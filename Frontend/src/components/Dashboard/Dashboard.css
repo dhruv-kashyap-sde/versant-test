@@ -1,0 +1,56 @@
+.dashboard-container{
+    min-height: 100vh;
+    display: flex;
+    /* padding: 2rem 3rem; */
+}
+
+.dashboard-container .header{
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.sidebar-container{
+    text-align: center;
+    border-right: var(--border);
+    /* background-color: rebeccapurple; */
+    min-width: 200px;
+    padding: 10px 15px;
+    width: 20vw;
+}
+
+.sidebar-container .logo-container{
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.sidebar-container .sidebar-buttons{
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.dashboard-body{
+    padding: 10px 15px;
+    /* background-color: rebeccapurple; */
+    width: 80vw;
+}
+
+.student-form{
+    background-color: whitesmoke;
+    padding: 20px 30px;
+    border-radius: var(--radius);
+}
+
+.student-form input{
+    width: 100%;
+}
+.student-form .form-fields{
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 2fr;
+    grid-gap: 0 20px;
+}

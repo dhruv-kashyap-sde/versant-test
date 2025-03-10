@@ -1,0 +1,69 @@
+{
+    "partA": [
+      {"question": "With all the good programs available it’s difficult to make a quick decision."},
+      {"question": "The search for qualified software engineer is truly difficult."},
+      {"question": "Roads through woods can be scary when there’s no light."},
+      {"question": "Somebody told me to speed up."},
+      {"question": "Bob and Tom talked all day."},
+      {"question": "These plates and glasses would make a fine present."},
+      {"question": "Do you accept credit cards?"}
+    ],
+    "partB": [
+      {
+        "question": "Staying here/how long/are you?",
+        "rearranged": "How long are you staying here?"
+      },
+      {
+        "question": "Of your family/any pictures/do you have?",
+        "rearranged": "Do you have any pictures of your family?"
+      },
+      {
+        "question": "Of mine/he is/ a friend.",
+        "rearranged": "He is a friend of mine."
+      },
+      {
+        "question": "Next door/is for sale/the house.",
+        "rearranged": "The house next door is for sale."
+      }
+    ],
+    "partD": [
+      {
+        "question": "You’re driving too ___. you should slow down.",
+        "answer": "fast"
+      },
+      {
+        "question": "I haven’t eaten anything all day. I’m so ___.",
+        "answer": "hungry"
+      },
+      {
+        "question": "She was awarded a promotion based on her excellent ___ on the job.",
+        "answer": "performance"
+      },
+      {
+        "question": "It was so ___ outside that no one wanted to leave the air-conditioned house.",
+        "answer": "hot"
+      }
+    ],
+    "partE": [
+      {"question": "I have to agree with you."},
+      {"question": "The company first opened when I was much younger."},
+      {"question": "I don’t have any information."},
+      {"question": "It’s a good idea to create a different version of your resume."},
+      {"question": "You can use the computer in a minute."}
+    ],
+    "partF": [
+      {
+        "passage": "John is the sales manager of a small store. An angry customer called him to complain about a home security system."
+      },
+      {
+        "passage": "Sam was on a busy flight that had been delayed. The plane finally landed and arrived at the gate."
+      },
+      {
+        "passage": "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style."
+      },
+      {
+        "passage": "Employees who wish to take time off during the summer should check with their managers in advance."
+      }
+    ]
+  }
+  
