@@ -9,6 +9,9 @@ import Private from './utils/private';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Loginpage from './pages/Login/Login';
 import { Toaster } from 'react-hot-toast';
+import StartTest from './components/Test/StartTest';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './utils/ProtectedRoute';
 
 const App = () => {
   const [text, settext] = useState(" ");
@@ -33,6 +36,7 @@ const App = () => {
 
   return (
     <>
+        <AuthProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Homepage />} />
@@ -40,9 +44,18 @@ const App = () => {
             <Route path="" element={<Dashboard/>} />
           </Route>
           <Route path="/login" element={<Loginpage />} />
+          <Route
+            path="/start-test"
+            element={
+              <ProtectedRoute>
+                <StartTest />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Toaster/>
       </Router>
+      </AuthProvider>      
     </>
   )
 }
