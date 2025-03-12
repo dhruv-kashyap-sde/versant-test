@@ -57,15 +57,3 @@
     margin-top: 20px;
     border: var(--border);
 }
-
-.security-container .secondary:disabled{
-    background-color: #bbb7b7;
-    color: var(--text-2);
-    cursor: not-allowed;
-}
-
-.security-container .primary:disabled{
-    background-color: #bbb7b7;
-    color: var(--text-2);
-    cursor: not-allowed;
-}

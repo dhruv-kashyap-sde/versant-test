@@ -14,16 +14,6 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './utils/ProtectedRoute';
 
 const App = () => {
-  const [text, settext] = useState(" ");
-  let msg = new SpeechSynthesisUtterance(text);
-  const synth = speechSynthesis;
-  const speak = () => {
-  synth.speak(msg);
-  console.log(msg);
-  }
-  const stop = () => {
-    speechSynthesis.cancel();
-  }
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {
     return "The Speech Synthesis API is not supported in your browser";
   }

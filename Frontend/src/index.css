@@ -134,10 +134,36 @@
   }
   
   /* Utility Classes */
+  .error-text{
+    color: red;
+    display: flex;
+    gap: 20px;
+    font-size: 20px;
+  }
+
   button.active{
     color: var(--w);
     background-color: var(--theme);
   }
+
+  
+.secondary:disabled{
+  background-color: #bbb7b7;
+  color: var(--text-2);
+  cursor: not-allowed;
+}
+  
+.secondary:disabled:hover{
+  background-color: #bbb7b7;
+  color: var(--text-2);
+  cursor: not-allowed;
+}
+
+.primary:disabled{
+  background-color: #bbb7b7;
+  color: var(--text-2);
+  cursor: not-allowed;
+}
 
   .color{
     color: var(--theme);
