@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './Disclaimer.css';
 
-const Disclaimer = () => {
+const Disclaimer = ({ onContinue }) => {
   const [isChecked, setIsChecked] = useState(false);
   
   const rules = ["",
@@ -44,6 +43,7 @@ const Disclaimer = () => {
 
   const handleContinueClick = () => {
     stop();
+    onContinue();
   };
 
   return (

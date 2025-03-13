@@ -3,6 +3,7 @@ import SecurityChecks from "../../security/SecurityChecks";
 import NotFullScreen from "../../security/NotFullScreen";
 import AllPartsFlowControl from "./AllPartsFlowControl";
 import { AuthContext } from "../../context/AuthContext";
+import './Disclaimer.css';
 
 const StartTest = () => {
   const {
@@ -27,6 +28,7 @@ const StartTest = () => {
 
   return (
     <div>
+      
       {isFullScreen ? (
         proceedTest ? (
           <AllPartsFlowControl />

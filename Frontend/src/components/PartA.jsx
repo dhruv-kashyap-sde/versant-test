@@ -1,54 +1,70 @@
-// CaptureAudio.jsx
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 
-function CaptureAudio() {
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+const PartA = () => {
+  const sentences = [
+    "Please repeat this sentence.",
+    "This is the second sentence.",
+    "Here comes the third sentence.",
+    "Now repeat the fourth sentence.",
+    "Finally, this is the fifth sentence."
+  ];
 
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    audioChunksRef.current = [];
+  const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [studentResponses, setStudentResponses] = useState([]);
 
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      audioChunksRef.current.push(event.data);
+  const speakSentence = (index) => {
+    const synth = speechSynthesis;
+    const msg = new SpeechSynthesisUtterance(sentences[index]);
+    msg.onend = () => {
+      // Start listening to the student's response after the sentence is spoken
+      startListening();
+    };
+    synth.speak(msg);
+  };
+
+  const startListening = () => {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      handleStudentResponse(transcript);
     };
 
-    mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-      // Send audioBlob to the server
-      uploadAudio(audioBlob);
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error', event.error);
     };
 
-    mediaRecorderRef.current.start();
-    setRecording(true);
+    recognition.onend = () => {
+      console.log('Speech recognition service disconnected');
+    };
+
+    recognition.start();
   };
 
-  const stopRecording = () => {
-    mediaRecorderRef.current.stop();
-    setRecording(false);
+  const handleStudentResponse = (response) => {
+    setStudentResponses([...studentResponses, response]);
+    if (currentSentenceIndex < sentences.length - 1) {
+      setCurrentSentenceIndex(currentSentenceIndex + 1);
+    } else {
+      console.log("All sentences have been repeated.");
+      // Handle the end of the repetition part
+    }
   };
 
-  const uploadAudio = async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'input.wav');
-
-    await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-  };
+  useEffect(() => {
+    speakSentence(currentSentenceIndex);
+  }, [currentSentenceIndex]);
 
   return (
     <div>
-      {recording ? (
-        <button onClick={stopRecording}>Stop</button>
-      ) : (
-        <button onClick={startRecording}>Start</button>
-      )}
+      <h2>Repetition Part</h2>
+      <p>Please repeat the sentence you hear.</p>
+      {/* The sentences are not displayed, only spoken */}
     </div>
-  );
+  )
 }
 
-export default CaptureAudio;
+export default PartA;

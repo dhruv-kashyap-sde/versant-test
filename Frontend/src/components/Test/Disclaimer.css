@@ -1,7 +1,7 @@
 .disclaimer-container{
-    height: 100vh;
+    height: 90vh;
     width: 100vw;
-    padding: 2rem 3rem;
+    padding: 2rem ;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -10,7 +10,7 @@
 
 .disclaimer-header{
     background-color: var(--theme);
-    font-size: 2rem;
+    font-size: 1.5rem;
     border-radius: var(--radius);
     text-align: center;
     padding: 10px;
@@ -40,4 +40,18 @@
 
 .disclaimer-container button{
     width: 100%;
+}
+
+.main-header{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+    padding: 0.5rem 1rem;
+    background-color: var(--text-2);
+}
+
+.main-header h1, .main-header h2{
+    color: var(--w);
+
 }

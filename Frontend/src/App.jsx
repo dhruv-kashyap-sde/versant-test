@@ -12,6 +12,7 @@ import { Toaster } from 'react-hot-toast';
 import StartTest from './components/Test/StartTest';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './utils/ProtectedRoute';
+import PartD from './components/PartD';
 
 const App = () => {
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {
@@ -38,7 +39,7 @@ const App = () => {
             path="/start-test"
             element={
               <ProtectedRoute>
-                <StartTest />
+                <PartD />
               </ProtectedRoute>
             }
           />
