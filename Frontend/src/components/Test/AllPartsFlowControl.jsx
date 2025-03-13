@@ -8,7 +8,7 @@ const AllPartsFlowControl = () => {
   const [partIndex, setPartIndex] = useState(-1);
 
   const handleContinue = () => {
-    setPartIndex(0);
+    setPartIndex(i => i + 1);
   };
 
   return (
@@ -20,7 +20,7 @@ const AllPartsFlowControl = () => {
       {partIndex === -1 ? (
         <Disclaimer onContinue={handleContinue} />
       ) : (
-        <PartD />
+        <PartD onContinue={handleContinue} />
       )}
     </div>
   );

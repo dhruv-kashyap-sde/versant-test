@@ -47,6 +47,31 @@
     justify-content: center;
     
 }
+.part-box .tutorial{
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+.tutorial .tut-box{
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    padding: 20px;
+    padding-top: 0;
+}
+
+.tut-box .box{
+    width: 50%;
+}
+
+.tut-box .box .color{
+    height: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--w);    
+}
 
 .part-body .primary{
     margin-left: 10px;

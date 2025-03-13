@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const PartD = () => {
+const PartD = ({ onContinue }) => {
   const partDQuestions = [
     {
       question: "You’re driving too ___. you should slow down.",
@@ -22,42 +22,73 @@ const PartD = () => {
     },
   ];
 
+  // tutorial logic
+  const [inTutorial, setInTutorial] = useState(true);
+  const rules = ["",
+    "Part D",
+    "Sentence completion ",
+    "Please type one word that best fits the meaning of the sentence. Type only one word. You will have 20 seconds for each sentence. Click 'Next' when you are finished.",
+  ];
+
+  const synth = speechSynthesis;
+  let msgIndex = 0;
+  let msg = new SpeechSynthesisUtterance();
+
+  const speak = () => {
+    if (msgIndex < rules.length) {
+      msg.text = rules[msgIndex];
+      synth.speak(msg);
+      msgIndex++;
+      msg.onend = speak;
+    }
+  };
+
+  const stop = () => {
+    speechSynthesis.cancel();
+  };
+
+  useEffect(() => {
+    speak();
+    return () => {
+      stop();
+    };
+  }, []);
+
+  // handling question logic
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [allAnswers, setAllAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(20);
 
-  useEffect(() => {
+  const startTest = () => {
+    setInTutorial(false);
+    stop();
     if (timeLeft === 0) {
       handleNextQuestion();
     }
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
       console.log(timeLeft);
-      
     }, 1000);
-    
-  if (currentQuestionIndex === partDQuestions.length) {
-    clearInterval(timer)
-  }
 
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+    if (currentQuestionIndex === partDQuestions.length) {
+      clearInterval(timer);
+    }
+  };
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setUserAnswer("");
     setTimeLeft(20);
+    setAllAnswers([...allAnswers, userAnswer]);
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(currentQuestionIndex);
-    setAllAnswers([...allAnswers, userAnswer]);
     console.log([...allAnswers, userAnswer]);
-    
+
     handleNextQuestion();
+    onContinue();
   };
 
   return (
@@ -69,11 +100,39 @@ const PartD = () => {
             <p>Sentence Completion</p>
           </h2>
           <div className="question-index">
-            <strong>{currentQuestionIndex !== partDQuestions.length? currentQuestionIndex + 1 : currentQuestionIndex}</strong>/{partDQuestions.length }
+            {!inTutorial ? (
+              <>
+                <strong>
+                  {currentQuestionIndex !== partDQuestions.length
+                    ? currentQuestionIndex + 1
+                    : currentQuestionIndex}
+                </strong>
+                /{partDQuestions.length}
+              </>
+            ) : (
+              "Instructions"
+            )}
           </div>
         </div>
         <div className="part-box">
-          {currentQuestionIndex < partDQuestions.length ? (
+          {inTutorial ? (
+            <div className="tutorial">
+              <p>Please type one word that best fits the meaning of the sentence. Type only one word. You will have 25 seconds for each sentence. Click "Next" when you are finished.</p>
+              <div className="tut-box">
+                <div className="box">
+                  <h3>You see:</h3>
+                  <div style={{background:"var(--text-2)"}} className="color">
+                    It's ___ tonight. Bring your sweater.
+                  </div>
+                </div>
+                <div className="box">
+                  <h3>You type:</h3>
+                  <div style={{background:"var(--theme)"}} className="color">cold</div>
+                </div>
+              </div>
+              <button onClick={startTest} className="primary">Start</button>
+            </div>
+          ) : currentQuestionIndex < partDQuestions.length ? (
             <div>
               <p>{partDQuestions[currentQuestionIndex].question}</p>
               <input
@@ -87,11 +146,13 @@ const PartD = () => {
             <p>Test completed!</p>
           )}
         </div>
-        {currentQuestionIndex < partDQuestions.length && (
+        {currentQuestionIndex < partDQuestions.length && !inTutorial && (
           <>
-            <span>TIme left: {timeLeft} seconds</span>
+            <span>Time left: {timeLeft} seconds</span>
             <button onClick={handleSubmit} className="primary">
-              Next Question
+              {currentQuestionIndex < partDQuestions.length - 1
+                ? "Next Question"
+                : "Submit"}
             </button>
           </>
         )}
