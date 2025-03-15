@@ -12,6 +12,8 @@ import { Toaster } from 'react-hot-toast';
 import StartTest from './components/Test/StartTest';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './utils/ProtectedRoute';
+import PartD from './components/PartD';
+import PartE from './components/PartE';
 
 const App = () => {
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {

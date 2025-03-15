@@ -3,6 +3,8 @@ import Disclaimer from "./Disclaimer";
 import "../Parts.css";
 import PartA from "../PartA";
 import PartD from "../PartD";
+import PartE from "../PartE";
+import PartF from "../PartF";
 
 const AllPartsFlowControl = () => {
   const [partIndex, setPartIndex] = useState(-1);
@@ -19,9 +21,10 @@ const AllPartsFlowControl = () => {
       </div>
       {partIndex === -1 ? (
         <Disclaimer onContinue={handleContinue} />
-      ) : (
+      ) : partIndex === 0 ? (
         <PartD onContinue={handleContinue} />
-      )}
+      ) : partIndex===1? <PartE onContinue={handleContinue}/>
+      : <PartF/>}
     </div>
   );
 };
