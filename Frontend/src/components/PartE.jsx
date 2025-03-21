@@ -29,6 +29,8 @@ const PartE = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
+  const voices = speechSynthesis.getVoices();
+  msg.voice = voices[95];
 
   const speak = () => {
     if (msgIndex < rules.length) {

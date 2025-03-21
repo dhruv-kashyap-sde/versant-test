@@ -41,9 +41,11 @@ const PartD = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-
+  const voices = speechSynthesis.getVoices();
+  
   const speak = () => {
     if (msgIndex < rules.length) {
+      msg.voice = voices[95];
       msg.text = rules[msgIndex];
       synth.speak(msg);
       msgIndex++;

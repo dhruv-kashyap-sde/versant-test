@@ -16,10 +16,12 @@ const Disclaimer = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-
+  const voices = synth.getVoices();
+  
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
+      msg.voice = voices[95];
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;

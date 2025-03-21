@@ -4,11 +4,8 @@ import Tutorial from '../utils/Tutorial';
 const PartA = ({ onContinue }) => {
   const questions = [
     {question: "it’s difficult to make a quick decision."},
-    {question: "The search for qualified software engineer is truly difficult."},
-    {question: "Roads through woods can be scary when there’s no light."},
     {question: "Somebody told me to speed up."},
     {question: "Bob and Tom talked all day."},
-    {question: "These plates and glasses would make a fine present."},
     {question: "Do you accept credit cards?"}
   ];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -90,7 +87,8 @@ const PartA = ({ onContinue }) => {
 
     setSpeechStatus('speaking');
     const utterance = new SpeechSynthesisUtterance(text);
-
+    const voices = speechSynthesis.getVoices();
+    utterance.voice = voices[95];
     utterance.onend = () => {
       setSpeechStatus('listening');
       startListening();
@@ -145,10 +143,12 @@ const PartA = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-
+  const voices = speechSynthesis.getVoices();
+  
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
+      msg.voice = voices[95];
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;

@@ -158,6 +158,12 @@
   color: var(--text-2);
   cursor: not-allowed;
 }
+  
+.primary:disabled:hover{
+  background-color: #bbb7b7;
+  color: var(--text-2);
+  cursor: not-allowed;
+}
 
 .primary:disabled{
   background-color: #bbb7b7;
