@@ -46,14 +46,39 @@
     align-items: center;
     justify-content: center;
 }
+.part-box .speech-qa-container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.speech-qa-container .blue, .speech-qa-container .gray{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: var(--border);
+    color: var(--w);
+}
+.speech-qa-container .blue{
+    background-color: var(--theme);
+}
+
+.speech-qa-container .gray{
+    background-color: var(--text-2);
+}
 
 .part-box .user-input-container{
     width: 50%;
     text-align: center;
 }
 
-.user-input-container i{
+.part-box i{
     font-size: 3rem;
+    color: var(--w);
 }
 
 .part-box .textarea textarea{

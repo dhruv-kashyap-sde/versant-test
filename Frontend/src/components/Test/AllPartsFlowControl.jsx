@@ -22,9 +22,16 @@ const AllPartsFlowControl = () => {
       {partIndex === -1 ? (
         <Disclaimer onContinue={handleContinue} />
       ) : partIndex === 0 ? (
-        <PartD onContinue={handleContinue} />
-      ) : partIndex===1? <PartE onContinue={handleContinue}/>
-      : <PartF/>}
+        <PartA onContinue={handleContinue} />
+      ) : partIndex === 1 ? (
+        <PartD onContinue={handleContinue}/>
+      ) : partIndex === 2 ? (
+        <PartE onContinue={handleContinue}/>
+      ) : partIndex === 3 ? (
+        <PartF onContinue={handleContinue}/>
+      ) : (
+        <div>Test completed!</div>
+      )}
     </div>
   );
 };

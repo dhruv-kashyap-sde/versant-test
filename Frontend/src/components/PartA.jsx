@@ -2,12 +2,15 @@ import React, { useEffect, useState, useRef } from 'react';
 import Tutorial from '../utils/Tutorial';
 
 const PartA = ({ onContinue }) => {
-  const [questions, setQuestions] = useState([
-    "Repeat after me",
-    "NOw repeat this second sentence",
-    "THis is the last sentence that you have to repeat",
-    // Add more questions as needed
-  ]);
+  const questions = [
+    {question: "it’s difficult to make a quick decision."},
+    {question: "The search for qualified software engineer is truly difficult."},
+    {question: "Roads through woods can be scary when there’s no light."},
+    {question: "Somebody told me to speed up."},
+    {question: "Bob and Tom talked all day."},
+    {question: "These plates and glasses would make a fine present."},
+    {question: "Do you accept credit cards?"}
+  ];
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);
@@ -50,13 +53,7 @@ const PartA = ({ onContinue }) => {
         storeAnswer(''); // Store empty string for no answer
         setIsListening(false);
         setSpeechStatus('idle');
-
-        // Move to next question if we have more
-        if (currentQuestionIndex < questions.length - 1) {
-          setTimeout(() => {
-            setCurrentQuestionIndex(prev => prev + 1);
-          }, 1000);
-        }
+        // Remove the index increment from here since onend will handle it
       };
     } else {
       console.error("Speech recognition not supported");
@@ -78,7 +75,7 @@ const PartA = ({ onContinue }) => {
     if (inTutorial) return;
 
     if (currentQuestionIndex < questions.length) {
-      speakQuestion(questions[currentQuestionIndex]);
+      speakQuestion(questions[currentQuestionIndex].question);
     }
 
     if (currentQuestionIndex === questions.length) {
@@ -172,7 +169,7 @@ const PartA = ({ onContinue }) => {
   const startTest = () => {
     stop();
     setInTutorial(false);
-    speakQuestion(questions[currentQuestionIndex]);
+    speakQuestion(questions[currentQuestionIndex].question);
   }
   return (
     <>
@@ -204,7 +201,13 @@ const PartA = ({ onContinue }) => {
           ) : currentQuestionIndex < questions.length ? (
             <>
               <div className="speech-qa-container">
-                <p>{speechStatus === 'idle' ? <i class="ri-loader-line"></i> : speechStatus === "listening" ? <i class="ri-speak-line">listen</i> : speechStatus === 'speaking' ? <i class="ri-headphone-line">speak</i> : ""}</p>
+                <>{speechStatus === 'idle' 
+                ? <div className="gray"><i class="ri-loader-line"></i>Processing</div> 
+                : speechStatus === "listening" 
+                ? <div className="blue"><i class="ri-mic-line"></i>Now Speak</div>
+                : speechStatus === 'speaking' 
+                ? <div className="gray"><i class="ri-speak-line"></i>Listen</div>
+                : ""}</>
               </div>
             </>
           ) : (

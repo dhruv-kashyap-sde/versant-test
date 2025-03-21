@@ -25,21 +25,22 @@ const Homepage = () => {
   const checkTin = () => {
     if (!validateTin()) return;
 
-    axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
-      .then(response => {
-        console.log(response);
+    navigate('/start-test');
+    // axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
+    //   .then(response => {
+    //     console.log(response);
 
-        if (response.status === 200) {
-          toast.success('TIN verified');
-          verifyTin(); // Set the verification state
-          navigate('/start-test'); // Navigate to the StartTest component
-        } 
-      })
-      .catch(error => {
-        // toast.error('There was an error checking the TIN');
-        toast.error(`${error.response.data.message}`);
-        console.log('There was an error checking the TIN!', error);
-      });
+    //     if (response.status === 200) {
+    //       toast.success('TIN verified');
+    //       verifyTin(); // Set the verification state
+    //       navigate('/start-test'); // Navigate to the StartTest component
+    //     } 
+    //   })
+    //   .catch(error => {
+    //     // toast.error('There was an error checking the TIN');
+    //     toast.error(`${error.response.data.message}`);
+    //     console.log('There was an error checking the TIN!', error);
+    //   });
   };
 
   return (
