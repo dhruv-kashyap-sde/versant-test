@@ -27,7 +27,7 @@ const PartD = ({ onContinue }) => {
   const [inTutorial, setInTutorial] = useState(true);
   
   const CONST = [
-    "Please type one word that best fits the meaning of the sentence. Type only one word. You will have 2 seconds for each sentence. Click 'Next' when you are finished.",
+    "Please type one word that best fits the meaning of the sentence. Type only one word. You will have 20 seconds for each sentence. Click 'Next' when you are finished.",
     "It's ___ tonight. Bring your sweater.",
     "cold"
   ]
@@ -66,7 +66,7 @@ const PartD = ({ onContinue }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [allAnswers, setAllAnswers] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(2);
+  const [timeLeft, setTimeLeft] = useState(20);
 
   const startTest = () => {
     setInTutorial(false);
@@ -96,7 +96,7 @@ const PartD = ({ onContinue }) => {
     allAnswers.push(userAnswer);
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setUserAnswer("");
-    setTimeLeft(2);
+    setTimeLeft(20);
     console.log(allAnswers);
   };
 

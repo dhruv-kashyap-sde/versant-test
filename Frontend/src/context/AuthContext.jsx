@@ -139,7 +139,7 @@ export const AuthProvider = ({ children }) => {
       setIsInternetGood(elapsed < 300);
     } catch (err) {
       console.error("Internet connection check failed:", err);
-      setIsInternetGood(false);
+      setIsInternetGood(true);
     }
   };
 

@@ -21,7 +21,7 @@ const PartF = ({ onContinue }) => {
   const [inTutorial, setInTutorial] = useState(true);
 
   const CONST = [
-    "You will have 3 seconds to read a paragraph. After 3 seconds, the paragraph will disappear from the screen. Then, you will have 90 seconds to reconstruct the paragraph. Show that you understood the passage by rewriting it in your own words. Your answer will be scored for clear and accurate content, not word-for-word memorization.",
+    "You will have 30 seconds to read a paragraph. After 30 seconds, the paragraph will disappear from the screen. Then, you will have 90 seconds to reconstruct the paragraph. Show that you understood the passage by rewriting it in your own words. Your answer will be scored for clear and accurate content, not word-for-word memorization.",
     "Mic went to 10 job interviews. At the last interview, he finally received a job offer.",
     "Mic had 10 job interviews. He got an offer after the final interview."
   ]
@@ -60,13 +60,13 @@ const PartF = ({ onContinue }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [allAnswers, setAllAnswers] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(3);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [showInput, setShowInput] = useState(false);
 
   const startTest = () => {
     stop();
     setInTutorial(false);
-    setTimeLeft(3);
+    setTimeLeft(30);
   }
 
   useEffect(() => {
@@ -97,7 +97,7 @@ const PartF = ({ onContinue }) => {
     allAnswers.push(userAnswer);
     setUserAnswer("");
     setShowInput(false);
-    setTimeLeft(3);
+    setTimeLeft(30);
 
   };
 

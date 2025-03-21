@@ -14,7 +14,7 @@ const PartE = ({ onContinue }) => {
   const [inTutorial, setInTutorial] = useState(true);
   
   const CONST = [
-    "Please type each sentence exactly as you hear it. You will have 10 seconds for each sentence. Pay attention to spelling and punctuation. Click 'Next' when you are finished",
+    "Please type each sentence exactly as you hear it. You will have 30 seconds for each sentence. Pay attention to spelling and punctuation. Click 'Next' when you are finished",
     "Can you work on Monday? Yes I can.",
     "Can you work on Monday? Yes I can."
   ]
@@ -54,7 +54,7 @@ const PartE = ({ onContinue }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [allAnswers, setAllAnswers] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [speaking, setSpeaking] = useState(false);
 
   const startTest = () => {
@@ -93,7 +93,7 @@ const PartE = ({ onContinue }) => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     allAnswers.push(userAnswer);
     setUserAnswer("");
-    setTimeLeft(10);
+    setTimeLeft(30);
     console.log(allAnswers);
     if (currentQuestionIndex === partEQuestions.length - 1) {
       return;
