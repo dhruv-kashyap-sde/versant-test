@@ -1,60 +1,173 @@
-// PassageReconstruction.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import Tutorial from "../utils/Tutorial";
 
-function PassageReconstruction({ passage }) {
-  const [showPassage, setShowPassage] = useState(true);
-  const [timer, setTimer] = useState(30);
-  const [responseTime, setResponseTime] = useState(90);
-  const [reconstructedText, setReconstructedText] = useState('');
+const PartF = ({ onContinue }) => {
+  const partFQuestions = [
+    {
+      question: "John is the sales manager of a small store. An angry customer called him to complain about a home security system that she had recently bought from his store. She told him that it did not work properly because the alarm went off when she was in the house. Initially she demanded a refund, but when John apologized, and offered to replace her system with a new one, she agreed. "
+    },
+    {
+      question: "Sam was on a busy flight that had been delayed. The plane finally landed and arrived at the gate. Then all the passengers got up to get their luggage. The woman in front of Sam accidentally bumped him in the arm. Just as she was apologizing, her bag fell from the overhead compartment and hit him on the head. The woman felt awful. Sam decided he didn’t want to fly again anytime soon. "
+    },
+    {
+      question: "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style for many years. Her award included a trip to Paris for one week. Mary and her husband have never been to Paris and they are very excited about it."
+    },
+    {
+      question: "Employees who wish to take time off during the summer should check with their managers in advance. Many people plan to be away from the office during the summer. As a company, we’d like to make sure all projects have enough people working on them before we approve requests for time off."
+    }
+  ];
+
+  // tutorial logic
+  const [inTutorial, setInTutorial] = useState(true);
+
+  const CONST = [
+    "You will have 3 seconds to read a paragraph. After 3 seconds, the paragraph will disappear from the screen. Then, you will have 90 seconds to reconstruct the paragraph. Show that you understood the passage by rewriting it in your own words. Your answer will be scored for clear and accurate content, not word-for-word memorization.",
+    "Mic went to 10 job interviews. At the last interview, he finally received a job offer.",
+    "Mic had 10 job interviews. He got an offer after the final interview."
+  ]
+
+  const rules = ["",
+    "Part F..., Passage Reconstruction.",
+    CONST[0]
+  ];
+
+
+  const synth = speechSynthesis;
+  let msgIndex = 0;
+  let msg = new SpeechSynthesisUtterance();
+
+  const speak = () => {
+    if (msgIndex < rules.length) {
+      msg.text = rules[msgIndex];
+      synth.speak(msg);
+      msgIndex++;
+      msg.onend = speak;
+    }
+  };
+
+  const stop = () => {
+    speechSynthesis.cancel();
+  };
 
   useEffect(() => {
-    let passageTimer;
-    if (showPassage && timer > 0) {
-      passageTimer = setTimeout(() => setTimer(timer - 1), 1000);
-    } else if (timer === 0) {
-      setShowPassage(false);
-    }
-    return () => clearTimeout(passageTimer);
-  }, [showPassage, timer]);
+    speak();
+    return () => {
+      stop();
+    };
+  }, []);
+
+  // handling question logic
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [allAnswers, setAllAnswers] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(3);
+  const [showInput, setShowInput] = useState(false);
+
+  const startTest = () => {
+    stop();
+    setInTutorial(false);
+    setTimeLeft(3);
+  }
 
   useEffect(() => {
-    let responseTimer;
-    if (!showPassage && responseTime > 0) {
-      responseTimer = setTimeout(() => setResponseTime(responseTime - 1), 1000);
-    }
-    return () => clearTimeout(responseTimer);
-  }, [showPassage, responseTime]);
+    if (inTutorial) return;
 
-  const submitAnswer = async () => {
-    const response = await fetch('/api/submit-passage-reconstruction', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reconstructedText }),
-    });
-    const result = await response.json();
-    // Handle result
+    if (timeLeft === 0) {
+      if (showInput) {
+        handleNextQuestion();
+      } else {
+        setShowInput(true);
+        setTimeLeft(90);
+      }
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+
+    if (currentQuestionIndex === partFQuestions.length) {
+      clearInterval(timer)
+    }
+    return () => clearInterval(timer);
+  }, [timeLeft, inTutorial, showInput]);
+
+  const handleNextQuestion = () => {
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    allAnswers.push(userAnswer);
+    setUserAnswer("");
+    setShowInput(false);
+    setTimeLeft(3);
+
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleNextQuestion();
+    console.log(allAnswers);
+
   };
 
   return (
-    <div>
-      {showPassage ? (
-        <div>
-          <p>{passage}</p>
-          <p>Time left: {timer} seconds</p>
+    <>
+      <div className="part-body">
+        <div className="part-header">
+          <h2>
+            <span className="circle">F</span>
+            <p>Passage Reconstruction</p>
+          </h2>
+          <div className="question-index">
+            {!inTutorial ? (
+              <>
+                <strong>
+                  {currentQuestionIndex !== partFQuestions.length
+                    ? currentQuestionIndex + 1
+                    : currentQuestionIndex}
+                </strong>
+                /{partFQuestions.length}
+              </>
+            ) : (
+              "Instructions"
+            )}
+          </div>
         </div>
-      ) : (
-        <div>
-          <p>Reconstruct the passage:</p>
-          <p>Time left: {responseTime} seconds</p>
-          <textarea
-            value={reconstructedText}
-            onChange={(e) => setReconstructedText(e.target.value)}
-          />
-          <button onClick={submitAnswer}>Submit</button>
-        </div>
-      )}
-    </div>
-  );
-}
+        <div className="part-box">
+          {inTutorial ? (
+            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest} />
+          ) : currentQuestionIndex < partFQuestions.length ? (
+            <>
+              {!showInput ? (
+                <p style={{ width: "90%" }}>{partFQuestions[currentQuestionIndex].question}</p>
+              ) : (
+                <form onSubmit={handleSubmit} className="user-input-container textarea">
+                  <textarea
+                    rows={10}
+                    autoFocus
+                    type="text"
+                    className="user-input"
+                    placeholder="Type your answer..."
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                  />
+                  <button className="secondary">Submit </button>
+                </form>
 
-export default PassageReconstruction;
+              )}
+            </>
+          ) : (
+            <div className="part-box-complete">
+              <p>Test completed!</p>
+              <button onClick={onContinue} className="primary">Finish Test</button>
+            </div>
+          )}
+        </div>
+        {currentQuestionIndex < partFQuestions.length && !inTutorial && (
+          <><span>Time left: {timeLeft} seconds</span>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default PartF;

@@ -14,6 +14,8 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './utils/ProtectedRoute';
 import PartD from './components/PartD';
 import PartE from './components/PartE';
+import PartF from './components/PartF';
+import PartA from './components/PartA';
 
 const App = () => {
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {
@@ -24,14 +26,13 @@ const App = () => {
   // <button onClick={speak} className="primary">Speak</button>
   // <button onClick={stop} className="secondary">stop</button>
   // <p>{text}</p>
-
-
+  
   return (
     <>
         <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<PartA />} />
           <Route path="/admin" element={<Private />} >
             <Route path="" element={<Dashboard/>} />
           </Route>

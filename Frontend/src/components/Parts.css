@@ -75,6 +75,11 @@
     padding-top: 0;
 }
 
+.part-box .part-box-complete{
+    display: flex;
+    flex-direction: column;
+}
+
 .tut-box .box{
     width: 50%;
 }

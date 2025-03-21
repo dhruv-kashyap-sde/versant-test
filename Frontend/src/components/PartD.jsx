@@ -142,9 +142,9 @@ const PartD = ({ onContinue }) => {
               />
             </form>
           ) : (
-            <><p>Test completed!</p>
+            <div className="part-box-complete"><p>Test completed!</p>
             <br />
-            <button onClick={onContinue} className="primary">Go to Next Part</button></>
+            <button onClick={onContinue} className="primary">Go to Next Part</button></div>
           )}
         </div>
         {currentQuestionIndex < partDQuestions.length && !inTutorial && (

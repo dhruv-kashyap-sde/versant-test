@@ -1,22 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Tutorial from '../utils/Tutorial';
 
-const PartA = ({ onContinue }) => {
+const SpeechQuestionAnswer = () => {
   const [questions, setQuestions] = useState([
-    "Repeat after me",
-    "NOw repeat this second sentence",
-    "THis is the last sentence that you have to repeat",
+    "What is your name?",
+    "How old are you?",
+    "Where are you from?",
     // Add more questions as needed
   ]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
-
+  
   const speechSynthesis = window.speechSynthesis;
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
-
+  
   // Initialize speech recognition
   useEffect(() => {
     if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
@@ -25,17 +24,17 @@ const PartA = ({ onContinue }) => {
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = 'en-US';
-
+      
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         storeAnswer(transcript);
       };
-
+      
       recognitionRef.current.onend = () => {
         setIsListening(false);
         setSpeechStatus('idle');
         clearTimeout(timerRef.current);
-
+        
         // Move to next question if we have more
         if (currentQuestionIndex < questions.length - 1) {
           setTimeout(() => {
@@ -45,23 +44,16 @@ const PartA = ({ onContinue }) => {
           console.log("All questions completed. Answers:", answers);
         }
       };
-
-      recognitionRef.current.onerror = () => {
-        storeAnswer(''); // Store empty string for no answer
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
         setIsListening(false);
         setSpeechStatus('idle');
-
-        // Move to next question if we have more
-        if (currentQuestionIndex < questions.length - 1) {
-          setTimeout(() => {
-            setCurrentQuestionIndex(prev => prev + 1);
-          }, 1000);
-        }
       };
     } else {
       console.error("Speech recognition not supported");
     }
-
+    
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
@@ -72,47 +64,41 @@ const PartA = ({ onContinue }) => {
       clearTimeout(timerRef.current);
     };
   }, []);
-
+  
   // Start the process when component mounts or when currentQuestionIndex changes
   useEffect(() => {
-    if (inTutorial) return;
-
     if (currentQuestionIndex < questions.length) {
       speakQuestion(questions[currentQuestionIndex]);
     }
-
-    if (currentQuestionIndex === questions.length) {
-      console.log("All questions completed. Answers:", answers);
-    }
   }, [currentQuestionIndex]);
-
+  
   const speakQuestion = (text) => {
     if (speechSynthesis.speaking) {
       speechSynthesis.cancel();
     }
-
+    
     setSpeechStatus('speaking');
     const utterance = new SpeechSynthesisUtterance(text);
-
+    
     utterance.onend = () => {
       setSpeechStatus('listening');
       startListening();
     };
-
+    
     utterance.onerror = (event) => {
       console.error("Speech synthesis error", event);
       setSpeechStatus('idle');
     };
-
+    
     speechSynthesis.speak(utterance);
   };
-
+  
   const startListening = () => {
     if (recognitionRef.current) {
       try {
         setIsListening(true);
         recognitionRef.current.start();
-
+        
         // Set a timeout to stop listening after 10 seconds
         timerRef.current = setTimeout(() => {
           if (recognitionRef.current && isListening) {
@@ -124,99 +110,39 @@ const PartA = ({ onContinue }) => {
       }
     }
   };
-
+  
   const storeAnswer = (answer) => {
-    answers.push(answer);
+    setAnswers(prev => [...prev, {
+      question: questions[currentQuestionIndex],
+      answer
+    }]);
   };
-
-
-  // tutorial logic
-  const [inTutorial, setInTutorial] = useState(true);
-
-  const CONST = [
-    "Please repeat the sentences that you hear",
-    "Leave town on next Train",
-    "Leave town on next Train"
-  ]
-
-  const rules = ["",
-    "Part A..., Sentence Repitition",
-    CONST[0],
-    "for example, You will hear... Leave town on next Train. and You should say... Leave town on next Train.",
-  ];
-
-  const synth = speechSynthesis;
-  let msgIndex = 0;
-  let msg = new SpeechSynthesisUtterance();
-
-  const speak = () => {
-    if (msgIndex < rules.length) {
-      msg.text = rules[msgIndex];
-      synth.speak(msg);
-      msgIndex++;
-      msg.onend = speak;
-    }
-  };
-
-  const stop = () => {
-    speechSynthesis.cancel();
-  };
-
-  useEffect(() => {
-    speak();
-    return () => {
-      stop();
-    };
-  }, []);
-
-  const startTest = () => {
-    stop();
-    setInTutorial(false);
-    speakQuestion(questions[currentQuestionIndex]);
-  }
+  
   return (
-    <>
-
-      <div className="part-body">
-        <div className="part-header">
-          <h2>
-            <span className="circle">A</span>
-            <p>Sentence Repetition</p>
-          </h2>
-          <div className="question-index">
-            {!inTutorial ? (
-              <>
-                <strong>
-                  {currentQuestionIndex !== questions.length
-                    ? currentQuestionIndex + 1
-                    : currentQuestionIndex}
-                </strong>
-                /{questions.length}
-              </>
-            ) : (
-              "Instructions"
-            )}
-          </div>
-        </div>
-        <div className="part-box">
-          {inTutorial ? (
-            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest} />
-          ) : currentQuestionIndex < questions.length ? (
-            <>
-              <div className="speech-qa-container">
-                <p>{speechStatus === 'idle' ? <i class="ri-loader-line"></i> : speechStatus === "listening" ? <i class="ri-speak-line">listen</i> : speechStatus === 'speaking' ? <i class="ri-headphone-line">speak</i> : ""}</p>
-              </div>
-            </>
-          ) : (
-            <div className="part-box-complete">
-              <p>Test completed!</p>
-              <button onClick={onContinue} className="primary">Finish Test</button>
-            </div>
-          )}
-        </div>
-
-      </div></>
+    <div className="speech-qa-container">
+      <h2>Speech Question and Answer</h2>
+      
+      <div className="status-indicator">
+        {speechStatus === 'speaking' && <p>Speaking: "{questions[currentQuestionIndex]}"</p>}
+        {speechStatus === 'listening' && <p>Listening... (10 seconds)</p>}
+        {speechStatus === 'idle' && currentQuestionIndex < questions.length && 
+          <p>Getting ready for next question...</p>}
+        {currentQuestionIndex >= questions.length && <p>All questions completed!</p>}
+      </div>
+      
+      <div className="answers-display">
+        <h3>Recorded Answers:</h3>
+        <ul>
+          {answers.map((item, index) => (
+            <li key={index}>
+              <strong>Q: {item.question}</strong><br/>
+              A: {item.answer}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };
 
-export default PartA;
+export default SpeechQuestionAnswer;
