@@ -146,7 +146,29 @@ export const AuthProvider = ({ children }) => {
   const voices = window.speechSynthesis.getVoices();
   const speakingVoice = voices[2];
   
+  // Updated totalScore state to be an array of objects
+  const [totalScore, setTotalScore] = useState([
+    { part: 'A', answers: [] },
+    { part: 'B', answers: [] },
+    { part: 'C', answers: [] },
+    { part: 'D', answers: [] },
+    { part: 'E', answers: [] },
+    { part: 'F', answers: [] }
+  ]);
+  
+  // New function to update only the score for a specific part by pushing new answers to the array
+  const updatePartScore = (part, newAnswer) => {
+    setTotalScore(prevScores => 
+      prevScores.map(score => 
+        score.part === part ? { ...score, answers: [...score.answers, newAnswer] } : score
+      )
+    );
+  };
+
   const contextValue = {
+    totalScore, 
+    setTotalScore,
+    updatePartScore, // Add the new function to the context value
     mediaStreamRef, videoRef, 
     isVerified,
     verifyTin,

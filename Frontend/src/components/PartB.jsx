@@ -1,58 +1,239 @@
-// SentenceBuildAudio.jsx
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
+import Tutorial from '../utils/Tutorial';
+import { AuthContext } from '../context/AuthContext';
 
-function SentenceBuildAudio({ audioSrc }) {
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+const PartB = ({ onContinue }) => {
+  const questions = [
+    {
+      question: "Staying here/how long/are you?",
+      rearranged: "How long are you staying here?"
+    },
+    {
+      question: "Of your family/any pictures/do you have?",
+      rearranged: "Do you have any pictures of your family?"
+    },
+    {
+      question: "Of mine/he is/ a friend.",
+      rearranged: "He is a friend of mine."
+    },
+    {
+      question: "Next door/is for sale/the house.",
+      rearranged: "The house next door is for sale."
+    }];
 
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    audioChunksRef.current = [];
+  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
 
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      audioChunksRef.current.push(event.data);
+  const speechSynthesis = window.speechSynthesis;
+  const recognitionRef = useRef(null);
+  const timerRef = useRef(null);
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        storeAnswer(transcript);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+        setSpeechStatus('idle');
+        clearTimeout(timerRef.current);
+
+        // Move to next question if we have more
+        if (currentQuestionIndex < questions.length - 1) {
+          setTimeout(() => {
+            setCurrentQuestionIndex(prev => prev + 1);
+          }, 1000);
+        } else {
+          console.log("All questions completed. Answers:", answers);
+        }
+      };
+
+      recognitionRef.current.onerror = () => {
+        storeAnswer(''); // Store empty string for no answer
+        setIsListening(false);
+        setSpeechStatus('idle');
+        // Remove the index increment from here since onend will handle it
+      };
+    } else {
+      console.error("Speech recognition not supported");
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+      clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  // Start the process when component mounts or when currentQuestionIndex changes
+  useEffect(() => {
+    if (inTutorial) return;
+
+    if (currentQuestionIndex < questions.length) {
+      speakQuestion(questions[currentQuestionIndex].question);
+    }
+
+    if (currentQuestionIndex === questions.length) {
+      console.log("All questions completed. Answers:", answers);
+    }
+  }, [currentQuestionIndex]);
+
+  const speakQuestion = (text) => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+
+    setSpeechStatus('speaking');
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.voice = speakingVoice;
+    utterance.onend = () => {
+      setSpeechStatus('listening');
+      startListening();
     };
 
-    mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-      // Send audioBlob to the server
-      uploadAudio(audioBlob);
+    utterance.onerror = (event) => {
+      console.error("Speech synthesis error", event);
+      setSpeechStatus('idle');
     };
 
-    mediaRecorderRef.current.start();
-    setRecording(true);
+    speechSynthesis.speak(utterance);
   };
 
-  const stopRecording = () => {
-    mediaRecorderRef.current.stop();
-    setRecording(false);
+  const startListening = () => {
+    if (recognitionRef.current) {
+      try {
+        setIsListening(true);
+        recognitionRef.current.start();
+
+        // Set a timeout to stop listening after 10 seconds
+        timerRef.current = setTimeout(() => {
+          if (recognitionRef.current && isListening) {
+            recognitionRef.current.stop();
+          }
+        }, 10000);
+      } catch (error) {
+        console.error("Error starting speech recognition", error);
+      }
+    }
   };
 
-  const uploadAudio = async (audioBlob) => {
-    const formData = new FormData();
-    formData.append('audio', audioBlob, 'sentence_build.wav');
-
-    await fetch('/api/submit-sentence-build', {
-      method: 'POST',
-      body: formData,
-    });
+  const storeAnswer = (answer) => {
+    answers.push(answer);
   };
 
+
+  // tutorial logic
+  const [inTutorial, setInTutorial] = useState(true);
+
+  const CONST = [
+    "Please rearrange the word groups  that you hear into the correct sentence.",
+    "was reading... my mother... her favourite magazine",
+    "My mother was reading her favourite magazine."
+  ]
+
+  const rules = ["",
+    "Part B..., Sentence Builds",
+    CONST[0],
+    "for example, You will hear... 'was reading... my mother... her favourite magazine'. and You should say... 'my mother was reading her favourite magazine.",
+  ];
+
+  const synth = speechSynthesis;
+  let msgIndex = 0;
+  let msg = new SpeechSynthesisUtterance();
+  
+  const speak = () => {
+    if (msgIndex < rules.length) {
+      msg.text = rules[msgIndex];
+      // msg.voice = speakingVoice;
+      const voices = synth.getVoices();
+      msg.voice = voices[2];
+      synth.speak(msg);
+      msgIndex++;
+      msg.onend = speak;
+    }
+  };
+
+  const stop = () => {
+    speechSynthesis.cancel();
+  };
+
+  useEffect(() => {
+    speak();
+    return () => {
+      stop();
+    };
+  }, []);
+
+  const startTest = () => {
+    stop();
+    setInTutorial(false);
+    speakQuestion(questions[currentQuestionIndex].question);
+  }
   return (
-    <div>
-      {/* Audio Playback of Phrases */}
-      <audio controls src={audioSrc}></audio>
+    <>
 
-      {/* Recording Controls */}
-      {recording ? (
-        <button onClick={stopRecording}>Stop Recording</button>
-      ) : (
-        <button onClick={startRecording}>Start Recording</button>
-      )}
-    </div>
+      <div className="part-body">
+        <div className="part-header">
+          <h2>
+            <span className="circle">B</span>
+            <p>Sentence Builds</p>
+          </h2>
+          <div className="question-index">
+            {!inTutorial ? (
+              <>
+                <strong>
+                  {currentQuestionIndex !== questions.length
+                    ? currentQuestionIndex + 1
+                    : currentQuestionIndex}
+                </strong>
+                /{questions.length}
+              </>
+            ) : (
+              "Instructions"
+            )}
+          </div>
+        </div>
+        <div className="part-box">
+          {inTutorial ? (
+            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest} />
+          ) : currentQuestionIndex < questions.length ? (
+            <>
+              <div className="speech-qa-container">
+                <>{speechStatus === 'idle' 
+                ? <div className="gray"><i class="ri-loader-line"></i>Processing</div> 
+                : speechStatus === "listening" 
+                ? <div className="blue"><i class="ri-mic-line"></i>Now Speak</div>
+                : speechStatus === 'speaking' 
+                ? <div className="gray"><i class="ri-speak-line"></i>Listen</div>
+                : ""}</>
+              </div>
+            </>
+          ) : (
+            <div className="part-box-complete">
+              <p>Test completed!</p>
+              <button onClick={onContinue} className="secondary">Go to Next Part</button>
+            </div>
+          )}
+        </div>
+
+      </div></>
   );
-}
+};
 
-export default SentenceBuildAudio;
+export default PartB;

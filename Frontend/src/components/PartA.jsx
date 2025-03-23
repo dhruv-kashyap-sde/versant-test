@@ -9,9 +9,8 @@ const PartA = ({ onContinue }) => {
     {question: "Bob and Tom talked all day."},
     {question: "Do you accept credit cards?"}
   ];
-    const { speakingVoice } = useContext(AuthContext);
+    const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
 
@@ -30,7 +29,7 @@ const PartA = ({ onContinue }) => {
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        storeAnswer(transcript);
+        updatePartScore('A', transcript);
       };
 
       recognitionRef.current.onend = () => {
@@ -44,12 +43,12 @@ const PartA = ({ onContinue }) => {
             setCurrentQuestionIndex(prev => prev + 1);
           }, 1000);
         } else {
-          console.log("All questions completed. Answers:", answers);
+          console.log("All questions completed. Answers:", totalScore);
         }
       };
 
       recognitionRef.current.onerror = () => {
-        storeAnswer(''); // Store empty string for no answer
+        updatePartScore('A',''); // Store empty string for no answer
         setIsListening(false);
         setSpeechStatus('idle');
         // Remove the index increment from here since onend will handle it
@@ -78,7 +77,7 @@ const PartA = ({ onContinue }) => {
     }
 
     if (currentQuestionIndex === questions.length) {
-      console.log("All questions completed. Answers:", answers);
+      console.log("All questions completed. Answers:", totalScore);
     }
   }, [currentQuestionIndex]);
 
@@ -120,11 +119,6 @@ const PartA = ({ onContinue }) => {
       }
     }
   };
-
-  const storeAnswer = (answer) => {
-    answers.push(answer);
-  };
-
 
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);

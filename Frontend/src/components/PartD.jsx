@@ -24,7 +24,7 @@ const PartD = ({ onContinue }) => {
     },
   ];
 
-  const { speakingVoice } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
 
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
@@ -69,7 +69,6 @@ const PartD = ({ onContinue }) => {
   // handling question logic
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
-  const [allAnswers, setAllAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(20);
 
   const startTest = () => {
@@ -97,11 +96,11 @@ const PartD = ({ onContinue }) => {
   }, [timeLeft, inTutorial]);
 
   const handleNextQuestion = () => {
-    allAnswers.push(userAnswer);
+    totalScore[3].answers.push(userAnswer);
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setUserAnswer("");
     setTimeLeft(20);
-    console.log(allAnswers);
+    console.log(totalScore);
   };
 
   const handleSubmit = (e) => {

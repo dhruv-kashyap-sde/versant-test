@@ -11,7 +11,7 @@ const PartE = ({ onContinue }) => {
     {question: "You can use the computer in a minute."}
   ];
 
-  const { speakingVoice } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
 
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
@@ -57,7 +57,6 @@ const PartE = ({ onContinue }) => {
   // handling question logic
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
-  const [allAnswers, setAllAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(30);
   const [speaking, setSpeaking] = useState(false);
 
@@ -96,10 +95,10 @@ const PartE = ({ onContinue }) => {
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    allAnswers.push(userAnswer);
+    totalScore[4].answers.push(userAnswer);
     setUserAnswer("");
     setTimeLeft(30);
-    console.log(allAnswers);
+    console.log(totalScore);
     if (currentQuestionIndex === partEQuestions.length - 1) {
       return;
     }
@@ -141,7 +140,7 @@ const PartE = ({ onContinue }) => {
             <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest}/>
           ) : currentQuestionIndex < partEQuestions.length ? (
             <form onSubmit={handleSubmit} className="user-input-container">
-              {speaking? <i style={{backgroundColor: "var(--text-2)"}} class="ri-customer-service-fill"></i> :<input
+              {speaking? <i style={{color: "var(--text-2)"}} class="ri-customer-service-fill"></i> :<input
                 autoFocus
                 type="text"
                 className="user-input"

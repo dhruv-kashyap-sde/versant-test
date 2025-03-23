@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Tutorial from "../utils/Tutorial";
+import { AuthContext } from "../context/AuthContext";
 
 const PartF = ({ onContinue }) => {
   const partFQuestions = [
@@ -17,6 +18,7 @@ const PartF = ({ onContinue }) => {
     }
   ];
 
+  const { updatePartScore, totalScore} = useContext(AuthContext);
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
 
@@ -61,7 +63,6 @@ const PartF = ({ onContinue }) => {
   // handling question logic
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
-  const [allAnswers, setAllAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(30);
   const [showInput, setShowInput] = useState(false);
 
@@ -96,7 +97,7 @@ const PartF = ({ onContinue }) => {
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    allAnswers.push(userAnswer);
+    totalScore[5].answers.push(userAnswer);
     setUserAnswer("");
     setShowInput(false);
     setTimeLeft(30);
@@ -106,7 +107,7 @@ const PartF = ({ onContinue }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleNextQuestion();
-    console.log(allAnswers);
+    console.log(totalScore);
 
   };
 
