@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Tutorial from "../utils/Tutorial";
+import { AuthContext } from "../context/AuthContext";
 
 const PartD = ({ onContinue }) => {
   const partDQuestions = [
@@ -23,6 +24,8 @@ const PartD = ({ onContinue }) => {
     },
   ];
 
+  const { speakingVoice } = useContext(AuthContext);
+
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
   
@@ -41,11 +44,10 @@ const PartD = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  const voices = speechSynthesis.getVoices();
   
   const speak = () => {
     if (msgIndex < rules.length) {
-      msg.voice = voices[95];
+      msg.voice = speakingVoice;
       msg.text = rules[msgIndex];
       synth.speak(msg);
       msgIndex++;
@@ -146,13 +148,13 @@ const PartD = ({ onContinue }) => {
           ) : (
             <div className="part-box-complete"><p>Test completed!</p>
             <br />
-            <button onClick={onContinue} className="primary">Go to Next Part</button></div>
+            <button onClick={onContinue} className="secondary">Go to Next Part</button></div>
           )}
         </div>
         {currentQuestionIndex < partDQuestions.length && !inTutorial && (
           <>
             <span>Time left: {timeLeft} seconds</span>
-            <button onClick={currentQuestionIndex < partDQuestions.length - 1 ? handleSubmit : onContinue} className="primary">
+            <button onClick={currentQuestionIndex < partDQuestions.length - 1 ? handleSubmit : onContinue} className="secondary">
               {currentQuestionIndex < partDQuestions.length - 1
                 ? "Next Question"
                 : "Submit"}

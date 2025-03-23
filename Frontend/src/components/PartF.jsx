@@ -40,7 +40,7 @@ const PartF = ({ onContinue }) => {
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
-      msg.voice = voices[95];
+      msg.voice = voices[1];
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;
@@ -165,6 +165,8 @@ const PartF = ({ onContinue }) => {
         </div>
         {currentQuestionIndex < partFQuestions.length && !inTutorial && (
           <><span>Time left: {timeLeft} seconds</span>
+          {!showInput ? <button onClick={() => setShowInput(true)} className="secondary">Skip and Write</button>
+          :<button onClick={handleNextQuestion} className="secondary">Skip to Next Question</button>}
           </>
         )}
       </div>

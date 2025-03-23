@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import Tutorial from '../utils/Tutorial';
+import { AuthContext } from '../context/AuthContext';
 
 const PartA = ({ onContinue }) => {
   const questions = [
@@ -8,6 +9,7 @@ const PartA = ({ onContinue }) => {
     {question: "Bob and Tom talked all day."},
     {question: "Do you accept credit cards?"}
   ];
+    const { speakingVoice } = useContext(AuthContext);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);
@@ -87,8 +89,7 @@ const PartA = ({ onContinue }) => {
 
     setSpeechStatus('speaking');
     const utterance = new SpeechSynthesisUtterance(text);
-    const voices = speechSynthesis.getVoices();
-    utterance.voice = voices[95];
+    utterance.voice = speakingVoice;
     utterance.onend = () => {
       setSpeechStatus('listening');
       startListening();
@@ -137,18 +138,17 @@ const PartA = ({ onContinue }) => {
   const rules = ["",
     "Part A..., Sentence Repitition",
     CONST[0],
-    "for example, You will hear... Leave town on next Train. and You should say... Leave town on next Train.",
+    "for example, You will hear... 'Leave town on next Train'. and You should say... 'Leave town on next Train'.",
   ];
 
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  const voices = speechSynthesis.getVoices();
   
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
-      msg.voice = voices[95];
+      msg.voice = speakingVoice;
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;
@@ -213,7 +213,7 @@ const PartA = ({ onContinue }) => {
           ) : (
             <div className="part-box-complete">
               <p>Test completed!</p>
-              <button onClick={onContinue} className="primary">Finish Test</button>
+              <button onClick={onContinue} className="secondary">Go to Next Part</button>
             </div>
           )}
         </div>

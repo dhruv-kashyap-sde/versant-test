@@ -1,27 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 
 const Disclaimer = ({ onContinue }) => {
+  const { speakingVoice } = useContext(AuthContext);
   const [isChecked, setIsChecked] = useState(false);
   
-  const rules = ["",
-    "Welcome to Versant Test",
-    "Please follow the instructions carefully",
-    "Do not reload the page during the test.",
-    "Do not block any permissions.",
-    "Do not remove FullScreen.",
-    "Violating any rules leads to instant disqualification.",
-    "Speak in natural voice, not too low, not too loud."
+  const rules = [
+    "Welcome to Versant Test. Please follow the instructions carefully. Do not reload the page during the test. Do not block any permissions. Do not remove FullScreen. Violating any rules leads to instant disqualification. Speak in natural voice, not too low, not too loud.",
   ];
 
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  const voices = synth.getVoices();
   
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
-      msg.voice = voices[95];
+      msg.voice = speakingVoice;
+      msg.pitch = 2;
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;

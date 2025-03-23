@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Tutorial from "../utils/Tutorial";
+import { AuthContext } from "../context/AuthContext";
 
 const PartE = ({ onContinue }) => {
   const partEQuestions = [
@@ -9,6 +10,8 @@ const PartE = ({ onContinue }) => {
     {question: "It’s a good idea to create a different version of your resume."},
     {question: "You can use the computer in a minute."}
   ];
+
+  const { speakingVoice } = useContext(AuthContext);
 
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
@@ -20,8 +23,7 @@ const PartE = ({ onContinue }) => {
   ]
   
   const rules = ["",
-    "Part E",
-    "Dictation",
+    "Part E... Dictation",
     CONST[0]
   ];
 
@@ -29,12 +31,12 @@ const PartE = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  const voices = speechSynthesis.getVoices();
-  msg.voice = voices[95];
-
+  
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
+      msg.voice = speakingVoice;
+      msg.rate = 1.1;
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;
@@ -68,6 +70,7 @@ const PartE = ({ onContinue }) => {
   const questionSpeaker = (question) => {
     setSpeaking(true);
     msg.text = question;
+    msg.voice = speakingVoice;
     synth.speak(msg);
     msg.onend = () => setSpeaking(false)      
   }
@@ -138,7 +141,7 @@ const PartE = ({ onContinue }) => {
             <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest}/>
           ) : currentQuestionIndex < partEQuestions.length ? (
             <form onSubmit={handleSubmit} className="user-input-container">
-              {speaking? <i class="ri-customer-service-fill"></i> :<input
+              {speaking? <i style={{backgroundColor: "var(--text-2)"}} class="ri-customer-service-fill"></i> :<input
                 autoFocus
                 type="text"
                 className="user-input"
@@ -149,7 +152,6 @@ const PartE = ({ onContinue }) => {
             </form>
           ) : (
             <div className="part-box-complete"><p>Test completed!</p>
-            <br />
             <button onClick={onContinue} className="primary">Go to Next Part</button></div>
           )}
         </div>

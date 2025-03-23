@@ -143,6 +143,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const voices = window.speechSynthesis.getVoices();
+  const speakingVoice = voices[2];
+  
   const contextValue = {
     mediaStreamRef, videoRef, 
     isVerified,
@@ -166,7 +169,8 @@ export const AuthProvider = ({ children }) => {
     checkFullScreen,
     handleFullScreenChange,
     proceedTest, setProceedTest,
-    initializeCamera, checkInternetConnection, initializeMic
+    initializeCamera, checkInternetConnection, initializeMic,
+    speakingVoice
   };
 
   return (
