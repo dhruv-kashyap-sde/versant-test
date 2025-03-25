@@ -5,19 +5,19 @@ import { AuthContext } from '../context/AuthContext';
 const PartB = ({ onContinue }) => {
   const questions = [
     {
-      question: "Staying here/how long/are you?",
+      question: "Staying here... how long... are you?",
       rearranged: "How long are you staying here?"
     },
     {
-      question: "Of your family/any pictures/do you have?",
+      question: "Of your family... any pictures... do you have?",
       rearranged: "Do you have any pictures of your family?"
     },
     {
-      question: "Of mine/he is/ a friend.",
+      question: "Of mine... he is...  a friend.",
       rearranged: "He is a friend of mine."
     },
     {
-      question: "Next door/is for sale/the house.",
+      question: "Next door... is for sale... the house.",
       rearranged: "The house next door is for sale."
     }];
 
@@ -42,7 +42,7 @@ const PartB = ({ onContinue }) => {
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        storeAnswer(transcript);
+        updatePartScore('B',transcript);
       };
 
       recognitionRef.current.onend = () => {
@@ -56,12 +56,12 @@ const PartB = ({ onContinue }) => {
             setCurrentQuestionIndex(prev => prev + 1);
           }, 1000);
         } else {
-          console.log("All questions completed. Answers:", answers);
+          console.log("All questions completed. Answers:", totalScore);
         }
       };
 
       recognitionRef.current.onerror = () => {
-        storeAnswer(''); // Store empty string for no answer
+        updatePartScore('B',''); // Store empty string for no answer
         setIsListening(false);
         setSpeechStatus('idle');
         // Remove the index increment from here since onend will handle it
@@ -90,7 +90,7 @@ const PartB = ({ onContinue }) => {
     }
 
     if (currentQuestionIndex === questions.length) {
-      console.log("All questions completed. Answers:", answers);
+      console.log("All questions completed. Answers:", totalScore);
     }
   }, [currentQuestionIndex]);
 
@@ -132,11 +132,6 @@ const PartB = ({ onContinue }) => {
       }
     }
   };
-
-  const storeAnswer = (answer) => {
-    answers.push(answer);
-  };
-
 
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
