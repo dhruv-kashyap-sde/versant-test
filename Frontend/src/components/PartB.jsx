@@ -222,7 +222,7 @@ const PartB = ({ onContinue }) => {
           ) : (
             <div className="part-box-complete">
               <p>Test completed!</p>
-              <button onClick={onContinue} className="secondary">Go to Next Part</button>
+              <button onClick={onContinue} className="primary">Go to Next Part</button>
             </div>
           )}
         </div>

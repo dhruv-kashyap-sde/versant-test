@@ -5,6 +5,7 @@ import PartA from "../PartA";
 import PartD from "../PartD";
 import PartE from "../PartE";
 import PartF from "../PartF";
+import PartB from "../PartB";
 
 const AllPartsFlowControl = () => {
   const [partIndex, setPartIndex] = useState(-1);
@@ -24,10 +25,12 @@ const AllPartsFlowControl = () => {
       ) : partIndex === 0 ? (
         <PartA onContinue={handleContinue} />
       ) : partIndex === 1 ? (
-        <PartD onContinue={handleContinue}/>
+        <PartB onContinue={handleContinue}/>
       ) : partIndex === 2 ? (
-        <PartE onContinue={handleContinue}/>
+        <PartD onContinue={handleContinue}/>
       ) : partIndex === 3 ? (
+        <PartE onContinue={handleContinue}/>
+      ) : partIndex === 4 ? (
         <PartF onContinue={handleContinue}/>
       ) : (
         <div>Test completed!</div>

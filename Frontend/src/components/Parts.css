@@ -103,6 +103,8 @@
 .part-box .part-box-complete{
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .tut-box .box{

@@ -17,7 +17,6 @@ const Disclaimer = ({ onContinue }) => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
       msg.voice = speakingVoice;
-      msg.pitch = 2;
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;
