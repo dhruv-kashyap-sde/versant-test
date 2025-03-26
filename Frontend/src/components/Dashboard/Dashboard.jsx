@@ -3,9 +3,10 @@ import axios from 'axios';
 import './Dashboard.css'
 import CreateStudent from './CreateStudent';
 import AllStudent from './AllStudent';
+import CreateQuestions from './CreateQuestions';
 
 const Dashboard = () => {
-  const [activeComponent, setActiveComponent] = useState("AllStudents");
+  const [activeComponent, setActiveComponent] = useState("Questions");
 
   // const navigate = useNavigate();
 
@@ -15,6 +16,8 @@ const Dashboard = () => {
         return <CreateStudent />;
       case "AllStudents":
         return <AllStudent />;
+      case "Questions":
+        return <CreateQuestions />;
       default:
         return <AllStudent />;
     }
@@ -29,8 +32,9 @@ const Dashboard = () => {
         </div>
         <div className="hr"></div>
         <div className="sidebar-buttons">
-          <button className={`${activeComponent == "AllStudents" && 'active' } secondary`} onClick={() => setActiveComponent("AllStudents")}>All Students</button>
-          <button className={`${activeComponent == "CreateStudent" && 'active' } secondary`} onClick={() => setActiveComponent("CreateStudent")}>Add Student</button>
+          <button className={`${activeComponent === "AllStudents" && 'active' } secondary`} onClick={() => setActiveComponent("AllStudents")}>All Students</button>
+          <button className={`${activeComponent === "CreateStudent" && 'active' } secondary`} onClick={() => setActiveComponent("CreateStudent")}>Add Student</button>
+          <button className={`${activeComponent === "Questions" && 'active' } secondary`} onClick={() => setActiveComponent("Questions")}>Add Questions</button>
         </div>
       </div>
       <div className="dashboard-body">

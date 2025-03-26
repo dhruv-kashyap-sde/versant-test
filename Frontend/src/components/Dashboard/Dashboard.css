@@ -54,3 +54,30 @@
     grid-template-columns: 1fr 2fr 1fr 2fr;
     grid-gap: 0 20px;
 }
+
+/* Question creation */
+
+.question-container{
+    background-color: whitesmoke;
+    padding: 20px ;
+    border-radius: var(--radius);
+    min-height: 85vh;
+}
+
+.question-container .parts-button{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.question-container .question-body .question-input{
+    display: flex;
+    justify-content: start;
+    gap: 20px;
+}
+
+.question-body .question-input input{
+    width: 50%;
+    margin-bottom: 0;
+}
