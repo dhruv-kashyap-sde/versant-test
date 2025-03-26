@@ -20,7 +20,7 @@ exports.beginTest = async (req, res) => {
     // Logic to allow the student to continue the test
     // ...
 
-    return res.status(200).json({ message: "TIN verified successfully" });
+    return res.status(200).json({ message: "TIN verified successfully", student });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error", error });
   }

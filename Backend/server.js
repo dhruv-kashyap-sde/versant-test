@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const adminRoutes = require('./routes/admin.routes');
 const testRoutes = require('./routes/test.routes');
+const questionRoutes = require('./routes/questions.routes');
 const connectDB = require("./config/db.config");
 const cors = require('cors');
 const app = express();
@@ -20,7 +21,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api/admin', adminRoutes);
 app.use('/api/', testRoutes);
+app.use('/api/questions', questionRoutes);
 connectDB();
+
+app.get("/", (req, res) => {
+  res.send('Hello World!');
+})
 
 // Configure multer for file upload
 const storage = multer.memoryStorage();
