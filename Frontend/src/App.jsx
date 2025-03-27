@@ -17,6 +17,7 @@ import PartE from './components/PartE';
 import PartF from './components/PartF';
 import PartA from './components/PartA';
 import PartB from './components/PartB';
+import PartC from './components/PartC';
 
 const App = () => {
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {
@@ -33,7 +34,7 @@ const App = () => {
         <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<PartC />} />
           <Route path="/admin" element={<Private />} > {/* change it with <Private> later */}
             <Route path="" element={<Dashboard/>} />
           </Route>

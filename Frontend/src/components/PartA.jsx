@@ -167,7 +167,6 @@ const PartA = ({ onContinue }) => {
   }
   return (
     <>
-
       <div className="part-body">
         <div className="part-header">
           <h2>
@@ -212,7 +211,8 @@ const PartA = ({ onContinue }) => {
           )}
         </div>
 
-      </div></>
+      </div>
+    </>
   );
 };
 

@@ -147,22 +147,27 @@ export const AuthProvider = ({ children }) => {
   const speakingVoice = voices[2];
   
   // Updated totalScore state to be an array of objects
-  const [totalScore, setTotalScore] = useState([
-    { part: 'A', answers: [] },
-    { part: 'B', answers: [] },
-    { part: 'C', answers: [] },
-    { part: 'D', answers: [] },
-    { part: 'E', answers: [] },
-    { part: 'F', answers: [] }
-  ]);
+  const [totalScore, setTotalScore] = useState({
+    partA: { answers: [] },
+    partB: { answers: [] },
+    partC: { answers: [] },
+    partD: { answers: [] },
+    partE: { answers: [] },
+    partF: { answers: [] },
+});
   
   // New function to update only the score for a specific part by pushing new answers to the array
   const updatePartScore = (part, newAnswer) => {
-    setTotalScore(prevScores => 
-      prevScores.map(score => 
-        score.part === part ? { ...score, answers: [...score.answers, newAnswer] } : score
-      )
-    );
+    // Convert single character part (like 'A') to the full key name (like 'partA')
+    const partKey = `part${part}`;
+    
+    setTotalScore(prevScores => ({
+      ...prevScores,
+      [partKey]: {
+      ...prevScores[partKey],
+      answers: [...prevScores[partKey].answers, newAnswer]
+      }
+    }));
   };
 
   const contextValue = {

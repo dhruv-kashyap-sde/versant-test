@@ -1,33 +1,40 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import Tutorial from '../utils/Tutorial';
 import { AuthContext } from '../context/AuthContext';
+import checkPartB from '../utils/test/checkpartB';
 
 const PartB = ({ onContinue }) => {
   const questions = [
     {
-      question: "Staying here... how long... are you?",
-      rearranged: "How long are you staying here?"
+      question: "That building... internet access... has limited.",
+      rearranged: "That building has limited internet access."
     },
     {
-      question: "Of your family... any pictures... do you have?",
-      rearranged: "Do you have any pictures of your family?"
+      question: "Left immediately... after the meeting ended... the sales man.",
+      rearranged: "The salesman left immediately after the meeting ended."
     },
     {
-      question: "Of mine... he is...  a friend.",
-      rearranged: "He is a friend of mine."
+      question: "What had occurred... in there absent... they discovered.",
+      rearranged: "They discovered what had occurred in their absence."
     },
     {
-      question: "Next door... is for sale... the house.",
-      rearranged: "The house next door is for sale."
-    }];
+      question: "Our recent report... in detail... describe the finding.",
+      rearranged: "Our recent report describes the findings in detail."
+    }
+  ];
 
-  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
+  const { updatePartScore, totalScore } = useContext(AuthContext);
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
 
   const speechSynthesis = window.speechSynthesis;
+
+  const voices = speechSynthesis.getVoices();
+  let speakingVoice = voices[6];
+
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -61,7 +68,7 @@ const PartB = ({ onContinue }) => {
       };
 
       recognitionRef.current.onerror = () => {
-        updatePartScore('B',''); // Store empty string for no answer
+        updatePartScore('B',' '); // Store empty string for no answer
         setIsListening(false);
         setSpeechStatus('idle');
         // Remove the index increment from here since onend will handle it
@@ -101,6 +108,7 @@ const PartB = ({ onContinue }) => {
 
     setSpeechStatus('speaking');
     const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.7;
     utterance.voice = speakingVoice;
     utterance.onend = () => {
       setSpeechStatus('listening');
@@ -156,8 +164,9 @@ const PartB = ({ onContinue }) => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
       // msg.voice = speakingVoice;
-      const voices = synth.getVoices();
-      msg.voice = voices[2];
+      console.log(speakingVoice);
+      
+      msg.voice = speakingVoice;
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;
@@ -180,6 +189,11 @@ const PartB = ({ onContinue }) => {
     setInTutorial(false);
     speakQuestion(questions[currentQuestionIndex].question);
   }
+
+  const checkanswers = () => {
+    console.log(checkPartB(questions, totalScore.partB.answers))
+  }
+
   return (
     <>
 
@@ -223,6 +237,7 @@ const PartB = ({ onContinue }) => {
             <div className="part-box-complete">
               <p>Test completed!</p>
               <button onClick={onContinue} className="primary">Go to Next Part</button>
+              <button onClick={checkanswers} className="primary">Check answer</button>
             </div>
           )}
         </div>
