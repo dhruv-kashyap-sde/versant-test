@@ -3,29 +3,30 @@ import Tutorial from "../utils/Tutorial";
 import { AuthContext } from "../context/AuthContext";
 
 const PartD = ({ onContinue }) => {
-  const partDQuestions = [
-    {
-      question: "You’re driving too ___. you should slow down.",
-      answer: "fast",
-    },
-    {
-      question: "I haven’t eaten anything all day. I’m so ___.",
-      answer: "hungry",
-    },
-    {
-      question:
-        "She was awarded a promotion based on her excellent ___ on the job.",
-      answer: "performance",
-    },
-    {
-      question:
-        "It was so ___ outside that no one wanted to leave the air-conditioned house.",
-      answer: "hot",
-    },
-  ];
+  // const partDQuestions = [
+  //   {
+  //     question: "You’re driving too ___. you should slow down.",
+  //     answer: "fast",
+  //   },
+  //   {
+  //     question: "I haven’t eaten anything all day. I’m so ___.",
+  //     answer: "hungry",
+  //   },
+  //   {
+  //     question:
+  //       "She was awarded a promotion based on her excellent ___ on the job.",
+  //     answer: "performance",
+  //   },
+  //   {
+  //     question:
+  //       "It was so ___ outside that no one wanted to leave the air-conditioned house.",
+  //     answer: "hot",
+  //   },
+  // ];
 
-  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
 
+  const partDQuestions = testQuestions.partD;
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
   
@@ -96,7 +97,7 @@ const PartD = ({ onContinue }) => {
   }, [timeLeft, inTutorial]);
 
   const handleNextQuestion = () => {
-    totalScore[3].answers.push(userAnswer);
+    totalScore.partD.answers.push(userAnswer);
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setUserAnswer("");
     setTimeLeft(20);

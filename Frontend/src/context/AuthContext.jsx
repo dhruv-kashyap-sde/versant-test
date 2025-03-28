@@ -11,6 +11,12 @@ export const AuthProvider = ({ children }) => {
   const mediaStreamRef = useRef(null);
   const [onSecurityPassed, setOnSecurityPassed] = useState(false);
 
+  const [student, setStudent] = useState({});
+
+  // states for questions fetched from database
+  const [testQuestions, setTestQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   // States for the individual checks:
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isMicActive, setIsMicActive] = useState(false);
@@ -20,6 +26,7 @@ export const AuthProvider = ({ children }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [error, setError] = useState(null);
   const [proceedTest, setProceedTest] = useState(false);
+
   const verifyTin = () => {
     setIsVerified(true);
   };
@@ -197,7 +204,10 @@ export const AuthProvider = ({ children }) => {
     handleFullScreenChange,
     proceedTest, setProceedTest,
     initializeCamera, checkInternetConnection, initializeMic,
-    speakingVoice
+    speakingVoice,
+    loading, setLoading,
+    testQuestions, setTestQuestions,
+    student, setStudent,
   };
 
   return (

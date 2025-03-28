@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 const Homepage = () => {
   const [tin, setTin] = useState('2365773761');
   const navigate = useNavigate();
-  const { verifyTin } = useAuth();
+  const { verifyTin, student, setStudent } = useAuth();
 
   const handleTinChange = (e) => {
     setTin(e.target.value);
@@ -28,8 +28,8 @@ const Homepage = () => {
     // navigate('/start-test');
     axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
       .then(response => {
-        console.log(response);
-
+        console.log(response.data);
+        setStudent(response.data.student);
         if (response.status === 200) {
           toast.success('TIN verified');
           verifyTin(); // Set the verification state

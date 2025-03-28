@@ -4,27 +4,28 @@ import { AuthContext } from '../context/AuthContext';
 import checkPartB from '../utils/test/checkpartB';
 
 const PartB = ({ onContinue }) => {
-  const questions = [
-    {
-      question: "That building... internet access... has limited.",
-      rearranged: "That building has limited internet access."
-    },
-    {
-      question: "Left immediately... after the meeting ended... the sales man.",
-      rearranged: "The salesman left immediately after the meeting ended."
-    },
-    {
-      question: "What had occurred... in there absent... they discovered.",
-      rearranged: "They discovered what had occurred in their absence."
-    },
-    {
-      question: "Our recent report... in detail... describe the finding.",
-      rearranged: "Our recent report describes the findings in detail."
-    }
-  ];
+  // const questions = [
+  //   {
+  //     question: "That building... internet access... has limited.",
+  //     rearranged: "That building has limited internet access."
+  //   },
+  //   {
+  //     question: "Left immediately... after the meeting ended... the sales man.",
+  //     rearranged: "The salesman left immediately after the meeting ended."
+  //   },
+  //   {
+  //     question: "What had occurred... in there absent... they discovered.",
+  //     rearranged: "They discovered what had occurred in their absence."
+  //   },
+  //   {
+  //     question: "Our recent report... in detail... describe the finding.",
+  //     rearranged: "Our recent report describes the findings in detail."
+  //   }
+  // ];
 
-  const { updatePartScore, totalScore } = useContext(AuthContext);
+  const { updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
   
+  const questions = testQuestions.partB;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);

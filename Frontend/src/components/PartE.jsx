@@ -3,16 +3,16 @@ import Tutorial from "../utils/Tutorial";
 import { AuthContext } from "../context/AuthContext";
 
 const PartE = ({ onContinue }) => {
-  const partEQuestions = [
-    {question: "I have to agree with you."},
-    {question: "The company first opened when I was much younger."},
-    {question: "I don’t have any information."},
-    {question: "It’s a good idea to create a different version of your resume."},
-    {question: "You can use the computer in a minute."}
-  ];
+  // const partEQuestions = [
+  //   {question: "I have to agree with you."},
+  //   {question: "The company first opened when I was much younger."},
+  //   {question: "I don’t have any information."},
+  //   {question: "It’s a good idea to create a different version of your resume."},
+  //   {question: "You can use the computer in a minute."}
+  // ];
 
-  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
-
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
+  const partEQuestions = testQuestions.partE;
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
   
@@ -95,7 +95,7 @@ const PartE = ({ onContinue }) => {
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    totalScore[4].answers.push(userAnswer);
+    totalScore.partE.answers.push(userAnswer);
     setUserAnswer("");
     setTimeLeft(30);
     console.log(totalScore);

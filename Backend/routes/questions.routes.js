@@ -23,4 +23,7 @@ router.post('/partF', questionsController.createPartFQuestion);
 // get all the questions
 router.get('/', questionsController.getAllQuestions);
 
+// random questions for the test
+router.get('/random', questionsController.getRandomQuestions);
+
 module.exports = router;

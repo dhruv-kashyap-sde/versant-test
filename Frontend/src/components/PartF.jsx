@@ -3,22 +3,23 @@ import Tutorial from "../utils/Tutorial";
 import { AuthContext } from "../context/AuthContext";
 
 const PartF = ({ onContinue }) => {
-  const partFQuestions = [
-    {
-      question: "John is the sales manager of a small store. An angry customer called him to complain about a home security system that she had recently bought from his store. She told him that it did not work properly because the alarm went off when she was in the house. Initially she demanded a refund, but when John apologized, and offered to replace her system with a new one, she agreed. "
-    },
-    {
-      question: "Sam was on a busy flight that had been delayed. The plane finally landed and arrived at the gate. Then all the passengers got up to get their luggage. The woman in front of Sam accidentally bumped him in the arm. Just as she was apologizing, her bag fell from the overhead compartment and hit him on the head. The woman felt awful. Sam decided he didn’t want to fly again anytime soon. "
-    },
-    {
-      question: "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style for many years. Her award included a trip to Paris for one week. Mary and her husband have never been to Paris and they are very excited about it."
-    },
-    {
-      question: "Employees who wish to take time off during the summer should check with their managers in advance. Many people plan to be away from the office during the summer. As a company, we’d like to make sure all projects have enough people working on them before we approve requests for time off."
-    }
-  ];
+  // const partFQuestions = [
+  //   {
+  //     question: "John is the sales manager of a small store. An angry customer called him to complain about a home security system that she had recently bought from his store. She told him that it did not work properly because the alarm went off when she was in the house. Initially she demanded a refund, but when John apologized, and offered to replace her system with a new one, she agreed. "
+  //   },
+  //   {
+  //     question: "Sam was on a busy flight that had been delayed. The plane finally landed and arrived at the gate. Then all the passengers got up to get their luggage. The woman in front of Sam accidentally bumped him in the arm. Just as she was apologizing, her bag fell from the overhead compartment and hit him on the head. The woman felt awful. Sam decided he didn’t want to fly again anytime soon. "
+  //   },
+  //   {
+  //     question: "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style for many years. Her award included a trip to Paris for one week. Mary and her husband have never been to Paris and they are very excited about it."
+  //   },
+  //   {
+  //     question: "Employees who wish to take time off during the summer should check with their managers in advance. Many people plan to be away from the office during the summer. As a company, we’d like to make sure all projects have enough people working on them before we approve requests for time off."
+  //   }
+  // ];
 
-  const { updatePartScore, totalScore} = useContext(AuthContext);
+  const { updatePartScore, totalScore, testQuestions} = useContext(AuthContext);
+  const partFQuestions = testQuestions.partF;
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
 
@@ -97,7 +98,7 @@ const PartF = ({ onContinue }) => {
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-    totalScore[5].answers.push(userAnswer);
+    totalScore.partF.answers.push(userAnswer);
     setUserAnswer("");
     setShowInput(false);
     setTimeLeft(30);

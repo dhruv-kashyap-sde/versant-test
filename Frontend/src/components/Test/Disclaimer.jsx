@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const Disclaimer = ({ onContinue }) => {
-  const { speakingVoice } = useContext(AuthContext);
+  const { speakingVoice, setTestQuestions, loading, setLoading, student } = useContext(AuthContext);
   const [isChecked, setIsChecked] = useState(false);
   
   const rules = [
@@ -38,9 +40,22 @@ const Disclaimer = ({ onContinue }) => {
     setIsChecked(event.target.checked);
   };
 
-  const handleContinueClick = () => {
+  const handleContinueClick = async () => {
     stop();
-    onContinue();
+    try {
+      setLoading(true);
+      let tin = student.tin;
+      console.log(student);
+      
+      const response = await axios.post(`${import.meta.env.VITE_API}/start`, { tin });
+      setTestQuestions(response.data.questions);
+      console.log(response.data);
+      setLoading(false);
+      onContinue();
+    } catch (error) {
+      console.log("Error fetching questions", error);
+      toast.error("Error fetching questions");
+    }
   };
 
   return (
@@ -67,7 +82,7 @@ const Disclaimer = ({ onContinue }) => {
           I agree
         </label>
       </div>
-      <button className='primary' disabled={!isChecked} onClick={handleContinueClick}>Continue</button>
+      <button className='primary' disabled={!isChecked} onClick={handleContinueClick}>{loading? "loading":"Continue"}</button>
     </div>
   );
 };

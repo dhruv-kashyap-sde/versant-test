@@ -2,40 +2,41 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import Tutorial from '../utils/Tutorial';
 import { AuthContext } from '../context/AuthContext';
 
-const PartC = () => {
+const PartC = ({ onContinue }) => {
   // Sample conversation data
-  const questions = [
-    {
-      dialog: [
-        { speaker: "Speaker 1", text: "Lucy, can you come to the office early tomorrow?" },
-        { speaker: "Speaker 2", text: "Sure, what time?" },
-        { speaker: "Speaker 1", text: "7:30 would be great." },
-      ],
-      question: "What will Lucy have to do tomorrow morning?",
-      keywords: ["go to the office", "early", "7:30", "come to the office", "be at the office"],
-    },
-    {
-      dialog: [
-        { speaker: "Speaker 1", text: "did you got the book?" },
-        { speaker: "Speaker 2", text: "Yes, it was interesting." },
-        { speaker: "Speaker 1", text: "Glad to hear that." },
-      ],
-      question: "how was the book?",
-      keywords: ["interesting", "good", "nice", "enjoyed", "liked"],
-    },
-    {
-      dialog: [
-        { speaker: "Speaker 1", text: "Did you hire any of the employee?" },
-        { speaker: "Speaker 2", text: "No i did not." },
-        { speaker: "Speaker 1", text: "I guess no one had enough experience, right?" },
-      ],
-      question: "Why employees were not hired?",
-      keywords: ["experience", "no one had enough experience", "no experience", "not enough experience"],
-    },
-    // Add more questions here
-  ];
-  const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
+  // const questions = [
+  //   {
+  //     dialog: [
+  //       { speaker: "Speaker 1", text: "Lucy, can you come to the office early tomorrow?" },
+  //       { speaker: "Speaker 2", text: "Sure, what time?" },
+  //       { speaker: "Speaker 1", text: "7:30 would be great." },
+  //     ],
+  //     question: "What will Lucy have to do tomorrow morning?",
+  //     keywords: ["go to the office", "early", "7:30", "come to the office", "be at the office"],
+  //   },
+  //   {
+  //     dialog: [
+  //       { speaker: "Speaker 1", text: "did you got the book?" },
+  //       { speaker: "Speaker 2", text: "Yes, it was interesting." },
+  //       { speaker: "Speaker 1", text: "Glad to hear that." },
+  //     ],
+  //     question: "how was the book?",
+  //     keywords: ["interesting", "good", "nice", "enjoyed", "liked"],
+  //   },
+  //   {
+  //     dialog: [
+  //       { speaker: "Speaker 1", text: "Did you hire any of the employee?" },
+  //       { speaker: "Speaker 2", text: "No i did not." },
+  //       { speaker: "Speaker 1", text: "I guess no one had enough experience, right?" },
+  //     ],
+  //     question: "Why employees were not hired?",
+  //     keywords: ["experience", "no one had enough experience", "no experience", "not enough experience"],
+  //   },
+  //   // Add more questions here
+  // ];
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
 
+  const questions = testQuestions.partC;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState('');
@@ -325,7 +326,7 @@ const PartC = () => {
         ) : (
           <div className="part-box-complete">
             <p>Test completed!</p>
-            <button onClick={checkAnswer} className="primary">Go to Next Part</button>
+            <button onClick={onContinue} className="primary">Go to Next Part</button>
           </div>
         )}
       </div>

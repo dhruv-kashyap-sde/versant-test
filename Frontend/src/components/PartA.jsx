@@ -3,17 +3,17 @@ import Tutorial from '../utils/Tutorial';
 import { AuthContext } from '../context/AuthContext';
 
 const PartA = ({ onContinue }) => {
-  const questions = [
-    {question: "it’s difficult to make a quick decision."},
-    {question: "Somebody told me to speed up."},
-    {question: "Bob and Tom talked all day."},
-    {question: "Do you accept credit cards?"}
-  ];
-    const { speakingVoice, updatePartScore, totalScore } = useContext(AuthContext);
+  // const questions = [
+  //   {question: "it’s difficult to make a quick decision."},
+  //   {question: "Somebody told me to speed up."},
+  //   {question: "Bob and Tom talked all day."},
+  //   {question: "Do you accept credit cards?"}
+  // ];
+    const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isListening, setIsListening] = useState(false);
   const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
-
+  const questions = testQuestions.partA;
   const speechSynthesis = window.speechSynthesis;
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
