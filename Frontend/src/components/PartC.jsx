@@ -12,25 +12,25 @@ const PartC = () => {
         { speaker: "Speaker 1", text: "7:30 would be great." },
       ],
       question: "What will Lucy have to do tomorrow morning?",
-      keywords: ["go to the office", "office early", "office at 7:30", "come to the office", "be at the office"],
+      keywords: ["go to the office", "early", "7:30", "come to the office", "be at the office"],
     },
     {
       dialog: [
-        { speaker: "Speaker 1", text: "Lucy, can you come to the office early tomorrow?" },
-        { speaker: "Speaker 2", text: "Sure, what time?" },
-        { speaker: "Speaker 1", text: "7:30 would be great." },
+        { speaker: "Speaker 1", text: "did you got the book?" },
+        { speaker: "Speaker 2", text: "Yes, it was interesting." },
+        { speaker: "Speaker 1", text: "Glad to hear that." },
       ],
-      question: "What will Lucy have to do tomorrow morning?",
-      keywords: ["go to the office", "office early", "office at 7:30", "come to the office", "be at the office"],
+      question: "how was the book?",
+      keywords: ["interesting", "good", "nice", "enjoyed", "liked"],
     },
     {
       dialog: [
-        { speaker: "Speaker 1", text: "Lucy, can you come to the office early tomorrow?" },
-        { speaker: "Speaker 2", text: "Sure, what time?" },
-        { speaker: "Speaker 1", text: "7:30 would be great." },
+        { speaker: "Speaker 1", text: "Did you hire any of the employee?" },
+        { speaker: "Speaker 2", text: "No i did not." },
+        { speaker: "Speaker 1", text: "I guess no one had enough experience, right?" },
       ],
-      question: "What will Lucy have to do tomorrow morning?",
-      keywords: ["go to the office", "office early", "office at 7:30", "come to the office", "be at the office"],
+      question: "Why employees were not hired?",
+      keywords: ["experience", "no one had enough experience", "no experience", "not enough experience"],
     },
     // Add more questions here
   ];
@@ -196,6 +196,8 @@ const PartC = () => {
 
   const checkAnswer = () => {
     const currentConversation = questions[currentQuestionIndex];
+    console.log(currentConversation);
+    
 
     // Convert to lowercase for case-insensitive matching
     const normalizedUserAnswer = userAnswer.toLowerCase().trim();
@@ -208,15 +210,6 @@ const PartC = () => {
     setFeedback(isCorrect ? "Correct! Well done." : "Try again. Think about what Lucy needs to do.");
   };
 
-  const nextConversation = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setUserAnswer('');
-      setFeedback('');
-    }
-  };
-
-  const currentConversation = questions[currentQuestionIndex];
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
   const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
@@ -332,7 +325,7 @@ const PartC = () => {
         ) : (
           <div className="part-box-complete">
             <p>Test completed!</p>
-            <button onClick={onContinue} className="primary">Go to Next Part</button>
+            <button onClick={checkAnswer} className="primary">Go to Next Part</button>
           </div>
         )}
       </div>
