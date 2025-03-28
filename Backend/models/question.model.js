@@ -22,7 +22,12 @@ const QuestionSchema = new mongoose.Schema({
         description: { type: String, default: "Candidates listen to a conversation between two speakers and answer a comprehension question with a word or short phrase" },
         questions: [
             { 
-                question: { type: String, required: true } 
+                dialog: [{
+                    speaker: { type: String, required: true },
+                    text: { type: String, required: true }
+                }],
+                question: { type: String, required: true },
+                keywords: [{ type: String, required: true }]
             }
         ],
     },
