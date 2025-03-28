@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 
 const Disclaimer = ({ onContinue }) => {
-  const { speakingVoice, setTestQuestions, loading, setLoading, student } = useContext(AuthContext);
+  const { speakingVoice, setTestQuestions, loading, setLoading, student, setTestId } = useContext(AuthContext);
   const [isChecked, setIsChecked] = useState(false);
   
   const rules = [
@@ -50,6 +50,7 @@ const Disclaimer = ({ onContinue }) => {
       const response = await axios.post(`${import.meta.env.VITE_API}/start`, { tin });
       setTestQuestions(response.data.questions);
       console.log(response.data);
+      setTestId(response.data.testId);
       setLoading(false);
       onContinue();
     } catch (error) {

@@ -134,6 +134,11 @@
   }
   
   /* Utility Classes */
+  .secondary-text{
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
   .error-text{
     color: red;
     display: flex;

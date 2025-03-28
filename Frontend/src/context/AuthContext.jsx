@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
 
   // states for questions fetched from database
   const [testQuestions, setTestQuestions] = useState([]);
+  const [testId, setTestId] = useState("");
   const [loading, setLoading] = useState(false);
 
   // States for the individual checks:
@@ -208,6 +209,7 @@ export const AuthProvider = ({ children }) => {
     loading, setLoading,
     testQuestions, setTestQuestions,
     student, setStudent,
+    testId, setTestId,
   };
 
   return (

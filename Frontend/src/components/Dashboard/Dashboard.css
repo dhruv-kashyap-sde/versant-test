@@ -74,10 +74,23 @@
 .question-container .question-body .question-input{
     display: flex;
     justify-content: start;
+    align-items: end;
     gap: 20px;
+    margin-bottom: 10px;
 }
 
 .question-body .question-input input{
-    width: 50%;
     margin-bottom: 0;
+    width: 50%;
+}
+
+.question-body .example-box{
+    background-color: white;
+    padding: 10px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    p{
+        margin-bottom: 0;
+    }
+    margin-bottom: 20px;
 }
