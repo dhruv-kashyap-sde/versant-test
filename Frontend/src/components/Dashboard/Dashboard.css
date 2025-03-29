@@ -71,7 +71,7 @@
     margin-bottom: 10px;
 }
 
-.question-container .question-body .question-input form{
+.question-container .question-body .question-input .a-form{
     display: flex;
     justify-content: start;
     align-items: end;
@@ -92,4 +92,22 @@
         margin-bottom: 0;
     }
     margin-bottom: 20px;
+}
+
+/* custom part form css */
+.b-form {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.b-form .line-1, .b-form .line-2{   
+    margin: 10px 0;
+    gap: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.b-form .line-2 input{
+    width: 100%;
+    justify-content: start;
 }

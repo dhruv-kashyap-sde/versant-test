@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast';
+import A from './QuestionParts/A';
+import B from './QuestionParts/B';
 
 const CreateQuestions = () => {
-    const [activeComponent, setActiveComponent] = useState("A");    
+    const [activeComponent, setActiveComponent] = useState("B");
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -50,239 +52,6 @@ const CreateQuestions = () => {
 
 export default CreateQuestions;
 
-export const A = () => {
-    const [question, setQuestion] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [partQuestions, setPartQuestions] = useState([]);
-
-    useEffect(() => {
-        fetchQuestions();
-    }, []);
-
-    const fetchQuestions = async () => {
-        try {
-            let response = await axios.get(`${import.meta.env.VITE_API}/questions/part?part=A`); // Adjust the API endpoint as needed
-            console.log("fetchQuestions", response.data);
-            setPartQuestions(response.data.questions);
-        } catch (error) {
-            console.error("Failed to fetch questions:", error);
-            toast.error("Failed to fetch questions");
-        }
-    };
-
-    const handleAddQuestion = async () => {
-        if (!question.trim()) return;
-        
-        setLoading(true);
-        try {
-            const newQuestion = { question };
-            const response = await axios.post(`${import.meta.env.VITE_API}/questions/partA`, newQuestion); // Adjust the API endpoint as needed
-            fetchQuestions(); // Refresh the questions list after adding a new question
-            setQuestion('');
-            toast.success("Question added successfully");
-        } catch (error) {
-            console.error("Failed to add question:", error);
-            toast.error("Failed to add question");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteQuestion = async (id) => {
-        try {
-            await axios.delete(`${import.meta.env.VITE_API}/questions/${id}?part=A`); // Adjust the API endpoint as needed
-            setPartQuestions(partQuestions.filter(q => q._id !== id));
-            toast.success("Question deleted successfully");
-        } catch (error) {
-            console.error("Failed to delete question:", error);
-            toast.error("Failed to delete question");
-        }
-    };
-
-    return (
-        <div>
-            <h3>Part A: Candidates are asked to repeat sentences that they hear</h3>
-            <div className="question-input">
-                <form onSubmit={(e) => { e.preventDefault(); handleAddQuestion(); }}>
-                <input 
-                    type="text" 
-                    placeholder='Enter the Question...'
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                />
-                <button 
-                    className="primary" 
-                    disabled={loading}
-                >
-                    {loading ? 'Adding...' : 'Add'}
-                </button>
-                </form>
-            </div>
-            <div className="example-box">
-                <h3><strong>Example </strong></h3>
-                <div className="hr"></div>
-                <p><i className="ri-speak-line"></i> : "With all the good programs available it's difficult to make a quick decision."</p>
-                <p><i className="ri-mic-line"></i> : "With all the good programs available it's difficult to make a quick decision."</p>
-            </div>
-            <div>
-                <table className=' example-box'>
-                    <thead>
-                        <tr>
-                            <th>Sr No.</th>
-                            <th>Question</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {partQuestions.length > 0 ? (
-                            partQuestions.map((q, index) => (
-                                <tr key={q._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{q.question}</td>
-                                    <td>
-                                        <button 
-                                            className="delete-btn" 
-                                            onClick={() => handleDeleteQuestion(q._id)}
-                                            disabled={loading}
-                                            >
-                                                {loading ? 'loading...' : 'Delete'}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    )
-}
-
-export const B = () => {
-    const [phrase1, setPhrase1] = useState('');
-    const [phrase2, setPhrase2] = useState('');
-    const [phrase3, setPhrase3] = useState('');
-    const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchQuestions();
-    }, []);
-
-    const fetchQuestions = async () => {
-        try {
-            setQuestions([
-                { id: 1, phrase1: "Left immediately", phrase2: "after the meeting ended", phrase3: "the sales man" }
-            ]);
-        } catch (error) {
-            console.error("Failed to fetch questions:", error);
-        }
-    };
-
-    const handleAddQuestion = async () => {
-        if (!phrase1.trim() || !phrase2.trim() || !phrase3.trim()) return;
-        
-        setLoading(true);
-        try {
-            const newQuestion = { id: Date.now(), phrase1, phrase2, phrase3 };
-            setQuestions([...questions, newQuestion]);
-            setPhrase1('');
-            setPhrase2('');
-            setPhrase3('');
-        } catch (error) {
-            console.error("Failed to add question:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteQuestion = async (id) => {
-        try {
-            setQuestions(questions.filter(q => q.id !== id));
-        } catch (error) {
-            console.error("Failed to delete question:", error);
-        }
-    };
-
-    return (
-        <div>
-            <h3>Part B: Candidates hear three short phrases and are asked to rearrange them to make a sentence</h3>
-            <div className="question-input">
-                <input 
-                    type="text" 
-                    placeholder='Enter the Phrase 1...'
-                    value={phrase1}
-                    onChange={(e) => setPhrase1(e.target.value)}
-                />...
-                <input 
-                    type="text" 
-                    placeholder='Enter the Phrase 2...'
-                    value={phrase2}
-                    onChange={(e) => setPhrase2(e.target.value)}
-                />...
-                <input 
-                    type="text" 
-                    placeholder='Enter the Phrase 3...'
-                    value={phrase3}
-                    onChange={(e) => setPhrase3(e.target.value)}
-                />
-                <button 
-                    className="primary" 
-                    onClick={handleAddQuestion}
-                    disabled={loading}
-                >
-                    {loading ? 'Adding...' : 'Add'}
-                </button>
-            </div>
-            <div className="example-box">
-                <h3><strong>Example : </strong></h3>
-                <div className="hr"></div>
-                <p><i className="ri-speak-line"></i> : Left immediately... after the meeting ended... the sales man.</p>
-                <p><i className="ri-mic-line"></i> : The salesman left immediately after the meeting ended.</p>
-            </div>
-            <div className="questions-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sr No.</th>
-                            <th>Phrase 1</th>
-                            <th>Phrase 2</th>
-                            <th>Phrase 3</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {questions.map((q, index) => (
-                            <tr key={q.id}>
-                                <td>{index + 1}</td>
-                                <td>{q.phrase1}</td>
-                                <td>{q.phrase2}</td>
-                                <td>{q.phrase3}</td>
-                                <td>
-                                    <button 
-                                        className="delete-btn" 
-                                        onClick={() => handleDeleteQuestion(q.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {questions.length === 0 && (
-                            <tr>
-                                <td colSpan="5" style={{ textAlign: 'center' }}>No questions added yet</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    )
-}
 
 export const C = () => {
     const [dialog1, setDialog1] = useState('');
@@ -300,10 +69,10 @@ export const C = () => {
     const fetchQuestions = async () => {
         try {
             setQuestions([
-                { 
-                    id: 1, 
-                    dialog1: "Lucy, can you come to the office early tomorrow?", 
-                    dialog2: "Sure, what time?", 
+                {
+                    id: 1,
+                    dialog1: "Lucy, can you come to the office early tomorrow?",
+                    dialog2: "Sure, what time?",
                     dialog3: "7:30 would be great.",
                     question: "What will Lucy have to do tomorrow morning?",
                     keywords: "Go to the office early, She will go to the office at 7:30"
@@ -316,7 +85,7 @@ export const C = () => {
 
     const handleAddQuestion = async () => {
         if (!dialog1.trim() || !dialog2.trim() || !dialog3.trim() || !question.trim() || !keywords.trim()) return;
-        
+
         setLoading(true);
         try {
             const newQuestion = { id: Date.now(), dialog1, dialog2, dialog3, question, keywords };
@@ -345,38 +114,38 @@ export const C = () => {
         <div>
             <h3>Part C: Candidates listen to a conversation between two speakers and answer a comprehension question with a word or short phrase</h3>
             <div className="question-input">
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Dialog of speaker 1...'
                     value={dialog1}
                     onChange={(e) => setDialog1(e.target.value)}
                 />
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Dialog of speaker 2...'
                     value={dialog2}
                     onChange={(e) => setDialog2(e.target.value)}
                 />
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Dialog of speaker 1...'
                     value={dialog3}
                     onChange={(e) => setDialog3(e.target.value)}
                 />
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Question...'
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                 />
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the keywords...'
                     value={keywords}
                     onChange={(e) => setKeywords(e.target.value)}
                 />
-                <button 
-                    className="primary" 
+                <button
+                    className="primary"
                     onClick={handleAddQuestion}
                     disabled={loading}
                 >
@@ -416,8 +185,8 @@ export const C = () => {
                                 <td>{q.question}</td>
                                 <td>{q.keywords}</td>
                                 <td>
-                                    <button 
-                                        className="delete-btn" 
+                                    <button
+                                        className="delete-btn"
                                         onClick={() => handleDeleteQuestion(q.id)}
                                     >
                                         Delete
@@ -427,7 +196,7 @@ export const C = () => {
                         ))}
                         {questions.length === 0 && (
                             <tr>
-                                <td colSpan="7" style={{ textAlign: 'center' }}>No questions added yet</td>
+                                <td colSpan="7" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
                             </tr>
                         )}
                     </tbody>
@@ -459,7 +228,7 @@ export const D = () => {
 
     const handleAddQuestion = async () => {
         if (!question.trim() || !answer.trim()) return;
-        
+
         setLoading(true);
         try {
             const newQuestion = { id: Date.now(), question, answer };
@@ -485,20 +254,20 @@ export const D = () => {
         <div>
             <h3>Part D: Candidates read a sentence with a missing word and write an appropriate word to complete the sentence.</h3>
             <div className="question-input">
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder="Enter the Question... "
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                 />
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Answer...'
                     value={answer}
                     onChange={(e) => setAnswer(e.target.value)}
                 />
-                <button 
-                    className="primary" 
+                <button
+                    className="primary"
                     onClick={handleAddQuestion}
                     disabled={loading}
                 >
@@ -529,8 +298,8 @@ export const D = () => {
                                 <td>{q.question}</td>
                                 <td>{q.answer}</td>
                                 <td>
-                                    <button 
-                                        className="delete-btn" 
+                                    <button
+                                        className="delete-btn"
                                         onClick={() => handleDeleteQuestion(q.id)}
                                     >
                                         Delete
@@ -540,7 +309,7 @@ export const D = () => {
                         ))}
                         {questions.length === 0 && (
                             <tr>
-                                <td colSpan="4" style={{ textAlign: 'center' }}>No questions added yet</td>
+                                <td colSpan="4" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
                             </tr>
                         )}
                     </tbody>
@@ -571,7 +340,7 @@ export const E = () => {
 
     const handleAddQuestion = async () => {
         if (!question.trim()) return;
-        
+
         setLoading(true);
         try {
             const newQuestion = { id: Date.now(), question };
@@ -596,14 +365,14 @@ export const E = () => {
         <div>
             <h3>Part E: Candidates hear a sentence and must type the sentence exactly as they hear it</h3>
             <div className="question-input">
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Question...'
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                 />
-                <button 
-                    className="primary" 
+                <button
+                    className="primary"
                     onClick={handleAddQuestion}
                     disabled={loading}
                 >
@@ -631,8 +400,8 @@ export const E = () => {
                                 <td>{index + 1}</td>
                                 <td>{q.question}</td>
                                 <td>
-                                    <button 
-                                        className="delete-btn" 
+                                    <button
+                                        className="delete-btn"
                                         onClick={() => handleDeleteQuestion(q.id)}
                                     >
                                         Delete
@@ -642,7 +411,7 @@ export const E = () => {
                         ))}
                         {questions.length === 0 && (
                             <tr>
-                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet</td>
+                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
                             </tr>
                         )}
                     </tbody>
@@ -673,7 +442,7 @@ export const F = () => {
 
     const handleAddQuestion = async () => {
         if (!question.trim()) return;
-        
+
         setLoading(true);
         try {
             const newQuestion = { id: Date.now(), question };
@@ -698,14 +467,14 @@ export const F = () => {
         <div>
             <h3>Part F: Candidates reconstruct the content of a short passage presented for 30 seconds</h3>
             <div className="question-input">
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder='Enter the Question...'
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                 />
-                <button 
-                    className="primary" 
+                <button
+                    className="primary"
                     onClick={handleAddQuestion}
                     disabled={loading}
                 >
@@ -733,8 +502,8 @@ export const F = () => {
                                 <td>{index + 1}</td>
                                 <td>{q.question}</td>
                                 <td>
-                                    <button 
-                                        className="delete-btn" 
+                                    <button
+                                        className="delete-btn"
                                         onClick={() => handleDeleteQuestion(q.id)}
                                     >
                                         Delete
@@ -744,7 +513,7 @@ export const F = () => {
                         ))}
                         {questions.length === 0 && (
                             <tr>
-                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet</td>
+                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
                             </tr>
                         )}
                     </tbody>
