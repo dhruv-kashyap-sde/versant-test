@@ -125,8 +125,8 @@ const B = () => {
                     <thead>
                         <tr>
                             <th>Sr No.</th>
-                            <th>Phrase 1</th>
-                            <th>Phrase 2</th>
+                            <th>Phrases</th>
+                            <th>Rearranged</th>
                             <th>Actions</th>
                         </tr>
                     </thead>

@@ -95,18 +95,20 @@
 }
 
 /* custom part form css */
-.b-form {
+.b-form, .c-form {
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-.b-form .line-1, .b-form .line-2{   
+
+.b-form .line-1, .b-form .line-2, .c-form .line-1, .c-form .line-2{   
     margin: 10px 0;
     gap: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .b-form .line-2 input{
     width: 100%;
     justify-content: start;

@@ -3,9 +3,10 @@ import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast';
 import A from './QuestionParts/A';
 import B from './QuestionParts/B';
+import { C } from './QuestionParts/C';
 
 const CreateQuestions = () => {
-    const [activeComponent, setActiveComponent] = useState("B");
+    const [activeComponent, setActiveComponent] = useState("C");
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -51,161 +52,6 @@ const CreateQuestions = () => {
 }
 
 export default CreateQuestions;
-
-
-export const C = () => {
-    const [dialog1, setDialog1] = useState('');
-    const [dialog2, setDialog2] = useState('');
-    const [dialog3, setDialog3] = useState('');
-    const [question, setQuestion] = useState('');
-    const [keywords, setKeywords] = useState('');
-    const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchQuestions();
-    }, []);
-
-    const fetchQuestions = async () => {
-        try {
-            setQuestions([
-                {
-                    id: 1,
-                    dialog1: "Lucy, can you come to the office early tomorrow?",
-                    dialog2: "Sure, what time?",
-                    dialog3: "7:30 would be great.",
-                    question: "What will Lucy have to do tomorrow morning?",
-                    keywords: "Go to the office early, She will go to the office at 7:30"
-                }
-            ]);
-        } catch (error) {
-            console.error("Failed to fetch questions:", error);
-        }
-    };
-
-    const handleAddQuestion = async () => {
-        if (!dialog1.trim() || !dialog2.trim() || !dialog3.trim() || !question.trim() || !keywords.trim()) return;
-
-        setLoading(true);
-        try {
-            const newQuestion = { id: Date.now(), dialog1, dialog2, dialog3, question, keywords };
-            setQuestions([...questions, newQuestion]);
-            setDialog1('');
-            setDialog2('');
-            setDialog3('');
-            setQuestion('');
-            setKeywords('');
-        } catch (error) {
-            console.error("Failed to add question:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteQuestion = async (id) => {
-        try {
-            setQuestions(questions.filter(q => q.id !== id));
-        } catch (error) {
-            console.error("Failed to delete question:", error);
-        }
-    };
-
-    return (
-        <div>
-            <h3>Part C: Candidates listen to a conversation between two speakers and answer a comprehension question with a word or short phrase</h3>
-            <div className="question-input">
-                <input
-                    type="text"
-                    placeholder='Enter the Dialog of speaker 1...'
-                    value={dialog1}
-                    onChange={(e) => setDialog1(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder='Enter the Dialog of speaker 2...'
-                    value={dialog2}
-                    onChange={(e) => setDialog2(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder='Enter the Dialog of speaker 1...'
-                    value={dialog3}
-                    onChange={(e) => setDialog3(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder='Enter the Question...'
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder='Enter the keywords...'
-                    value={keywords}
-                    onChange={(e) => setKeywords(e.target.value)}
-                />
-                <button
-                    className="primary"
-                    onClick={handleAddQuestion}
-                    disabled={loading}
-                >
-                    {loading ? 'Adding...' : 'Add'}
-                </button>
-            </div>
-            <div className="example-box">
-                <h3><strong>Example : </strong></h3>
-                <div className="hr"></div>
-                <p><i className="ri-speak-line"></i> : <strong>Speaker 1</strong>: Lucy, can you come to the office early tomorrow?</p>
-                <p><i className="ri-speak-line"></i> : <strong>Speaker 2</strong>: Sure, what time?</p>
-                <p><i className="ri-speak-line"></i> : <strong>Speaker 1</strong>: 7:30 would be great.</p>
-                <br />
-                <p><i className="ri-speak-line"></i> : <strong>Question</strong>: What will Lucy have to do tomorrow morning?.</p>
-                <p><i className="ri-mic-line"></i> : <strong>Answer</strong>: "Go to the office early." or "She will go to the office at 7:30"</p>
-            </div>
-            <div className="questions-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sr No.</th>
-                            <th>Dialog 1</th>
-                            <th>Dialog 2</th>
-                            <th>Dialog 3</th>
-                            <th>Question</th>
-                            <th>Keywords</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {questions.map((q, index) => (
-                            <tr key={q.id}>
-                                <td>{index + 1}</td>
-                                <td>{q.dialog1}</td>
-                                <td>{q.dialog2}</td>
-                                <td>{q.dialog3}</td>
-                                <td>{q.question}</td>
-                                <td>{q.keywords}</td>
-                                <td>
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => handleDeleteQuestion(q.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {questions.length === 0 && (
-                            <tr>
-                                <td colSpan="7" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    )
-}
-
 export const D = () => {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');

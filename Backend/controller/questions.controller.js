@@ -192,7 +192,8 @@ exports.createPartCQuestion = async (req, res) => {
 
         res.status(201).json({
             message: 'Question(s) added to Part C successfully',
-            count: questions ? questions.filter(q => isValidQuestion(q)).length : 1
+            count: questions ? questions.filter(q => isValidQuestion(q)).length : 1,
+            questions: questionDoc.partC.questions
         });
     } catch (error) {
         res.status(500).json({ message: 'Error adding question(s)', error: error.message });
