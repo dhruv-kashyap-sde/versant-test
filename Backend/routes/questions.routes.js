@@ -23,7 +23,10 @@ router.post('/partF', questionsController.createPartFQuestion);
 // get all the questions
 router.get('/', questionsController.getAllQuestions);
 
-// random questions for the test
-router.get('/random', questionsController.getRandomQuestions);
+// get questions by part (fixed route - changed from /questions to /part to avoid conflicts)
+router.get('/part', questionsController.getQuestionsByPart);
+
+// delete a question by ID
+router.delete('/:id', questionsController.deleteQuestionById);
 
 module.exports = router;

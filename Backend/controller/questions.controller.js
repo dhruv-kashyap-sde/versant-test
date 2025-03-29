@@ -404,3 +404,74 @@ exports.getRandomQuestions = async (req, res) => {
         res.status(500).json({ message: 'Error retrieving questions', error: error.message });
     }
 };
+
+// Get questions by part or all questions
+exports.getQuestionsByPart = async (req, res) => {
+    try {
+        const { part } = req.query;
+        const questions = await Question.findOne();
+        
+        if (!questions) {
+            return res.status(404).json({ message: 'No questions found' });
+        }
+
+        // If no specific part is requested, return all questions
+        if (!part) {
+            return res.status(200).json(questions);
+        }
+
+        // Validate the part parameter
+        const validParts = ['A', 'B', 'C', 'D', 'E', 'F'];
+        if (!validParts.includes(part.toUpperCase())) {
+            return res.status(400).json({ message: 'Invalid part. Must be one of: A, B, C, D, E, F' });
+        }
+
+        const partKey = `part${part.toUpperCase()}`;
+        
+        if (!questions[partKey] || questions[partKey].questions.length === 0) {
+            return res.status(404).json({ message: `No questions found for Part ${part.toUpperCase()}` });
+        }
+        
+        res.status(200).json(questions[partKey]);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving questions', error: error.message });
+    }
+};
+
+// Delete a question by ID
+exports.deleteQuestionById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { part } = req.query;
+        console.log('Delete question ID:', id, 'from part:', part);
+        
+        if (!id) {
+            return res.status(400).json({ message: 'Question ID is required' });
+        }
+        
+        if (!part || !['A', 'B', 'C', 'D', 'E', 'F'].includes(part.toUpperCase())) {
+            return res.status(400).json({ message: 'Valid part (A, B, C, D, E, F) is required' });
+        }
+
+        const partKey = `part${part.toUpperCase()}.questions`;
+        
+        // Use MongoDB's pull operator to remove the specific question by its ID
+        const result = await Question.findOneAndUpdate(
+            { [`${partKey}._id`]: id },
+            { $pull: { [partKey]: { _id: id } } },
+            { new: true }
+        );
+        
+        if (!result) {
+            return res.status(404).json({ message: `Question with ID ${id} not found in part ${part}` });
+        }
+        
+        res.status(200).json({ 
+            message: `Question deleted successfully from part ${part}`,
+            updatedQuestions: result
+        });
+    } catch (error) {
+        console.error('Error in deleteQuestionById:', error);
+        res.status(500).json({ message: 'Error deleting question', error: error.message });
+    }
+};

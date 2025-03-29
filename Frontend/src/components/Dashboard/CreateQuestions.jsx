@@ -1,7 +1,9 @@
+import axios from 'axios';
 import React, { useState, useEffect } from 'react'
+import toast from 'react-hot-toast';
 
 const CreateQuestions = () => {
-    const [activeComponent, setActiveComponent] = useState("A");
+    const [activeComponent, setActiveComponent] = useState("A");    
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -49,9 +51,9 @@ const CreateQuestions = () => {
 export default CreateQuestions;
 
 export const A = () => {
-    const [question, setQuestion] = useState('');
-    const [questions, setQuestions] = useState([]);
+    const [question, setQuestion] = useState("");
     const [loading, setLoading] = useState(false);
+    const [partQuestions, setPartQuestions] = useState([]);
 
     useEffect(() => {
         fetchQuestions();
@@ -59,11 +61,12 @@ export const A = () => {
 
     const fetchQuestions = async () => {
         try {
-            setQuestions([
-                { id: 1, question: "With all the good programs available it's difficult to make a quick decision." }
-            ]);
+            let response = await axios.get(`${import.meta.env.VITE_API}/questions/part?part=A`); // Adjust the API endpoint as needed
+            console.log("fetchQuestions", response.data);
+            setPartQuestions(response.data.questions);
         } catch (error) {
             console.error("Failed to fetch questions:", error);
+            toast.error("Failed to fetch questions");
         }
     };
 
@@ -72,11 +75,14 @@ export const A = () => {
         
         setLoading(true);
         try {
-            const newQuestion = { id: Date.now(), question };
-            setQuestions([...questions, newQuestion]);
+            const newQuestion = { question };
+            const response = await axios.post(`${import.meta.env.VITE_API}/questions/partA`, newQuestion); // Adjust the API endpoint as needed
+            fetchQuestions(); // Refresh the questions list after adding a new question
             setQuestion('');
+            toast.success("Question added successfully");
         } catch (error) {
             console.error("Failed to add question:", error);
+            toast.error("Failed to add question");
         } finally {
             setLoading(false);
         }
@@ -84,9 +90,12 @@ export const A = () => {
 
     const handleDeleteQuestion = async (id) => {
         try {
-            setQuestions(questions.filter(q => q.id !== id));
+            await axios.delete(`${import.meta.env.VITE_API}/questions/${id}?part=A`); // Adjust the API endpoint as needed
+            setPartQuestions(partQuestions.filter(q => q._id !== id));
+            toast.success("Question deleted successfully");
         } catch (error) {
             console.error("Failed to delete question:", error);
+            toast.error("Failed to delete question");
         }
     };
 
@@ -94,6 +103,7 @@ export const A = () => {
         <div>
             <h3>Part A: Candidates are asked to repeat sentences that they hear</h3>
             <div className="question-input">
+                <form onSubmit={(e) => { e.preventDefault(); handleAddQuestion(); }}>
                 <input 
                     type="text" 
                     placeholder='Enter the Question...'
@@ -102,11 +112,11 @@ export const A = () => {
                 />
                 <button 
                     className="primary" 
-                    onClick={handleAddQuestion}
                     disabled={loading}
                 >
                     {loading ? 'Adding...' : 'Add'}
                 </button>
+                </form>
             </div>
             <div className="example-box">
                 <h3><strong>Example </strong></h3>
@@ -114,8 +124,8 @@ export const A = () => {
                 <p><i className="ri-speak-line"></i> : "With all the good programs available it's difficult to make a quick decision."</p>
                 <p><i className="ri-mic-line"></i> : "With all the good programs available it's difficult to make a quick decision."</p>
             </div>
-            <div className="questions-table-container">
-                <table>
+            <div>
+                <table className=' example-box'>
                     <thead>
                         <tr>
                             <th>Sr No.</th>
@@ -124,21 +134,23 @@ export const A = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {questions.map((q, index) => (
-                            <tr key={q.id}>
-                                <td>{index + 1}</td>
-                                <td>{q.question}</td>
-                                <td>
-                                    <button 
-                                        className="delete-btn" 
-                                        onClick={() => handleDeleteQuestion(q.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {questions.length === 0 && (
+                        {partQuestions.length > 0 ? (
+                            partQuestions.map((q, index) => (
+                                <tr key={q._id}>
+                                    <td>{index + 1}</td>
+                                    <td>{q.question}</td>
+                                    <td>
+                                        <button 
+                                            className="delete-btn" 
+                                            onClick={() => handleDeleteQuestion(q._id)}
+                                            disabled={loading}
+                                            >
+                                                {loading ? 'loading...' : 'Delete'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
                                 <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet</td>
                             </tr>
