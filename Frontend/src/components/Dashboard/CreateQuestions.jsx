@@ -5,9 +5,10 @@ import A from './QuestionParts/A';
 import B from './QuestionParts/B';
 import { C } from './QuestionParts/C';
 import { D } from './QuestionParts/D';
+import { E } from './QuestionParts/E';
 
 const CreateQuestions = () => {
-    const [activeComponent, setActiveComponent] = useState("D");
+    const [activeComponent, setActiveComponent] = useState("E");
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -53,108 +54,6 @@ const CreateQuestions = () => {
 }
 
 export default CreateQuestions;
-export const E = () => {
-    const [question, setQuestion] = useState('');
-    const [questions, setQuestions] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchQuestions();
-    }, []);
-
-    const fetchQuestions = async () => {
-        try {
-            setQuestions([
-                { id: 1, question: "Can you work on Monday? Yes I can." }
-            ]);
-        } catch (error) {
-            console.error("Failed to fetch questions:", error);
-        }
-    };
-
-    const handleAddQuestion = async () => {
-        if (!question.trim()) return;
-
-        setLoading(true);
-        try {
-            const newQuestion = { id: Date.now(), question };
-            setQuestions([...questions, newQuestion]);
-            setQuestion('');
-        } catch (error) {
-            console.error("Failed to add question:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDeleteQuestion = async (id) => {
-        try {
-            setQuestions(questions.filter(q => q.id !== id));
-        } catch (error) {
-            console.error("Failed to delete question:", error);
-        }
-    };
-
-    return (
-        <div>
-            <h3>Part E: Candidates hear a sentence and must type the sentence exactly as they hear it</h3>
-            <div className="question-input">
-                <input
-                    type="text"
-                    placeholder='Enter the Question...'
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                />
-                <button
-                    className="primary"
-                    onClick={handleAddQuestion}
-                    disabled={loading}
-                >
-                    {loading ? 'Adding...' : 'Add'}
-                </button>
-            </div>
-            <div className="example-box">
-                <h3><strong>Example : </strong></h3>
-                <div className="hr"></div>
-                <p><i className="ri-speak-line"></i> : Can you work on Monday? Yes I can.</p>
-                <p><i className="ri-pencil-line"></i> : Can you work on Monday? Yes I can.</p>
-            </div>
-            <div className="questions-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sr No.</th>
-                            <th>Question</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {questions.map((q, index) => (
-                            <tr key={q.id}>
-                                <td>{index + 1}</td>
-                                <td>{q.question}</td>
-                                <td>
-                                    <button
-                                        className="delete-btn"
-                                        onClick={() => handleDeleteQuestion(q.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        {questions.length === 0 && (
-                            <tr>
-                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet or we are still loading them...</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    )
-}
-
 export const F = () => {
     const [question, setQuestion] = useState('');
     const [questions, setQuestions] = useState([]);
