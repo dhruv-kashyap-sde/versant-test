@@ -52,7 +52,7 @@ export const C = () => {
                 keywords: keywordsArray
             }
 
-            const response = await axios.post(`${import.meta.env.VITE_API}/questions/add`, validQuestion);
+            const response = await axios.post(`${import.meta.env.VITE_API}/questions/partC`, {question: validQuestion});
 
             toast.success("Question added successfully");
             // Reset form fields
@@ -89,6 +89,7 @@ export const C = () => {
                 <form onSubmit={(e) => { e.preventDefault(); handleAddQuestion(); }} className="c-form">
                     <div className="line-1">
                         <input
+                            autoFocus
                             required
                             type="text"
                             placeholder='Enter the Dialog of speaker 1...'
@@ -117,7 +118,8 @@ export const C = () => {
                             placeholder='Enter the Question...'
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
-                        />
+                        /> 
+                        <p>
                         <input
                             required
                             type="text"
@@ -125,9 +127,10 @@ export const C = () => {
                             value={keywords}
                             onChange={(e) => setKeywords(e.target.value)}
                         />
+                        <span className="secondary-text">**tip - Use commas ',' to separate keywords</span>
+                        </p>
                         <button
                             className="primary"
-                            onClick={handleAddQuestion}
                             disabled={loading}
                         >
                             {loading ? 'Adding...' : 'Add'}
@@ -142,7 +145,7 @@ export const C = () => {
                 <p><i className="ri-speak-line"></i> : <strong>Speaker 2</strong>: Sure, what time?</p>
                 <p><i className="ri-speak-line"></i> : <strong>Speaker 1</strong>: 7:30 would be great.</p>
                 <br />
-                <p><i className="ri-speak-line"></i> : <strong>Question</strong>: What will Lucy have to do tomorrow morning? <strong>Keywords: </strong>Office, early. morning</p>
+                <p><i className="ri-speak-line"></i> : <strong>Question</strong>: What will Lucy have to do tomorrow morning? <strong>Keywords: </strong>Office, early, morning</p>
                 <p><i className="ri-mic-line"></i> : <strong>Answer</strong>: "Go to the office early." or "She will go to the office at 7:30"</p>
             </div>
             <div className="questions-table-container">
@@ -166,7 +169,9 @@ export const C = () => {
                                 <td>{q.dialog[1].text}</td>
                                 <td>{q.dialog[2].text}</td>
                                 <td>{q.question}</td>
-                                <td>{q.keywords}</td>
+                                <td>{q.keywords.map((keyword, i) => (
+                                    <span key={i} className="keyword">{keyword}, </span>
+                                ))}</td>
                                 <td>
                                     <button
                                         className="delete-btn"
@@ -180,7 +185,7 @@ export const C = () => {
                         ))}
                         {partQuestions.length === 0 && (
                             <tr>
-                                <td colSpan="7" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
+                                <td colSpan="7" style={{ textAlign: 'center' }}>No questions added yet or we are still loading them...</td>
                             </tr>
                         )}
                     </tbody>

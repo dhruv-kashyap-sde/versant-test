@@ -113,3 +113,12 @@
     width: 100%;
     justify-content: start;
 }
+.c-form .line-2{
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    gap: 10px;
+}
+.c-form .line-2 p input{
+    width: 100%;
+}

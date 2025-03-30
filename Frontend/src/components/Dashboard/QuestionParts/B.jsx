@@ -149,7 +149,7 @@ const B = () => {
                         ))}
                         {partQuestions.length === 0 && (
                             <tr>
-                                <td colSpan="5" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
+                                <td colSpan="5" style={{ textAlign: 'center' }}>No questions added yet or we are still loading them...</td>
                             </tr>
                         )}
                     </tbody>

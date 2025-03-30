@@ -104,7 +104,7 @@ const A = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet or still loading</td>
+                                <td colSpan="3" style={{ textAlign: 'center' }}>No questions added yet or we are still loading them...</td>
                             </tr>
                         )}
                     </tbody>
