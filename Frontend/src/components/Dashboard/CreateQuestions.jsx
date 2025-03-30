@@ -9,7 +9,7 @@ import { E } from './QuestionParts/E';
 import { F } from './QuestionParts/F';
 
 const CreateQuestions = () => {
-    const [activeComponent, setActiveComponent] = useState("F");
+    const [activeComponent, setActiveComponent] = useState("A");
 
     const renderComponent = () => {
         switch (activeComponent) {

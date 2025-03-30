@@ -89,6 +89,22 @@ exports.dashboard = async (req, res) => {
   res.json({ message: "Welcome to Admin Dashboard", success: true });
 };
 
+// Delete a student by ID
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const deletedStudent = await Student.findByIdAndDelete(id);
+    
+    if (!deletedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+    
+    res.status(200).json({ message: "Student deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 //create an admin
 // exports.createAdmin = async (req, res) => {
 //   const { email, password } = req.body;

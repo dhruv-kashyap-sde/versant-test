@@ -26,6 +26,9 @@ router.post('/students', adminController.createStudent);
 // Route to fetch all students
 router.get('/students', adminController.getAllStudents);
 
+// Route to delete a student
+router.delete('/student/:id', adminController.deleteStudent);
+
 // **Login Route**
 router.post("/login", adminController.login);
 

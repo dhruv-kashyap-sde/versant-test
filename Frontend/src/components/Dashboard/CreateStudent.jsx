@@ -1,31 +1,53 @@
 import axios from "axios";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const CreateStudent = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [alternateId, setAlternateId] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
+      // Validate phone number
+      if (!/^\d+$/.test(phone)) {
+      toast.error("Phone number should contain only digits");
+      return;
+      }
+      
+      if (phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+      }
+
       const response = await axios.post(`${import.meta.env.VITE_API}/admin/students`, {
-        name,
-        email,
-        phone,
-        alternateId
+      name,
+      email,
+      phone,
+      alternateId
       },
       {
-        headers:{
-          "Content-Type": "application/json"
+        headers: {
+        "Content-Type": "application/json"
         }
       }
-    );
+      );
       console.log("Student created:", response.data);
+      toast.success("Student created successfully!");
+      setName("");
+      setEmail("");
+      setPhone("");
+      setAlternateId("");
     } catch (error) {
       console.error("Error creating student:", error.response.data.error);
+      toast.error("Error creating student: " + error.response.data.error);
+    } finally{
+      setLoading(false);
     }
+    
   };
   return (
     <>
@@ -38,7 +60,8 @@ const CreateStudent = () => {
         <div className="form-fields">
           <label>Name:</label>
           <input
-          placeholder="Enter name"
+            autoFocus
+            placeholder="Enter name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -46,7 +69,7 @@ const CreateStudent = () => {
           />
           <label>Email:</label>
           <input
-          placeholder="Enter email"
+            placeholder="Enter email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -54,7 +77,7 @@ const CreateStudent = () => {
           />
           <label>Phone:</label>
           <input
-          placeholder="Enter phone"
+            placeholder="Enter phone"
             type="tel"
             maxLength={10}
             value={phone}
@@ -63,14 +86,14 @@ const CreateStudent = () => {
           />
           <label>Alternate Id:</label>
           <input
-          placeholder="Enter email"
+            placeholder="Enter email"
             type="email"
             value={alternateId}
             onChange={(e) => setAlternateId(e.target.value)}
           />
         </div>
-        <button className="primary" type="submit">
-          Add Student
+        <button className="primary" disabled={loading} type="submit">
+          {loading? "Adding":"Add Student"}
         </button>
       </form>
     </>

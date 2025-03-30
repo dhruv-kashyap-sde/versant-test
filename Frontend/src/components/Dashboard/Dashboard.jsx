@@ -6,8 +6,7 @@ import AllStudent from './AllStudent';
 import CreateQuestions from './CreateQuestions';
 
 const Dashboard = () => {
-  const [activeComponent, setActiveComponent] = useState("Questions");
-
+  const [activeComponent, setActiveComponent] = useState("AllStudents");
   // const navigate = useNavigate();
 
   const renderComponent = () => {

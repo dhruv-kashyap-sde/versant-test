@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './AllStudent.css'
+import toast from 'react-hot-toast'
 
 const AllStudent = () => {
   const [students, setStudents] = useState([])
@@ -15,6 +16,16 @@ const AllStudent = () => {
       })
   }, [])
 
+  const handleDeleteStudent = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API}/admin/student/${id}`)
+      setStudents(students.filter(student => student._id !== id))
+      toast.success('Student deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting student:', error)
+      toast.error('Error deleting student');
+    }
+  }
   return (
     <>
       <div className="header">
@@ -32,19 +43,24 @@ const AllStudent = () => {
             <th>Phone Number</th>
             <th>Alternate ID</th>
             <th>Created At</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {students.map((student, index) => (
-            <tr key={student.id} className={index % 2 === 0 ? 'even' : 'odd'}>
+            <tr key={student._id} className={index % 2 === 0 ? 'even' : 'odd'}>
               <td>{index + 1}</td>
               <td>{student.tin}</td>
               <td>{student.name}</td>
               <td>{student.email}</td>
               <td>{student.testScore}</td>
               <td>{student.phone}</td>
-              <td>{student.alternateId === "" ? "N/A" :student.alternateId}</td>
+              <td>{student.alternateId === "" ? "N/A" : student.alternateId}</td>
               <td>{new Date(student.createdAt).toLocaleDateString()}</td>
+              <td>
+                <button onClick={() => handleDeleteStudent(student._id)} className="delete-btn"><i className="ri-delete-bin-6-line"></i>Delete</button>&nbsp;
+                {/* <button className="edit-btn"><i className="ri-pencil-line"></i>Edit</button> */}
+              </td>
             </tr>
           ))}
         </tbody>

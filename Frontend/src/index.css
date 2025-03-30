@@ -84,6 +84,24 @@
     color: var(--w);
   }
   
+  button.delete-btn, button.edit-btn{
+    color: red;
+    font-size: 12px;
+    padding: 5px 10px;
+    background-color: transparent;
+    border: var(--border);
+  }
+
+  button.delete-btn:hover{
+    color: whitesmoke;
+    background-color:red;
+    border: var(--border);
+  }
+  
+  button.edit-btn{
+    color: var(--theme);
+  }
+  
   /* Forms */
   input, textarea, select {
     width: 100%;
@@ -139,20 +157,6 @@
     color: var(--text-2);
   }
 
-  button.delete-btn{
-    color: red;
-    font-size: 12px;
-    padding: 5px 10px;
-    background-color: transparent;
-    border: var(--border);
-  }
-
-  button.delete-btn:hover{
-    color: whitesmoke;
-    background-color:red;
-    border: var(--border);
-  }
-  
   .error-text{
     color: red;
     display: flex;
