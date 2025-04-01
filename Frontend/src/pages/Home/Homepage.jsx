@@ -10,6 +10,7 @@ const Homepage = () => {
   const navigate = useNavigate();
   const { verifyTin, student, setStudent } = useAuth();
 
+  const [loading, setLoading] = useState(false);
   const handleTinChange = (e) => {
     setTin(e.target.value);
   };
@@ -26,20 +27,38 @@ const Homepage = () => {
     if (!validateTin()) return;
 
     // navigate('/start-test');
+    setLoading(true);
     axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
       .then(response => {
         console.log(response.data);
         setStudent(response.data.student);
+
+        if (response.data.status === "completed") {
+          toast.error("You have already completed the test. Please check your result.");
+          navigate("/");
+          setLoading(false);
+          return;
+        }
+
+        if (response.data.status === "started") {
+          toast.error("You are not allowed to take the test. Please contact your instructor.");
+          navigate("/");
+          setLoading(false);
+          return;
+        }
+
         if (response.status === 200) {
           toast.success('TIN verified');
           verifyTin(); // Set the verification state
           navigate('/start-test'); // Navigate to the StartTest component
-        } 
+        }
+        setLoading(false);
       })
       .catch(error => {
         // toast.error('There was an error checking the TIN');
         toast.error(`${error.response.data.message}`);
         console.log('There was an error checking the TIN!', error);
+        setLoading(false);
       });
   };
 
@@ -62,7 +81,7 @@ const Homepage = () => {
             placeholder="Enter TIN here..."
           />
           <button onClick={checkTin} className="primary mr-10">
-            Start Test
+            {loading?"Checking...":"Start Test"}
           </button>
           <button className="secondary mr-10">Result</button>
         </div>

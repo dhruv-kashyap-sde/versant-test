@@ -18,18 +18,35 @@ exports.startTest = async (req, res) => {
     }
 
     // Check if student has an ongoing test
-    // const ongoingTest = await TestAttempt.findOne({
-    //   studentId: student._id,
-    //   status: 'started'
-    // });
+    const ongoingTest = await TestAttempt.findOne({
+      studentId: student._id,
+      status: 'started'
+    });
 
-    // if (ongoingTest) {
-    //   return res.status(200).json({
-    //     message: "Ongoing test found",
-    //     testId: ongoingTest._id,
-    //     questions: ongoingTest.questions
-    //   });
-    // }
+    if (ongoingTest) {
+      console.log("onfoiinf", ongoingTest);
+
+      return res.status(200).json({
+        message: "Ongoing test found",
+        testId: ongoingTest._id,
+        status: ongoingTest.status,
+      });
+    }
+
+    // Check if student has already completed a test
+    const completedTest = await TestAttempt.findOne({
+      studentId: student._id,
+      status: 'completed'
+    });
+
+    if (completedTest) {
+      console.log("copmeleted", completedTest);
+      return res.status(200).json({
+        message: "You have already completed this test",
+        testId: completedTest._id,
+        status: completedTest.status,
+      });
+    }
 
     // Get random questions
     const allQuestions = await Question.findOne();
@@ -56,7 +73,8 @@ exports.startTest = async (req, res) => {
     // Create new test attempt
     const testAttempt = new TestAttempt({
       studentId: student._id,
-      questions: testQuestions
+      questions: testQuestions,
+      status: 'started',
     });
 
     await testAttempt.save();
@@ -78,15 +96,15 @@ exports.submitTest = async (req, res) => {
     const { testId, answers } = req.body;
 
     let testAttempt = await TestAttempt.findById(testId);
-    
+
     if (!testAttempt) {
       return res.status(404).json({ message: "Test not found" });
     }
 
     // Update test answers and calculate scores
     testAttempt.answers = answers;
-    console.log(testAttempt.questions.partF, answers.partF.answers);                                                                                                                                                                                                                                                                               
-    
+    console.log(testAttempt.questions.partF, answers.partF.answers);
+
     testAttempt.endTime = new Date();
     testAttempt.status = 'completed';
 
@@ -97,12 +115,12 @@ exports.submitTest = async (req, res) => {
       partC: checkPartC(testAttempt.questions.partC, answers.partC.answers),
       partD: checkPartD(testAttempt.questions.partD, answers.partD.answers),
       partE: checkPart(testAttempt.questions.partE, answers.partE.answers),
-      partF: checkPartF(testAttempt.questions.partF, answers.partF.answers) - 10
+      partF: checkPartF(testAttempt.questions.partF, answers.partF.answers)
     };
 
     testAttempt.scores = {
       ...scores,
-      total: (scores.partB + scores.partD) / 2 // Temporary calculation
+      total: (scores.partA + scores.partB + scores.partC + scores.partD + scores.partE + scores.partF) / 6
     };
 
     await testAttempt.save();
@@ -158,7 +176,36 @@ exports.beginTest = async (req, res) => {
     }
 
     // Logic to allow the student to continue the test
-    // ...
+    // Check if student has an ongoing test
+    const ongoingTest = await TestAttempt.findOne({
+      studentId: student._id,
+      status: 'started'
+    });
+
+    if (ongoingTest) {
+      console.log("onfoiinf", ongoingTest);
+
+      return res.status(200).json({
+        message: "Ongoing test found",
+        testId: ongoingTest._id,
+        status: ongoingTest.status,
+      });
+    }
+
+    // Check if student has already completed a test
+    const completedTest = await TestAttempt.findOne({
+      studentId: student._id,
+      status: 'completed'
+    });
+
+    if (completedTest) {
+      console.log("copmeleted", completedTest);
+      return res.status(200).json({
+        message: "You have already completed this test",
+        testId: completedTest._id,
+        status: completedTest.status,
+      });
+    }
 
     return res.status(200).json({ message: "TIN verified successfully", student });
   } catch (error) {
@@ -167,13 +214,13 @@ exports.beginTest = async (req, res) => {
 };
 
 exports.checkSpeed = (req, res) => {
-  res.status(200).json({success: true})
+  res.status(200).json({ success: true })
 };
 
 exports.checkResult = async (req, res) => {
   try {
     const studentAnswers = req.body;
-    
+
     // Get questions from database
     const questions = await Question.findOne();
     if (!questions) {
@@ -259,10 +306,10 @@ exports.checkResult = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Error processing results', 
-      error: error.message 
+    return res.status(500).json({
+      success: false,
+      message: 'Error processing results',
+      error: error.message
     });
   }
 };

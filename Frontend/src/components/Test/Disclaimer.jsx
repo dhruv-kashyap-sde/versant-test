@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Disclaimer = ({ onContinue }) => {
   const { speakingVoice, setTestQuestions, loading, setLoading, student, setTestId } = useContext(AuthContext);
@@ -40,6 +41,7 @@ const Disclaimer = ({ onContinue }) => {
     setIsChecked(event.target.checked);
   };
 
+  const navigate = useNavigate();
   const handleContinueClick = async () => {
     stop();
     try {
@@ -48,14 +50,29 @@ const Disclaimer = ({ onContinue }) => {
       console.log(student);
       
       const response = await axios.post(`${import.meta.env.VITE_API}/start`, { tin });
+      console.log(response.data);
+      
+      if (response.data.status === "completed") {
+        toast.error("You have already completed the test. Please check your result.");
+        navigate("/");
+        return;
+      }
+      if (response.data.status === "started") {
+        toast.error("You are not allowed to take the test. Please contact your instructor.");
+        navigate("/");
+        return;
+      }
       setTestQuestions(response.data.questions);
       console.log(response.data);
       setTestId(response.data.testId);
       setLoading(false);
+      toast.success(response.data.message);
       onContinue();
     } catch (error) {
       console.log("Error fetching questions", error);
       toast.error("Error fetching questions");
+    } finally{
+      setLoading(false);
     }
   };
 

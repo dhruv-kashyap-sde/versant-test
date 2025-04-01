@@ -34,7 +34,7 @@ const App = () => {
         <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<PartF />} />
+          <Route path="/" element={<Homepage />} />
           <Route path="/admin" element={<Private />} > {/* change it with <Private> later */}
             <Route path="" element={<Dashboard/>} />
           </Route>

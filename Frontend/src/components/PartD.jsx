@@ -139,6 +139,7 @@ const PartD = ({ onContinue }) => {
             <form onSubmit={handleSubmit}>
               <p>{partDQuestions[currentQuestionIndex].question}</p>
               <input
+                autoFocus
                 type="text"
                 placeholder="Enter your answer here..."
                 value={userAnswer}

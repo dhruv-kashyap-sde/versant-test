@@ -8,6 +8,7 @@ import PartF from "../PartF";
 import PartB from "../PartB";
 import PartC from "../PartC";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const AllPartsFlowControl = () => {
   const [partIndex, setPartIndex] = useState(-1);
@@ -16,6 +17,8 @@ const AllPartsFlowControl = () => {
   const handleContinue = () => {
     setPartIndex(i => i + 1);
   };
+
+  const navigate = useNavigate();
 
   return (
     <div style={{height:"100vh", overflow:"hidden"}}>
@@ -38,7 +41,7 @@ const AllPartsFlowControl = () => {
       ) : partIndex === 5 ? (
         <PartF onContinue={handleContinue}/>
       ) : (
-        <div>Test completed!</div>
+        navigate("/")
       )}
     </div>
   );

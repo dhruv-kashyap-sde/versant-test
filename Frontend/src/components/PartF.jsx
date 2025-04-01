@@ -113,13 +113,20 @@ const PartF = ({ onContinue }) => {
     console.log(totalScore);
   };
 
+  const [loading, setLoading] = useState(false);
   const handleAnswerSubmission = async () => {
     try {
+      setLoading(true);
       let response = await axios.post(`${import.meta.env.VITE_API}/submit`, {answers: totalScore, testId});
       console.log(response.data);
+      if (response.status === 200) {
+        onContinue();
+      }
       toast.success("Test completed successfully");
     } catch (error) {
       console.error("Error submitting test", error);
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -172,7 +179,7 @@ const PartF = ({ onContinue }) => {
           ) : (
             <div className="part-box-complete">
               <p>Test completed!</p>
-              <button onClick={handleAnswerSubmission} className="primary">Finish Test</button>
+              <button onClick={handleAnswerSubmission} className="primary">{loading? "Loading" : "Finish Test"}</button>
             </div>
           )}
         </div>
