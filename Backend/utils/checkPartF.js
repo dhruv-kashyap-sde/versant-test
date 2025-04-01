@@ -5,7 +5,7 @@
  * @param {Array} answers - Array of user rewritten passages
  * @returns {Array} Array of evaluation objects containing scores
  */
-const checkPartF = (questions, answers) => {
+const checkPartFScore = (questions, answers) => {
   if (!Array.isArray(questions) || !Array.isArray(answers)) {
     return [{
       score: 0,
@@ -131,5 +131,14 @@ const wordOrderDifference = (text1, text2) => {
   
   return Math.min(1, positionDifference / commonWords.length);
 };
+
+const checkPartF = (questions, answers) => {
+    const results = checkPartFScore(questions, answers);
+    let totalScore = 0;
+    results.forEach(result => {
+        totalScore += result.score;
+    });
+    return totalScore / results.length;   
+}
 
 module.exports = checkPartF;

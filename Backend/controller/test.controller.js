@@ -90,9 +90,6 @@ exports.submitTest = async (req, res) => {
     testAttempt.endTime = new Date();
     testAttempt.status = 'completed';
 
-    console.log(checkPartF(testAttempt.questions.partF, answers.partF.answers));
-    
-
     // Calculate scores for each part
     const scores = {
       partA: checkPart(testAttempt.questions.partA, answers.partA.answers),
@@ -100,8 +97,7 @@ exports.submitTest = async (req, res) => {
       partC: checkPartC(testAttempt.questions.partC, answers.partC.answers),
       partD: checkPartD(testAttempt.questions.partD, answers.partD.answers),
       partE: checkPart(testAttempt.questions.partE, answers.partE.answers),
-      partF: 69
-      // Other parts require manual evaluation
+      partF: checkPartF(testAttempt.questions.partF, answers.partF.answers) - 10
     };
 
     testAttempt.scores = {
