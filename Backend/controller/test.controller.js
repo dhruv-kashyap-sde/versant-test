@@ -24,8 +24,6 @@ exports.startTest = async (req, res) => {
     });
 
     if (ongoingTest) {
-      console.log("onfoiinf", ongoingTest);
-
       return res.status(200).json({
         message: "Ongoing test found",
         testId: ongoingTest._id,
@@ -40,7 +38,6 @@ exports.startTest = async (req, res) => {
     });
 
     if (completedTest) {
-      console.log("copmeleted", completedTest);
       return res.status(200).json({
         message: "You have already completed this test",
         testId: completedTest._id,
@@ -78,6 +75,11 @@ exports.startTest = async (req, res) => {
     });
 
     await testAttempt.save();
+    
+    // Update student's test score
+    await Student.findByIdAndUpdate(student._id, {
+      testStatus: 'started'
+    });
 
     res.status(201).json({
       message: "Test started successfully",
@@ -103,7 +105,6 @@ exports.submitTest = async (req, res) => {
 
     // Update test answers and calculate scores
     testAttempt.answers = answers;
-    console.log(testAttempt.questions.partF, answers.partF.answers);
 
     testAttempt.endTime = new Date();
     testAttempt.status = 'completed';
@@ -117,17 +118,26 @@ exports.submitTest = async (req, res) => {
       partE: checkPart(testAttempt.questions.partE, answers.partE.answers),
       partF: checkPartF(testAttempt.questions.partF, answers.partF.answers)
     };
-
+    let totalScore = (scores.partA + scores.partB + scores.partC + scores.partD + scores.partE + scores.partF) / 6;
     testAttempt.scores = {
       ...scores,
-      total: (scores.partA + scores.partB + scores.partC + scores.partD + scores.partE + scores.partF) / 6
+      total: totalScore
     };
 
     await testAttempt.save();
 
     // Update student's test score
     await Student.findByIdAndUpdate(testAttempt.studentId, {
-      testScore: testAttempt.scores.total
+      testScore: {
+        total: totalScore,
+        partA: scores.partA,
+        partB: scores.partB,
+        partC: scores.partC,
+        partD: scores.partD,
+        partE: scores.partE,
+        partF: scores.partF
+      },
+      testStatus: 'completed'
     });
 
     res.status(200).json({

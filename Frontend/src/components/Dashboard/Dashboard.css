@@ -17,7 +17,7 @@
     /* background-color: rebeccapurple; */
     min-width: 200px;
     padding: 10px 15px;
-    width: 20vw;
+    width: 15vw;
 }
 
 .sidebar-container .logo-container{
@@ -37,7 +37,7 @@
 .dashboard-body{
     padding: 10px 15px;
     /* background-color: rebeccapurple; */
-    width: 80vw;
+    width: 85vw;
 }
 
 .student-form{

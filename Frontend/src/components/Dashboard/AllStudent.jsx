@@ -9,6 +9,8 @@ const AllStudent = () => {
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API}/admin/students`)
       .then(response => {
+        console.log(response.data);
+        
         setStudents(response.data)
       })
       .catch(error => {
@@ -40,6 +42,7 @@ const AllStudent = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Test Score</th>
+            <th>Test Status</th>
             <th>Phone Number</th>
             <th>Alternate ID</th>
             <th>Created At</th>
@@ -53,7 +56,17 @@ const AllStudent = () => {
               <td>{student.tin}</td>
               <td>{student.name}</td>
               <td>{student.email}</td>
-              <td>{student.testScore}</td>
+              <td>{student.testScore.total}</td>
+              <td>
+                {student.testStatus === "completed" ? (
+                  <span className='completed'><i className="ri-check-line green"></i> Completed</span>
+                ) : student.testStatus === "started" ? (
+                  <span className='started'>Started</span>
+                ) : (
+                  <span className='not-started'><i className="ri-close-line red"></i> Not Started</span>
+                )
+                }
+                </td>
               <td>{student.phone}</td>
               <td>{student.alternateId === "" ? "N/A" : student.alternateId}</td>
               <td>{new Date(student.createdAt).toLocaleDateString()}</td>

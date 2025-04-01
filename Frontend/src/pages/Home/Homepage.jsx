@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Homepage = () => {
-  const [tin, setTin] = useState('2365773761');
+  const [tin, setTin] = useState('');
   const navigate = useNavigate();
   const { verifyTin, student, setStudent } = useAuth();
 

@@ -59,7 +59,7 @@ const TestAttemptSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: [ 'not started', 'started', 'completed', 'abandoned'],
+    enum: [ 'not started', 'started', 'completed'],
     default: 'not started'
   }
 }, { timestamps: true });
