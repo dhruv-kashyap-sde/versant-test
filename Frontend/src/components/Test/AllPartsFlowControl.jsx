@@ -7,9 +7,11 @@ import PartE from "../PartE";
 import PartF from "../PartF";
 import PartB from "../PartB";
 import PartC from "../PartC";
+import { useAuth } from "../../context/AuthContext";
 
 const AllPartsFlowControl = () => {
   const [partIndex, setPartIndex] = useState(-1);
+  const { student } = useAuth();
 
   const handleContinue = () => {
     setPartIndex(i => i + 1);
@@ -19,7 +21,7 @@ const AllPartsFlowControl = () => {
     <div style={{height:"100vh", overflow:"hidden"}}>
       <div className="main-header">
         <h1 className="logo">Versant Test</h1>
-        <h2>Student name</h2>
+        <h2>{student.name}</h2>
       </div>
       {partIndex === -1 ? (
         <Disclaimer onContinue={handleContinue} />

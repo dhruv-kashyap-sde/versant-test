@@ -1,7 +1,10 @@
 const Question = require("../models/question.model");
 const Student = require("../models/student.model");
 const TestAttempt = require("../models/testAttempt.model");
+const { calculatePartDScore, checkPartD } = require("../utils/checkPartD");
 const checkPart = require("../utils/checkPart");
+const { calculatePartCScore, getPartCScore, checkPartC } = require("../utils/checkPartC");
+const checkPartF = require("../utils/checkPartF");
 
 // Start a new test
 exports.startTest = async (req, res) => {
@@ -74,20 +77,30 @@ exports.submitTest = async (req, res) => {
   try {
     const { testId, answers } = req.body;
 
-    const testAttempt = await TestAttempt.findById(testId);
+    let testAttempt = await TestAttempt.findById(testId);
+    
     if (!testAttempt) {
       return res.status(404).json({ message: "Test not found" });
     }
 
     // Update test answers and calculate scores
     testAttempt.answers = answers;
+    console.log(testAttempt.questions.partF, answers.partF.answers);                                                                                                                                                                                                                                                                               
+    
     testAttempt.endTime = new Date();
     testAttempt.status = 'completed';
 
+    console.log(checkPartF(testAttempt.questions.partF, answers.partF.answers));
+    
+
     // Calculate scores for each part
     const scores = {
-      partB: checkPart(testAttempt.questions.partB, answers.partB),
-      partD: calculatePartDScore(testAttempt.questions.partD, answers.partD)
+      partA: checkPart(testAttempt.questions.partA, answers.partA.answers),
+      partB: checkPart(testAttempt.questions.partB, answers.partB.answers),
+      partC: checkPartC(testAttempt.questions.partC, answers.partC.answers),
+      partD: checkPartD(testAttempt.questions.partD, answers.partD.answers),
+      partE: checkPart(testAttempt.questions.partE, answers.partE.answers),
+      partF: 69
       // Other parts require manual evaluation
     };
 
@@ -113,15 +126,24 @@ exports.submitTest = async (req, res) => {
   }
 };
 
-// Helper function for Part D scoring
-function calculatePartDScore(questions, answers) {
-  let correct = 0;
-  questions.forEach((q, i) => {
-    if (q.answer.toLowerCase() === answers[i]?.toLowerCase()) {
-      correct++;
+// find a test based on its ID
+exports.findTest = async (req, res) => {
+  const { testId } = req.params;
+
+  try {
+    const testAttempt = await TestAttempt.findById(testId).populate('studentId', 'name tin');
+
+    if (!testAttempt) {
+      return res.status(404).json({ message: "Test not found" });
     }
-  });
-  return (correct / questions.length) * 100;
+
+    res.status(200).json({
+      message: "Test found successfully",
+      testAttempt
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error finding test", error: error.message });
+  }
 }
 
 // Controller method to begin the student's test

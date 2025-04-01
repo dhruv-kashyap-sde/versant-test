@@ -41,12 +41,12 @@ const TestAttemptSchema = new mongoose.Schema({
     }]
   },
   answers: {
-    partA: [{ type: String }],
-    partB: [{ type: String }],
-    partC: [{ type: String }],
-    partD: [{ type: String }],
-    partE: [{ type: String }],
-    partF: [{ type: String }]
+    partA: { answers: [ {type: String, default: " "}] },
+    partB: { answers: [ {type: String, default: " "}] },
+    partC: { answers: [ {type: String, default: " "}] },
+    partD: { answers: [ {type: String, default: " "}] },
+    partE: { answers: [ {type: String, default: " "}] },
+    partF: { answers: [ {type: String, default: " "}] }
   },
   scores: {
     partA: { type: Number, default: 0 },

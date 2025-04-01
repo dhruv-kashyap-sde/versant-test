@@ -105,6 +105,7 @@ exports.deleteStudent = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 //create an admin
 // exports.createAdmin = async (req, res) => {
 //   const { email, password } = req.body;

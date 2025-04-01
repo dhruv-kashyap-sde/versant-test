@@ -1,10 +1,10 @@
-const Levenshtein = require("fast-levenshtein");
-
+// import Levenshtein from "fast-levenshtein";
+const Levenshtein = require('fast-levenshtein'); // Import the Levenshtein library
 const checkPart = (questions, answers) => {
     let totalScore = 0;
     
     questions.forEach((question, index) => {
-        const expectedSentence = question.rearranged.toLowerCase().trim();
+        const expectedSentence = (question.rearranged ? question.rearranged : question.question).toLowerCase().trim();
         const transcribedSentence = answers[index] ? answers[index].toLowerCase().trim() : '';
         
         // Exact match check
