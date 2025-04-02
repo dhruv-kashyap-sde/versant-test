@@ -56,12 +56,40 @@ const AllStudent = () => {
               <td>{student.tin}</td>
               <td>{student.name}</td>
               <td>{student.email}</td>
-              <td>{student.testScore.total}</td>
+              <td className="score-cell">
+                <div className="score-wrapper">
+                  {student.testScore.total}
+                  <div className="score-popup">
+                    <div className="score-popup-header">Individual Scores</div>
+                    <div className="score-item">
+                      <span>Part A:</span> <span>{student.testScore.partA || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span>Part B:</span> <span>{student.testScore.partB || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span>Part C:</span> <span>{student.testScore.partC || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span>Part D:</span> <span>{student.testScore.partD || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span>Part E:</span> <span>{student.testScore.partE || 0}</span>
+                    </div>
+                    <div className="score-item">
+                      <span>Part F:</span> <span>{student.testScore.partF|| 0}</span>
+                    </div>
+                    <div className="score-item total">
+                      <span>Total:</span> <span>{student.testScore.total}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
               <td>
                 {student.testStatus === "completed" ? (
                   <span className='completed'><i className="ri-check-line green"></i> Completed</span>
                 ) : student.testStatus === "started" ? (
-                  <span className='started'>Started</span>
+                  <span className='started'><i className="ri-time-line color"></i> Started</span>
                 ) : (
                   <span className='not-started'><i className="ri-close-line red"></i> Not Started</span>
                 )

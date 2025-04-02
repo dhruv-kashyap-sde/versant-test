@@ -57,11 +57,7 @@ const TestAttemptSchema = new mongoose.Schema({
     partF: { type: Number, default: 0 },
     total: { type: Number, default: 0 }
   },
-  status: {
-    type: String,
-    enum: [ 'not started', 'started', 'completed'],
-    default: 'not started'
-  }
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model('TestAttempt', TestAttemptSchema);

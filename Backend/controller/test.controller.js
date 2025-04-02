@@ -18,8 +18,8 @@ exports.startTest = async (req, res) => {
     }
 
     // Check if student has an ongoing test
-    const ongoingTest = await TestAttempt.findOne({
-      studentId: student._id,
+    const ongoingTest = await Student.findOne({
+      _id: student._id,
       status: 'started'
     });
 
@@ -32,8 +32,8 @@ exports.startTest = async (req, res) => {
     }
 
     // Check if student has already completed a test
-    const completedTest = await TestAttempt.findOne({
-      studentId: student._id,
+    const completedTest = await Student.findOne({
+      _id: student._id,
       status: 'completed'
     });
 
@@ -71,7 +71,6 @@ exports.startTest = async (req, res) => {
     const testAttempt = new TestAttempt({
       studentId: student._id,
       questions: testQuestions,
-      status: 'started',
     });
 
     await testAttempt.save();
@@ -107,7 +106,6 @@ exports.submitTest = async (req, res) => {
     testAttempt.answers = answers;
 
     testAttempt.endTime = new Date();
-    testAttempt.status = 'completed';
 
     // Calculate scores for each part
     const scores = {
@@ -187,8 +185,8 @@ exports.beginTest = async (req, res) => {
 
     // Logic to allow the student to continue the test
     // Check if student has an ongoing test
-    const ongoingTest = await TestAttempt.findOne({
-      studentId: student._id,
+    const ongoingTest = await Student.findOne({
+      _id: student._id,
       status: 'started'
     });
 
@@ -203,8 +201,8 @@ exports.beginTest = async (req, res) => {
     }
 
     // Check if student has already completed a test
-    const completedTest = await TestAttempt.findOne({
-      studentId: student._id,
+    const completedTest = await Student.findOne({
+      _id: student._id,
       status: 'completed'
     });
 

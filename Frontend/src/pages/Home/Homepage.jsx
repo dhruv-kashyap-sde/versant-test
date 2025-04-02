@@ -33,14 +33,14 @@ const Homepage = () => {
         console.log(response.data);
         setStudent(response.data.student);
 
-        if (response.data.status === "completed") {
+        if (response.data.student.testStatus === "completed") {
           toast.error("You have already completed the test. Please check your result.");
           navigate("/");
           setLoading(false);
           return;
         }
 
-        if (response.data.status === "started") {
+        if (response.data.student.testStatus === "started") {
           toast.error("You are not allowed to take the test. Please contact your instructor.");
           navigate("/");
           setLoading(false);
