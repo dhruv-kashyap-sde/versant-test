@@ -3,6 +3,8 @@ const Student = require("../models/student.model");
 const generateTin = require("../utils/generateTin");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const xlsx = require('xlsx');
+const fs = require('fs');
 
 // Create a new student
 exports.createStudent = async (req, res) => {
@@ -93,15 +95,105 @@ exports.dashboard = async (req, res) => {
 exports.deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const deletedStudent = await Student.findByIdAndDelete(id);
-    
+
     if (!deletedStudent) {
       return res.status(404).json({ error: "Student not found" });
     }
-    
+
     res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Import students from Excel file
+exports.importStudentsFromExcel = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Please upload an Excel file" });
+    }
+
+    const filePath = req.file.path;
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(worksheet);
+
+    if (data.length === 0) {
+      // Delete the file after processing
+      fs.unlinkSync(filePath);
+      return res.status(400).json({ error: "Excel file is empty" });
+    }
+
+    const results = {
+      success: [],
+      errors: []
+    };
+
+    for (const row of data) {
+      try {
+        const { name, email, phone, alternateId } = row;
+
+        // Validate required fields
+        if (!name || !email || !phone) {
+          results.errors.push({
+            row,
+            error: "Missing required fields (name, email, or phone)"
+          });
+          continue;
+        }
+
+        // Check if a student with the same email or phone already exists
+        const existingStudent = await Student.findOne({
+          $or: [{ email }, { phone }],
+        });
+
+        if (existingStudent) {
+          results.errors.push({
+            row,
+            error: "Student with this email or phone already exists"
+          });
+          continue;
+        }
+
+        // Generate a unique TIN
+        let tin;
+        let tinExists = true;
+        while (tinExists) {
+          tin = generateTin();
+          const existingStudentWithTin = await Student.findOne({ tin });
+          if (!existingStudentWithTin) {
+            tinExists = false;
+          }
+        }
+
+        // Create and save the student
+        const student = new Student({ name, email, phone, alternateId, tin });
+        await student.save();
+        results.success.push(student);
+      } catch (error) {
+        results.errors.push({
+          row,
+          error: error.message
+        });
+      }
+    }
+
+    // Delete the file after processing
+    fs.unlinkSync(filePath);
+
+    res.status(201).json({
+      message: `Imported ${results.success.length} students successfully. ${results.errors.length} errors.`,
+      success: results.success,
+      errors: results.errors
+    });
+  } catch (error) {
+    // Delete the file if it exists and there was an error
+    if (req.file && req.file.path) {
+      fs.unlinkSync(req.file.path);
+    }
     res.status(500).json({ error: error.message });
   }
 };

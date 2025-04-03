@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import ExcelUpload from "./ExcelUpload";
 
 const CreateStudent = () => {
   const [name, setName] = useState("");
@@ -96,6 +97,8 @@ const CreateStudent = () => {
           {loading? "Adding":"Add Student"}
         </button>
       </form>
+
+      {/* <ExcelUpload /> */}
     </>
   );
 };
