@@ -59,11 +59,11 @@ exports.startTest = async (req, res) => {
 
     // Get 2 questions from each part
     const testQuestions = {
-      partA: getRandomElements(allQuestions.partA.questions, 2),
-      partB: getRandomElements(allQuestions.partB.questions, 2),
+      partA: getRandomElements(allQuestions.partA.questions, 10),
+      partB: getRandomElements(allQuestions.partB.questions, 8),
       partC: getRandomElements(allQuestions.partC.questions, 2),
-      partD: getRandomElements(allQuestions.partD.questions, 2),
-      partE: getRandomElements(allQuestions.partE.questions, 2),
+      partD: getRandomElements(allQuestions.partD.questions, 10),
+      partE: getRandomElements(allQuestions.partE.questions, 14),
       partF: getRandomElements(allQuestions.partF.questions, 2)
     };
 
