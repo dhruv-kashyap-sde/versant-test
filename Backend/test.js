@@ -64,4 +64,75 @@ const evaluatePassage = (originalPassage, userRewrite) => {
   let a = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, odit quos sint ipsam vel blanditiis aliquid totam asperiores, odio esse perferendis ut provident sapiente voluptate, assumenda id quisquam adipisci? Perspiciatis maiores illum numquam cum provident, possimus temporibus tempore ipsa quas blanditiis animi, natus ipsum quia expedita aspernatur. Ex, officia accusamus."
   
   console.log(evaluatePassage(qs, a));
-  
+  {
+    "partA": {
+        "answers": [
+            "Somebody told me to speed up.",
+            "Road throughs can be scary when there is no light.",
+            "I can I can believe how quickly the light blips.",
+            "Lost time found in the ground for.",
+            "Which car is yours?",
+            "When you go for an interview, we sure that you in comfortable dress.",
+            "Please look over the turns agreed by Friday.",
+            "Why didn't you deserve large picnic area?",
+            "I can offer you an upgrade.",
+            "Almost all like the snack sons."
+        ]
+    },
+    "partB": {
+        "answers": [
+            "His brother cleaned up the mess.",
+            "The house next door is for sale.",
+            "They they were.",
+            "After the meaning ended, did the salesman laughed immediately?",
+            " ",
+            "He's my friend.",
+            "Do you have do you have any pictures of your family?",
+            "We're going to see some old friends."
+        ]
+    },
+    "partC": {
+        "answers": [
+            "Get up early and go office at 7:30 AM.",
+            "Interesting."
+        ]
+    },
+    "partD": {
+        "answers": [
+            "k",
+            "hot",
+            "small",
+            "going",
+            "come",
+            "purchse",
+            "",
+            "name",
+            "perfomance",
+            ""
+        ]
+    },
+    "partE": {
+        "answers": [
+            "please note that  the fex number will remain same ",
+            "why do you see some of the plant dindt grow",
+            "todays meeting take places earlyer                                            ",
+            "the documnet needs to be edite",
+            "when is the game",
+            "she knows servel gerna",
+            "report any computer needs to be ",
+            "you can  use the computer in a minute",
+            "the proposal is finished",
+            "i turn down the offer ",
+            "i have to agree with you",
+            "we need to make sure that our copo",
+            "i knew something that",
+            "the train comes here every 20 minutes "
+        ]
+    },
+    "partF": {
+        "answers": [
+            "this is new reveval to our company that our company was commited to patient care and good work this is our ",
+            "as i told you to the last meeting, i am moving to  another company next week .at january 25 friday "
+        ]
+    }
+}
