@@ -116,7 +116,7 @@ exports.submitTest = async (req, res) => {
       partE: checkPart(testAttempt.questions.partE, answers.partE.answers),
       partF: checkPartF(testAttempt.questions.partF, answers.partF.answers)
     };
-    let totalScore = (scores.partA + scores.partB + scores.partC + scores.partD + scores.partE + scores.partF) / 6;
+    let totalScore = Number(((scores.partA + scores.partB + scores.partC + scores.partD + scores.partE + scores.partF) / 6).toFixed(2));
     testAttempt.scores = {
       ...scores,
       total: totalScore

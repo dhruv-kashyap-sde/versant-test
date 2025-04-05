@@ -18,6 +18,7 @@ import PartF from './components/PartF';
 import PartA from './components/PartA';
 import PartB from './components/PartB';
 import PartC from './components/PartC';
+import Result from './pages/Result/Result';
 
 const App = () => {
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {

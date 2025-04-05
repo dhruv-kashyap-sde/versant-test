@@ -11,11 +11,15 @@ const Homepage = () => {
   const { verifyTin, student, setStudent } = useAuth();
 
   const [loading, setLoading] = useState(false);
+  const [resultLoading, setResultLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+
   const handleTinChange = (e) => {
     setTin(e.target.value);
   };
 
   const validateTin = () => {
+    setTin(tin => tin.trim()); // Trim whitespace from TIN
     if (!/^\d{10}$/.test(tin)) {
       toast.error('TIN must be a 10-digit number');
       return false;
@@ -62,32 +66,78 @@ const Homepage = () => {
       });
   };
 
+  const checkResult = () => {
+    if (!validateTin()) return;
+
+    // navigate('/start-test');
+    setResultLoading(true);
+    axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
+      .then(response => {
+        console.log(response.data);
+        setStudent(response.data.student);
+        setResultLoading(false);
+        setShowResult(true);
+      })
+      .catch(error => {
+        // toast.error('There was an error checking the TIN');
+        toast.error(`${error.response.data.message}`);
+        console.log('There was an error checking the TIN!', error);
+        setLoading(false);
+      });
+  }
+
   return (
-    <div className="homepage">
-      <div className="content">
-        <div className="content-header">
-          <h1 className="title">Versant Test</h1>
-          <div className="hr"></div>
-        </div>
-        <div className="content-body">
-          <label htmlFor="tin">Start your test :</label>
-          <input
-            id="tin-input"
-            type="text"
-            maxLength={10}
-            value={tin}
-            onChange={handleTinChange}
-            name="tin"
-            placeholder="Enter TIN here..."
-          />
-          <button onClick={checkTin} className="primary mr-10">
-            {loading?"Checking...":"Start Test"}
-          </button>
-          <button className="secondary mr-10">Result</button>
+    <>
+      <div className="homepage">
+        <div className="content">
+          <div className="content-header">
+            <h1 className="title">Versant Test</h1>
+            <div className="hr"></div>
+          </div>
+          <div className="content-body">
+            <label htmlFor="tin">Start your test :</label>
+            <input
+              id="tin-input"
+              type="number"
+              maxLength={10}
+              value={tin}
+              onChange={handleTinChange}
+              name="tin"
+              placeholder="Enter TIN here..."
+            />
+            <button onClick={checkTin} className="primary mr-10">
+              {loading ? "Checking..." : "Start Test"}
+            </button>
+            <button onClick={checkResult} className="secondary mr-10">Result</button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+      {showResult && (
+        <div className="home-result-container">
+          <div className="home-result-body">
+          <h1 className="center">Test Result</h1>
+          <p><strong>Test Status :</strong> {student.testStatus === "completed" ? (
+                  <span className='status-code'><i className="ri-check-line green"> Completed</i></span>
+                ) : student.testStatus === "started" ? (
+                  <span className='status-code'><i className="ri-time-line color"> Started</i> </span>
+                ) : (
+                  <span className='status-code'><i className="ri-close-line red"> Not Started</i> </span>
+                )
+                }</p>
+          <p><span>Part A:</span> {student.testScore.partA} / 100</p>
+          <p><span>Part B:</span> {student.testScore.partB} / 100</p>
+          <p><span>Part C:</span> {student.testScore.partC} / 100</p>
+          <p><span>Part D:</span> {student.testScore.partD} / 100</p>
+          <p><span>Part E:</span> {student.testScore.partE} / 100</p>
+          <p><span>Part F:</span> {student.testScore.partF} / 100</p>
+          <div className="hr"></div>
+          <p><strong>Total Score:</strong> {student.testScore.total}</p>
+          <button className="primary" onClick={() => setShowResult(false)}>Close</button>
+          </div>
+        </div>
+      )}  
+    </>
+  )
 };
 
 export default Homepage;

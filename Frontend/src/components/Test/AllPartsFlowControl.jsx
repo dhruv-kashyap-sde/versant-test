@@ -11,9 +11,29 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AllPartsFlowControl = () => {
-  const { student, partIndex, setPartIndex, handleContinue } = useAuth();
+  const { student, partIndex, setPartIndex, handleContinue, setIsCameraActive, setIsMicActive, 
+    setAudioRecordingCompleted, setRecordedAudioUrl, setIsInternetGood, 
+    setIsFullScreen, setOnSecurityPassed, mediaStreamRef } = useAuth();
 
   const navigate = useNavigate();
+  const removeAllChecks = () => { 
+    // Reset all security checks
+    setIsCameraActive(false);
+    setIsMicActive(false);
+    setAudioRecordingCompleted(false);
+    setRecordedAudioUrl(null);
+    setIsInternetGood(false);
+    setIsFullScreen(false);
+    setOnSecurityPassed(false);
+    
+    // Stop any active media streams
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => {
+        track.stop();
+      });
+      mediaStreamRef.current = null;
+    }
+  }
 
   return (
     <div style={{height:"100vh", overflow:"hidden"}}>
@@ -36,7 +56,10 @@ const AllPartsFlowControl = () => {
       ) : partIndex === 5 ? (
         <PartF onContinue={handleContinue}/>
       ) : (
-        navigate("/")
+        <>
+          {navigate("/")}
+          {removeAllChecks()}
+        </>
       )}
     </div>
   );

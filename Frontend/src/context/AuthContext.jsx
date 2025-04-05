@@ -183,29 +183,41 @@ export const AuthProvider = ({ children }) => {
     }));
   };
 
+  // Function to remove all security checks
+  const removeAllChecks = () => {
+    setIsCameraActive(false);
+    setIsMicActive(false);
+    setAudioRecordingCompleted(false);
+    setRecordedAudioUrl(null);
+    setIsInternetGood(false);
+    setIsFullScreen(false);
+    setOnSecurityPassed(false);
+    setError(null);
+    
+    // Stop any active media streams
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach(track => {
+        track.stop();
+      });
+      mediaStreamRef.current = null;
+    }
+  };
+
   const contextValue = {
     totalScore, 
     setTotalScore,
-    updatePartScore, // Add the new function to the context value
+    updatePartScore,
     mediaStreamRef, videoRef, 
     isVerified,
     verifyTin,
-    error,
-    setError,
-    isInternetGood,
-    setIsInternetGood,
-    recordedAudioUrl,
-    setRecordedAudioUrl,
-    audioRecordingCompleted,
-    setAudioRecordingCompleted,
-    isMicActive,
-    setIsMicActive,
-    isCameraActive,
-    setIsCameraActive,
-    onSecurityPassed,
-    setOnSecurityPassed,
-    isFullScreen,
-    setIsFullScreen,
+    error, setError,
+    isInternetGood, setIsInternetGood,
+    recordedAudioUrl, setRecordedAudioUrl,
+    audioRecordingCompleted, setAudioRecordingCompleted,
+    isMicActive, setIsMicActive,
+    isCameraActive, setIsCameraActive,
+    onSecurityPassed, setOnSecurityPassed,
+    isFullScreen, setIsFullScreen,
     checkFullScreen,
     handleFullScreenChange,
     proceedTest, setProceedTest,
@@ -217,6 +229,7 @@ export const AuthProvider = ({ children }) => {
     testId, setTestId,
     partIndex, setPartIndex,
     handleContinue,
+    removeAllChecks, // Add the removeAllChecks function to context
   };
 
   return (
