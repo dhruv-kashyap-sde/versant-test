@@ -11,12 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AllPartsFlowControl = () => {
-  const [partIndex, setPartIndex] = useState(-1);
-  const { student } = useAuth();
-
-  const handleContinue = () => {
-    setPartIndex(i => i + 1);
-  };
+  const { student, partIndex, setPartIndex, handleContinue } = useAuth();
 
   const navigate = useNavigate();
 

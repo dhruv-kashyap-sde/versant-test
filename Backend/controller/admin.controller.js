@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const xlsx = require('xlsx');
 const fs = require('fs');
+const mongoose = require('mongoose');
 
 // Create a new student
 exports.createStudent = async (req, res) => {
@@ -195,6 +196,46 @@ exports.importStudentsFromExcel = async (req, res) => {
       fs.unlinkSync(req.file.path);
     }
     res.status(500).json({ error: error.message });
+  }
+};
+
+// Reset a student's test status to allow them to take the test again
+exports.resetStudentTestStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Student ID is required" });
+    }
+
+    // Find the student and update their test status
+    const student = await Student.findById(id);
+    
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Reset test status and scores
+    student.testStatus = 'not started';
+    student.testScore = {
+      total: 0,
+      partA: 0,
+      partB: 0,
+      partC: 0,
+      partD: 0,
+      partE: 0,
+      partF: 0
+    };
+
+    await student.save();
+
+    res.status(200).json({ 
+      message: "Student test status reset successfully", 
+      student,
+    });
+  } catch (error) {
+    console.error('Error resetting student test status:', error);
+    res.status(500).json({ message: "Error resetting student test status", error: error.message });
   }
 };
 

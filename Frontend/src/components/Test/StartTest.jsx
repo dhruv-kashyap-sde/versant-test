@@ -28,16 +28,15 @@ const StartTest = () => {
 
   return (
     <div>
-      
-      {isFullScreen ? (
-        proceedTest ? (
-          <AllPartsFlowControl />
-        ) : (
-          <SecurityChecks />
-        )
+
+      {proceedTest ? (
+        <AllPartsFlowControl />
       ) : (
-        <NotFullScreen checkFullScreen={checkFullScreen} />
+        <SecurityChecks />
       )}
+      {!isFullScreen &&
+        <NotFullScreen checkFullScreen={checkFullScreen} />
+      }
     </div>
   );
 };

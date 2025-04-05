@@ -5,20 +5,25 @@ import toast from 'react-hot-toast'
 
 const AllStudent = () => {
   const [students, setStudents] = useState([])
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchStudents = async () => {
     axios.get(`${import.meta.env.VITE_API}/admin/students`)
       .then(response => {
         console.log(response.data);
-        
+
         setStudents(response.data)
       })
       .catch(error => {
         console.error('There was an error fetching the students!', error)
       })
+  }
+  useEffect(() => {
+    fetchStudents();
   }, [])
 
   const handleDeleteStudent = async (id) => {
+    setLoading(true)
     try {
       await axios.delete(`${import.meta.env.VITE_API}/admin/student/${id}`)
       setStudents(students.filter(student => student._id !== id))
@@ -26,8 +31,31 @@ const AllStudent = () => {
     } catch (error) {
       console.error('Error deleting student:', error)
       toast.error('Error deleting student');
+    } finally {
+      setLoading(false)
     }
   }
+
+  const handleAllowance = async (id) => {
+    console.log(id);
+    setLoading(true)
+
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API}/admin/student/${id}/reset`)
+      if (response.status === 200) {
+        toast.success('Student allowed to take the test!')
+      } else {
+        toast.error('Error allowing student to take the test')
+      }
+    } catch (error) {
+      console.error('Error allowing student:', error)
+      toast.error('Error allowing student to take the test')
+    } finally {
+      setLoading(false);
+      fetchStudents(); // Refresh the student list after allowing a student
+    }
+  }
+
   return (
     <>
       <div className="header">
@@ -77,7 +105,7 @@ const AllStudent = () => {
                       <span>Part E:</span> <span>{student.testScore.partE || 0}</span>
                     </div>
                     <div className="score-item">
-                      <span>Part F:</span> <span>{student.testScore.partF|| 0}</span>
+                      <span>Part F:</span> <span>{student.testScore.partF || 0}</span>
                     </div>
                     <div className="score-item total">
                       <span>Total:</span> <span>{student.testScore.total}</span>
@@ -87,14 +115,14 @@ const AllStudent = () => {
               </td>
               <td>
                 {student.testStatus === "completed" ? (
-                  <span className='completed'><i className="ri-check-line green"></i> Completed</span>
+                  <span className='status-code'><i className="ri-check-line green"> Completed</i><button onClick={() => handleAllowance(student._id)} className="edit-btn">{loading? "Please wait..." :"Allow"}</button></span>
                 ) : student.testStatus === "started" ? (
-                  <span className='started'><i className="ri-time-line color"></i> Started</span>
+                  <span className='status-code'><i className="ri-time-line color"> Started</i> <button onClick={() => handleAllowance(student._id)} className="edit-btn">{loading? "Please wait..." :"Allow"}</button></span>
                 ) : (
-                  <span className='not-started'><i className="ri-close-line red"></i> Not Started</span>
+                  <span className='status-code'><i className="ri-close-line red"> Not Started</i> </span>
                 )
                 }
-                </td>
+              </td>
               <td>{student.phone}</td>
               <td>{student.alternateId === "" ? "N/A" : student.alternateId}</td>
               <td>{new Date(student.createdAt).toLocaleDateString()}</td>

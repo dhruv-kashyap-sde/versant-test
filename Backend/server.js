@@ -6,7 +6,6 @@ const speech = require("@google-cloud/speech");
 const Levenshtein = require("fast-levenshtein");
 const natural = require('natural');
 const similarity = require('string-similarity');
-const { NlpManager } = require('node-nlp');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const adminRoutes = require('./routes/admin.routes');
@@ -19,7 +18,10 @@ const port = process.env.PORT || 3000;
 
 app.use(cors({
   origin: ["http://localhost:5173", "http://localhost:5174", "https://versant-test-qxvv.onrender.com"],  // Change this to match your frontend port
-  methods: ["GET", "POST", "PUT", "DELETE"],}));
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}
+));
+
 app.use(bodyParser.json());
 app.use('/api/admin', adminRoutes);
 app.use('/api/', testRoutes);

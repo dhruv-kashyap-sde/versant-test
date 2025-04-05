@@ -14,6 +14,9 @@ router.get('/students', adminController.getAllStudents);
 // Route to delete a student
 router.delete('/student/:id', adminController.deleteStudent);
 
+// Reset a student's test status
+router.post('/student/:id/reset', adminController.resetStudentTestStatus);
+
 // Bulk import students from Excel file
 router.post('/students/import', upload.single('excel'), adminController.importStudentsFromExcel);
 

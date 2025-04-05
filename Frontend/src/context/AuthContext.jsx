@@ -10,6 +10,11 @@ export const AuthProvider = ({ children }) => {
   const videoRef = useRef(null);
   const mediaStreamRef = useRef(null);
   const [onSecurityPassed, setOnSecurityPassed] = useState(false);
+  const [partIndex, setPartIndex] = useState(-1);
+
+  const handleContinue = () => {
+    setPartIndex(i => i + 1);
+  };
 
   const [student, setStudent] = useState({});
 
@@ -152,7 +157,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const voices = window.speechSynthesis.getVoices();
-  const speakingVoice = voices[2];
+  const speakingVoice = voices[6];
   
   // Updated totalScore state to be an array of objects
   const [totalScore, setTotalScore] = useState({
@@ -210,6 +215,8 @@ export const AuthProvider = ({ children }) => {
     testQuestions, setTestQuestions,
     student, setStudent,
     testId, setTestId,
+    partIndex, setPartIndex,
+    handleContinue,
   };
 
   return (
