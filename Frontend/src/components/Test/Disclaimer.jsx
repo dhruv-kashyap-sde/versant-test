@@ -100,7 +100,7 @@ const Disclaimer = ({ onContinue }) => {
           I agree
         </label>
       </div>
-      <button className='primary' disabled={!isChecked} onClick={handleContinueClick}>{loading? "loading":"Continue"}</button>
+      <button className='primary' disabled={!isChecked || loading} onClick={handleContinueClick}>{loading? "loading":"Continue"}</button>
     </div>
   );
 };
