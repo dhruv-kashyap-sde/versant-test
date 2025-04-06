@@ -85,7 +85,7 @@ const PartD = ({ onContinue }) => {
     }
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
-      console.log(timeLeft);
+      // console.log(timeLeft);
       
     }, 1000);
     
@@ -101,7 +101,7 @@ const PartD = ({ onContinue }) => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setUserAnswer("");
     setTimeLeft(20);
-    console.log(totalScore);
+    // console.log(totalScore);
   };
 
   const handleSubmit = (e) => {

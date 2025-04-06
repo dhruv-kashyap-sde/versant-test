@@ -10,7 +10,7 @@ const AllStudent = () => {
   const fetchStudents = async () => {
     axios.get(`${import.meta.env.VITE_API}/admin/students`)
       .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
 
         setStudents(response.data)
       })
@@ -37,7 +37,7 @@ const AllStudent = () => {
   }
 
   const handleAllowance = async (id) => {
-    console.log(id);
+    // console.log(id);
     setLoading(true)
 
     try {

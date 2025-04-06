@@ -41,7 +41,7 @@ const SpeechQuestionAnswer = () => {
             setCurrentQuestionIndex(prev => prev + 1);
           }, 1000);
         } else {
-          console.log("All questions completed. Answers:", answers);
+          // // console.log("All questions completed. Answers:", answers);
         }
       };
       

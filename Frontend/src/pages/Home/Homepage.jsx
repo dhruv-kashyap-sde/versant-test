@@ -34,7 +34,7 @@ const Homepage = () => {
     setLoading(true);
     axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
       .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         setStudent(response.data.student);
 
         if (response.data.student.testStatus === "completed") {
@@ -61,7 +61,7 @@ const Homepage = () => {
       .catch(error => {
         // toast.error('There was an error checking the TIN');
         toast.error(`${error.response.data.message}`);
-        console.log('There was an error checking the TIN!', error);
+        // console.log('There was an error checking the TIN!', error);
         setLoading(false);
       });
   };
@@ -73,7 +73,7 @@ const Homepage = () => {
     setResultLoading(true);
     axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
       .then(response => {
-        console.log(response.data);
+        // console.log(response.data);
         setStudent(response.data.student);
         setResultLoading(false);
         setShowResult(true);
@@ -81,7 +81,7 @@ const Homepage = () => {
       .catch(error => {
         // toast.error('There was an error checking the TIN');
         toast.error(`${error.response.data.message}`);
-        console.log('There was an error checking the TIN!', error);
+        // console.log('There was an error checking the TIN!', error);
         setLoading(false);
       });
   }

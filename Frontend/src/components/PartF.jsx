@@ -110,7 +110,7 @@ const PartF = ({ onContinue }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     handleNextQuestion();
-    console.log(totalScore);
+    // console.log(totalScore);
   };
 
   const [loading, setLoading] = useState(false);
@@ -118,7 +118,7 @@ const PartF = ({ onContinue }) => {
     try {
       setLoading(true);
       let response = await axios.post(`${import.meta.env.VITE_API}/submit`, {answers: totalScore, testId});
-      console.log(response.data);
+      // console.log(response.data);
       if (response.status === 200) {
         onContinue();
       }

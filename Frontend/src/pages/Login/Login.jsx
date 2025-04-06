@@ -16,7 +16,7 @@ const Loginpage = () => {
       setLoading(true);
       let response = await axios.post(`${URL}/admin/login`, { email, password }   
       );
-      console.log(response);
+      // console.log(response);
       
       if(response.data.success){ 
         localStorage.setItem("token", response.data.token);

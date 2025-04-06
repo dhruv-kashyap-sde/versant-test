@@ -82,7 +82,7 @@ const PartE = ({ onContinue }) => {
     }
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
-      console.log(timeLeft);
+      // console.log(timeLeft);
       
     }, 1000);
     
@@ -98,7 +98,7 @@ const PartE = ({ onContinue }) => {
     totalScore.partE.answers.push(userAnswer);
     setUserAnswer("");
     setTimeLeft(30);
-    console.log(totalScore);
+    // console.log(totalScore);
     if (currentQuestionIndex === partEQuestions.length - 1) {
       return;
     }

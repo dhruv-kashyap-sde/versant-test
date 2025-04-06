@@ -64,7 +64,7 @@ const PartB = ({ onContinue }) => {
             setCurrentQuestionIndex(prev => prev + 1);
           }, 1000);
         } else {
-          console.log("All questions completed. Answers:", totalScore);
+          // // console.log("All questions completed. Answers:", totalScore);
         }
       };
 
@@ -98,7 +98,7 @@ const PartB = ({ onContinue }) => {
     }
 
     if (currentQuestionIndex === questions.length) {
-      console.log("All questions completed. Answers:", totalScore);
+      // // console.log("All questions completed. Answers:", totalScore);
     }
   }, [currentQuestionIndex]);
 
@@ -165,7 +165,7 @@ const PartB = ({ onContinue }) => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
       // msg.voice = speakingVoice;
-      console.log(speakingVoice);
+      // console.log(speakingVoice);
       
       msg.voice = speakingVoice;
       synth.speak(msg);
@@ -192,7 +192,7 @@ const PartB = ({ onContinue }) => {
   }
 
   const checkanswers = () => {
-    console.log(checkPartB(questions, totalScore.partB.answers))
+    // console.log(checkPartB(questions, totalScore.partB.answers))
   }
 
   return (

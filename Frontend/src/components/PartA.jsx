@@ -38,7 +38,7 @@ const PartA = ({ onContinue }) => {
             setCurrentQuestionIndex(prev => prev + 1);
           }, 1000);
         } else {
-          console.log("All questions completed. Answers:", totalScore);
+          // // console.log("All questions completed. Answers:", totalScore);
         }
       };
 
@@ -72,7 +72,7 @@ const PartA = ({ onContinue }) => {
     }
 
     if (currentQuestionIndex === questions.length) {
-      console.log("All questions completed. Answers:", totalScore);
+      // // console.log("All questions completed. Answers:", totalScore);
     }
   }, [currentQuestionIndex]);
 

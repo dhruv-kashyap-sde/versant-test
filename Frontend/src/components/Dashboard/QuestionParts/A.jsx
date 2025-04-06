@@ -14,7 +14,7 @@ const A = () => {
     const fetchQuestions = async () => {
         try {
             let response = await axios.get(`${import.meta.env.VITE_API}/questions/part?part=A`); // Adjust the API endpoint as needed
-            console.log("fetchQuestions", response.data.questions);
+            // console.log("fetchQuestions", response.data.questions);
             setPartQuestions(response.data.questions);
         } catch (error) {
             console.error("Failed to fetch questions:", error);

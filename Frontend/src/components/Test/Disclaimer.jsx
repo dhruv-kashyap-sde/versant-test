@@ -47,10 +47,10 @@ const Disclaimer = ({ onContinue }) => {
     try {
       setLoading(true);
       let tin = student.tin;
-      console.log(student);
+      // console.log(student);
       
       const response = await axios.post(`${import.meta.env.VITE_API}/start`, { tin });
-      console.log(response.data);
+      // console.log(response.data);
       
       if (response.data.status === "completed") {
         toast.error("You have already completed the test. Please check your result.");
@@ -63,13 +63,13 @@ const Disclaimer = ({ onContinue }) => {
         return;
       }
       setTestQuestions(response.data.questions);
-      console.log(response.data);
+      // console.log(response.data);
       setTestId(response.data.testId);
       setLoading(false);
       toast.success(response.data.message);
       onContinue();
     } catch (error) {
-      console.log("Error fetching questions", error);
+      // console.log("Error fetching questions", error);
       toast.error("Error fetching questions");
     } finally{
       setLoading(false);

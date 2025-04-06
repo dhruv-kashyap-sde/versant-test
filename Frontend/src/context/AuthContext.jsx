@@ -142,7 +142,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(
         `${import.meta.env.VITE_API}/check-speed`
       );
-      console.log(response.data);
+      // console.log(response.data);
 
       if (!response.data.success) {
         throw new Error("Resource unavailable");

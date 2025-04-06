@@ -36,7 +36,7 @@ const CreateStudent = () => {
         }
       }
       );
-      console.log("Student created:", response.data);
+      // console.log("Student created:", response.data);
       toast.success("Student created successfully!");
       setName("");
       setEmail("");

@@ -95,7 +95,7 @@ const PartC = ({ onContinue }) => {
             setCurrentQuestionIndex(prev => prev + 1);
           }, 1000);
         } else {
-          console.log("All questions completed. Answers:", totalScore);
+          // console.log("All questions completed. Answers:", totalScore);
         }
       };
 
@@ -173,7 +173,7 @@ const PartC = ({ onContinue }) => {
     }
 
     if (currentQuestionIndex === questions.length) {
-      console.log("All questions completed. Answers:", totalScore);
+      // console.log("All questions completed. Answers:", totalScore);
     }
   }, [currentQuestionIndex]);
 
@@ -197,7 +197,7 @@ const PartC = ({ onContinue }) => {
 
   const checkAnswer = () => {
     const currentConversation = questions[currentQuestionIndex];
-    console.log(currentConversation);
+    // console.log(currentConversation);
     
 
     // Convert to lowercase for case-insensitive matching

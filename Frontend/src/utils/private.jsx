@@ -14,7 +14,7 @@ const Private = () => {
     const requestAccess = async () => {
       try {
         const response = await axios.post(`${URL}/admin/dashboard`, { token });
-        console.log(response.data);
+        // console.log(response.data);
 
         if (response.data.success) {
           setHasAccess(true);
@@ -23,7 +23,7 @@ const Private = () => {
           toast.error("Access denied");
         }
       } catch (error) {
-        console.log("error login failed");
+        // console.log("error login failed");
         toast.error("error login failed");
         setHasAccess(false);
       } finally {

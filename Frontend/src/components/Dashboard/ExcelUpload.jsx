@@ -18,7 +18,7 @@ const ExcelUpload = () => {
       setError('Please select a file');
       return;
     }
-    console.log(file);
+    // console.log(file);
     
     // Check file extension
     const fileExtension = file.name.split('.').pop().toLowerCase();
