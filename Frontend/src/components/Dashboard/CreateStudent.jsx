@@ -98,7 +98,7 @@ const CreateStudent = () => {
         </button>
       </form>
 
-      {/* <ExcelUpload /> */}
+      <ExcelUpload />
     </>
   );
 };

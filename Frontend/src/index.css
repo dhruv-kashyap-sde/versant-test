@@ -63,6 +63,17 @@
     border: 1px solid transparent;
   }
   
+  button.edit-btn:disabled, button.delete-btn:disabled{
+    background-color: #bbb7b7;
+    color: var(--text-2);
+    cursor: not-allowed;
+  }
+
+  button.edit-btn:disabled:hover, button.delete-btn:disabled:hover{
+    background-color: #bbb7b7;
+    color: var(--text-2);
+    cursor: not-allowed;
+  }
   
   button.primary {
     background-color: var(--theme);

@@ -70,11 +70,11 @@ const studentSchema = new mongoose.Schema({
 });
 
 // Pre-save hook to auto-generate TIN if not provided
-studentSchema.pre('save', function(next) {
-  if (!this.tin) {
-    this.tin = Math.floor(1000000000 + Math.random() * 9000000000);
-  }
-  next();
-});
+// studentSchema.pre('save', function(next) {
+//   if (!this.tin) {
+//     this.tin = Math.floor(1000000000 + Math.random() * 9000000000);
+//   }
+//   next();
+// });
 
 module.exports = mongoose.model('Student', studentSchema);

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const ExcelUpload = () => {
   const [file, setFile] = useState(null);
@@ -13,17 +14,18 @@ const ExcelUpload = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log(file);
     e.preventDefault();
     if (!file) {
-      setError('Please select a file');
+      setError("Please select a file");
       return;
     }
     // console.log(file);
-    
+
     // Check file extension
-    const fileExtension = file.name.split('.').pop().toLowerCase();
-    if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
-      setError('Please upload an Excel file (.xlsx or .xls)');
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    if (fileExtension !== "xlsx" && fileExtension !== "xls") {
+      setError("Please upload an Excel file (.xlsx or .xls)");
       return;
     }
 
@@ -32,25 +34,27 @@ const ExcelUpload = () => {
     setError(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
+    console.log(formData.get("file"));
 
     try {
-      // Get the token from localStorage (assuming you store it there after login)
-      const token = localStorage.getItem('token');
-      
       const response = await axios.post(
-        `${import.meta.env.VITE_API}/admin/students/import`, 
-        formData, 
+        `${import.meta.env.VITE_API}/admin/students/import`,
+        formData, // Send the FormData directly, not wrapped in an object
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-      
+
       setResult(response.data);
+      toast.success("Student added successfully!");
     } catch (err) {
-      setError(err.response?.data?.error || 'An error occurred during upload');
+      setError(err.response?.data?.error || "An error occurred during upload");
+      toast.error(
+        err.response?.data?.error || "An error occurred during upload"
+      );
     } finally {
       setLoading(false);
     }
@@ -59,59 +63,80 @@ const ExcelUpload = () => {
   return (
     <div className="excel-upload-container">
       <h2>Import Students from Excel</h2>
-      
-      <div className="excel-format-info">
-        <h3>Excel File Format Guide:</h3>
-        <p>Your Excel file should have the following columns:</p>
-        <ul>
-          <li><strong>name</strong> - Student's full name (required)</li>
-          <li><strong>email</strong> - Student's email address (required)</li>
-          <li><strong>phone</strong> - Student's phone number (required)</li>
-          <li><strong>alternateId</strong> - Any alternate identification (optional)</li>
-        </ul>
-        <p>Example:</p>
-        <table border="1" cellPadding="5">
-          <thead>
-            <tr>
-              <th>name</th>
-              <th>email</th>
-              <th>phone</th>
-              <th>alternateId</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>John Doe</td>
-              <td>john@example.com</td>
-              <td>1234567890</td>
-              <td>STU001</td>
-            </tr>
-            <tr>
-              <td>Jane Smith</td>
-              <td>jane@example.com</td>
-              <td>9876543210</td>
-              <td>STU002</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
       <form onSubmit={handleSubmit} className="upload-form">
         <div className="form-group">
           <label htmlFor="excel-file">Select Excel File:</label>
-          <input 
-            type="file" 
-            id="excel-file" 
-            onChange={handleFileChange} 
-            accept=".xlsx, .xls" 
+          <input
+            type="file"
+            id="excel-file"
+            onChange={handleFileChange}
+            accept=".xlsx, .xls"
+            name="file"
           />
         </div>
-        
-        <button type="submit" disabled={loading || !file}>
-          {loading ? 'Uploading...' : 'Upload'}
+
+        <button className="secondary" type="submit" disabled={loading || !file}>
+          {loading ? "Uploading..." : "Upload"}
         </button>
       </form>
+      <hr />
+      <div className="excel-format-info">
+        <div className="excel-format-info-left">
+          <h3>Excel File Format Guide:</h3>
+          <p>Your Excel file should have the following columns:</p>
+          <ul>
+            <li>
+              <strong>name</strong> - Student's full name (required)
+            </li>
+            <li>
+              <strong>email</strong> - Student's email address (required)
+            </li>
+            <li>
+              <strong>phone</strong> - Student's phone number (required)
+            </li>
+            <li>
+              <strong>alternateId</strong> - Any alternate identification
+              (optional)
+            </li>
+          </ul>
+        </div>
+        <div className="excel-format-info-right">
+          <p>Example:</p>
+          <table border="1" cellPadding="5">
+            <thead>
+              <tr>
+                <th>name</th>
+                <th>email</th>
+                <th>phone</th>
+                <th>alternateId</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Doe</td>
+                <td>john@example.com</td>
+                <td>1234567890</td>
+                <td>STU001</td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>jane@example.com</td>
+                <td>9876543210</td>
+                <td>STU002</td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>jane@example.com</td>
+                <td>9876543210</td>
+                <td>STU002</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
+      <hr />
       {error && (
         <div className="error-message">
           <p>{error}</p>
@@ -122,10 +147,12 @@ const ExcelUpload = () => {
         <div className="result-container">
           <h3>Import Results</h3>
           <p>{result.message}</p>
-          
+
           {result.success && result.success.length > 0 && (
             <div>
-              <h4>Successfully Imported ({result.success.length}):</h4>
+              <h4 color="green">
+                Successfully Imported ({result.success.length}):
+              </h4>
               <table border="1" cellPadding="5">
                 <thead>
                   <tr>
@@ -148,10 +175,10 @@ const ExcelUpload = () => {
               </table>
             </div>
           )}
-          
+
           {result.errors && result.errors.length > 0 && (
             <div>
-              <h4>Failed Entries ({result.errors.length}):</h4>
+              <h4 className="red">Failed Entries ({result.errors.length}):</h4>
               <table border="1" cellPadding="5">
                 <thead>
                   <tr>
@@ -163,7 +190,7 @@ const ExcelUpload = () => {
                   {result.errors.map((error, index) => (
                     <tr key={index}>
                       <td>{JSON.stringify(error.row)}</td>
-                      <td>{error.error}</td>
+                      <td className="red">{error.error}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -18,7 +18,7 @@ router.delete('/student/:id', adminController.deleteStudent);
 router.post('/student/:id/reset', adminController.resetStudentTestStatus);
 
 // Bulk import students from Excel file
-router.post('/students/import', upload.single('excel'), adminController.importStudentsFromExcel);
+router.post('/students/import', upload.single('file'), adminController.importStudentsFromExcel);
 
 // **Login Route**
 router.post("/login", adminController.login);

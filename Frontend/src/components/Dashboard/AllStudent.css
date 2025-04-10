@@ -1,6 +1,8 @@
 .student-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .student-table th, .student-table td {
@@ -34,17 +36,24 @@
 
 /* excel uploading */
 .excel-upload-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  /* max-width: 800px; */
+  margin: 20px auto;
+  background-color: var(--w);
+  padding: 20px 30px;
+  border-radius: var(--radius);
   font-family: Arial, sans-serif;
 }
 
 .excel-format-info {
-  background-color: #f5f5f5;
+  background-color: var(--w);
   padding: 15px;
-  border-radius: 5px;
+  border-radius: var(--radius);
   margin-bottom: 20px;
+  display: flex;
+}
+
+.excel-format-info-left, .excel-format-info-right{
+  width: 50%;
 }
 
 .excel-format-info table {
@@ -58,6 +67,9 @@
 }
 
 .upload-form {
+  background-color: var(--w);
+  /* padding: 20px; */
+  border-radius: var(--radius); 
   margin-bottom: 20px;
 }
 
