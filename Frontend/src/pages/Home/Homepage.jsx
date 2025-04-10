@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Homepage.css";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -13,6 +13,21 @@ const Homepage = () => {
   const [loading, setLoading] = useState(false);
   const [resultLoading, setResultLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [hasSpeechSupport, setHasSpeechSupport] = useState(true);
+  const [hasSpeechSynthesisSupport, setHasSpeechSynthesisSupport] = useState(true);
+
+  useEffect(() => {
+    // Check for Speech Recognition support
+    const hasSpeechRecognition = 'SpeechRecognition' in window || 
+      'webkitSpeechRecognition' in window || 
+      'mozSpeechRecognition' in window || 
+      'msSpeechRecognition' in window;
+    setHasSpeechSupport(hasSpeechRecognition);
+
+    // Check for Speech Synthesis support
+    const hasSpeechSynthesis = 'speechSynthesis' in window;
+    setHasSpeechSynthesisSupport(hasSpeechSynthesis);
+  }, []);
 
   const handleTinChange = (e) => {
     setTin(e.target.value);
@@ -30,7 +45,12 @@ const Homepage = () => {
   const checkTin = () => {
     if (!validateTin()) return;
 
-    // navigate('/start-test');
+    // Check if browser supports required speech features
+    if (!hasSpeechSupport || !hasSpeechSynthesisSupport) {
+      toast.error('Your browser does not support speech recognition or speech synthesis. Please use a different browser like Chrome.');
+      return;
+    }
+
     setLoading(true);
     axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
       .then(response => {
@@ -95,6 +115,14 @@ const Homepage = () => {
             <div className="hr"></div>
           </div>
           <div className="content-body">
+            {(!hasSpeechSupport || !hasSpeechSynthesisSupport) && (
+              <div className="speech-support-warning">
+                <p style={{ color: 'red', marginBottom: '10px' }}>
+                  <i className="error"></i> Your browser does not support speech recognition or speech synthesis features required for this test. 
+                  Please use a modern browser like Chrome.
+                </p>
+              </div>
+            )}
             <label htmlFor="tin">Start your test :</label>
             <input
               id="tin-input"
