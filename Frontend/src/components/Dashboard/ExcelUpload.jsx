@@ -47,9 +47,11 @@ const ExcelUpload = () => {
           },
         }
       );
-
+      console.log(response.data);
       setResult(response.data);
-      toast.success("Student added successfully!");
+      if (response.data.errors) {
+        toast.error("Some students could not be added. Check the errors.");
+      } else toast.success("Student added successfully!");
     } catch (err) {
       setError(err.response?.data?.error || "An error occurred during upload");
       toast.error(

@@ -198,8 +198,14 @@ exports.importStudentsFromExcel = async (req, res) => {
           // Generate a unique TIN
           let tin;
           let tinExists = true;
+          let equalsto10 = true;
           while (tinExists) {
-            tin = generateTin();
+            while (equalsto10) {
+              tin = generateTin();
+              if (tin.length === 10) {
+                equalsto10 = false;
+              }
+            }
             const existingStudentWithTin = await Student.findOne({ tin });
             if (!existingStudentWithTin) {
               tinExists = false;
