@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Loader from "../../../utils/Loaders/Loader";
 
 const B = () => {
     const [phrase1, setPhrase1] = useState('');
@@ -149,7 +150,7 @@ const B = () => {
                         ))}
                         {partQuestions.length === 0 && (
                             <tr>
-                                <td colSpan="5" style={{ textAlign: 'center' }}>No questions added yet or we are still loading them...</td>
+                                <td colSpan="5" style={{ textAlign: 'center' }}>No questions added yet or we are still loading them... <Loader/></td>
                             </tr>
                         )}
                     </tbody>
