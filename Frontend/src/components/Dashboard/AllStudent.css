@@ -105,3 +105,105 @@
 .result-container th {
   background-color: #eaeaea;
 }
+
+/* Add to your existing CSS */
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-bottom: 20px; */
+  flex-wrap: wrap;
+}
+
+.search-container {
+  position: relative;
+  /* background-color: red; */
+  width: 30vw;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px;
+  padding-right: 40px;
+  border: var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 45%;
+  transform: translateY(-50%);
+  color: #777;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.pagination-btn {
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #e0e0e0;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-info {
+  margin: 0 10px;
+  font-size: 14px;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #666;
+}
+
+.sortable-header {
+  cursor: pointer;
+  position: relative;
+  padding-right: 20px;
+}
+
+.sortable-header:hover {
+  background-color: var(--w);
+  color: var(--theme);
+  border: var(--border);
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  font-size: 16px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .table-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-container {
+    width: 100%;
+  }
+  
+  .pagination {
+    flex-wrap: wrap;
+  }
+}
