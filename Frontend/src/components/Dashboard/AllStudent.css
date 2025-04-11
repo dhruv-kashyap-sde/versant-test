@@ -185,7 +185,7 @@
   background-color: var(--w);
   color: var(--theme);
   border: var(--border);
-
+}
 .no-results {
   text-align: center;
   padding: 20px;

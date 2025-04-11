@@ -1,4 +1,3 @@
-
 // const evaluatePassage = (originalPassage, userRewrite) => {
 //     // If either input is missing, return error
 //     if (!originalPassage || !userRewrite) {
@@ -7,15 +6,16 @@
 //         pass: false
 //       };
 //     }
-  
+
+
 //     // Convert to lowercase and remove punctuation for better comparison
 //     const cleanOriginal = originalPassage.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
 //     const cleanRewrite = userRewrite.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-  
+
 //     // Split passages into words
 //     const originalWords = cleanOriginal.split(/\s+/).filter(word => word.length > 3);
 //     const rewriteWords = cleanRewrite.split(/\s+/).filter(word => word.length > 3);
-  
+
 //     // Check word count - should be somewhat similar to original (not too short)
 //     const wordCountRatio = rewriteWords.length / originalWords.length;
 //     if (wordCountRatio < 0.5) {
@@ -24,23 +24,23 @@
 //         pass: false
 //       };
 //     }
-  
+
 //     // Count significant words from original that appear in the rewrite
 //     let keyWordsFound = 0;
 //     const uniqueOriginalWords = [...new Set(originalWords)];
-    
+
 //     for (const word of uniqueOriginalWords) {
 //       if (rewriteWords.includes(word)) {
 //         keyWordsFound++;
 //       }
 //     }
-  
+
 //     const keyWordRatio = keyWordsFound / uniqueOriginalWords.length;
-  
+
 //     // Calculate overall score
 //     let score = 0;
 //     let pass = false;
-  
+
 //     if (keyWordRatio < 0.1) {
 //       score = 40;
 //     } else if (keyWordRatio > 0.7) {
@@ -50,7 +50,7 @@
 //       score = Math.floor(70 + (30 * (keyWordRatio / 0.5)));
 //       pass = score > 70;
 //     }
-  
+
 //     return {
 //       score: Math.min(score, 100),
 //       pass,
@@ -62,7 +62,7 @@
 //   };
 //   let qs= "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style for many years. Her award included a trip to Paris for one week. Mary and her husband have never been to Paris and they are very excited about it."
 //   let a = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, odit quos sint ipsam vel blanditiis aliquid totam asperiores, odio esse perferendis ut provident sapiente voluptate, assumenda id quisquam adipisci? Perspiciatis maiores illum numquam cum provident, possimus temporibus tempore ipsa quas blanditiis animi, natus ipsum quia expedita aspernatur. Ex, officia accusamus."
-  
+
 //   console.log(evaluatePassage(qs, a));
 //   {
 //     "partA": {
@@ -137,12 +137,45 @@
 //     }
 // }
 
-function generateTin() {
-  let tin = '';
-  for (let i = 0; i < 10; i++) {
-      tin += Math.floor(Math.random() * 10);
-  }
-  return tin;
-}
-console.log(generateTin().length);
-console.log(generateTin());
+// function generateTin() {
+//   let tin = '';
+//   for (let i = 0; i < 10; i++) {
+//       tin += Math.floor(Math.random() * 10);
+//   }
+//   return tin;
+// }
+// console.log(generateTin().length);
+// console.log(generateTin());
+// import stringSimilarity from 'string-similarity';
+// import { checkPartD } from "./utils/checkPartD";
+// const checkPartD = require("./utils/checkPartD").checkPartD;
+// const answers = [
+//   "day",
+//   "cold",
+//   "big",
+//   "come",
+//   "going",
+//   "buy",
+//   "cubes",
+//   "sur",
+//   "lazy",
+//   "brought",
+// ];
+
+// const q = [
+//   {answer:"knight"},
+//   {answer:"hot"},
+//   {answer:"small"},
+//   {answer:"going"},
+//   {answer:"come"},
+//   {answer:"purchase"},
+//   {answer:"balls"},
+//   {answer:"name"},
+//   {answer:"performance"},
+//   {answer:"transferred"}
+// ]
+// console.log(checkPartD(q, answers));
+// const stringSimilarity = require("string-similarity");
+
+// const similarity = stringSimilarity.compareTwoStrings(q[9].answer, answers[9]);
+// console.log(similarity);
