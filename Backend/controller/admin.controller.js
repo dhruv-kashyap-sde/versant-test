@@ -1,6 +1,7 @@
 const Admin = require("../models/admin.model");
 const Student = require("../models/student.model");
 const generateTin = require("../utils/generateTin");
+const { sendTinEmail } = require("../utils/emailService");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const xlsx = require('xlsx');
@@ -8,35 +9,6 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-
-// Set storage engine
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, '../uploads');
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, `${Date.now()}-${file.originalname}`);
-//   }
-// });
-
-// // File filter to allow only Excel files
-// const fileFilter = (req, file, cb) => {
-//   const ext = path.extname(file.originalname);
-//   console.log("yaha tak agaya");
-//   if (ext !== '.xlsx' && ext !== '.xls') {
-//     return cb(new Error('Only Excel files are allowed'));
-//   }
-//   cb(null, true);
-// }
-
-// // Initialize multer upload
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
-//   fileFilter: fileFilter
-// });
-
-
 
 // Create a new student
 exports.createStudent = async (req, res) => {
@@ -68,6 +40,10 @@ exports.createStudent = async (req, res) => {
     // Add the generated TIN to the student data
     const student = new Student({ name, email, phone, alternateId, tin });
     await student.save();
+    
+    // Send the TIN to the student's email
+    await sendTinEmail(email, name, tin);
+    
     res.status(201).json(student);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -142,15 +118,12 @@ exports.deleteStudent = async (req, res) => {
 
 // Import students from Excel file
 exports.importStudentsFromExcel = async (req, res) => {
-  // console.log("File received:", req.file);
-  
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Please upload an Excel file" });
     }
 
     const filePath = req.file.path;
-    // console.log("Reading Excel file from:", filePath);
     
     try {
       const workbook = xlsx.readFile(filePath);
@@ -166,7 +139,8 @@ exports.importStudentsFromExcel = async (req, res) => {
 
       const results = {
         success: [],
-        errors: []
+        errors: [],
+        emailErrors: []
       };
 
       for (const row of data) {
@@ -215,6 +189,18 @@ exports.importStudentsFromExcel = async (req, res) => {
           // Create and save the student
           const student = new Student({ name, email, phone, alternateId, tin });
           await student.save();
+          
+          // Send the TIN to the student's email
+          const emailSent = await sendTinEmail(email, name, tin);
+          
+          if (!emailSent) {
+            results.emailErrors.push({
+              student: student._id,
+              email,
+              message: "Failed to send TIN email"
+            });
+          }
+          
           results.success.push(student);
         } catch (error) {
           results.errors.push({
@@ -228,9 +214,10 @@ exports.importStudentsFromExcel = async (req, res) => {
       fs.unlinkSync(filePath);
 
       res.status(201).json({
-        message: `Imported ${results.success.length} students successfully. ${results.errors.length} errors.`,
+        message: `Imported ${results.success.length} students successfully. ${results.errors.length} errors. ${results.emailErrors.length} email sending errors.`,
         success: results.success,
-        errors: results.errors
+        errors: results.errors,
+        emailErrors: results.emailErrors
       });
     } catch (excelError) {
       console.error("Error processing Excel file:", excelError);
@@ -292,29 +279,3 @@ exports.resetStudentTestStatus = async (req, res) => {
     res.status(500).json({ message: "Error resetting student test status", error: error.message });
   }
 };
-
-//create an admin
-// exports.createAdmin = async (req, res) => {
-//   const { email, password } = req.body;
-//   if (!email || !password) {
-//     return res.status(404).json({ message: "Please add all the Fields" });
-//   }
-
-//   try {
-//     bcrypt.hash(password, 10, async (err, hash) => {
-//       let admin = await Admin.findOne({ email });
-//       if (admin) res.status(401).send("user already exists");
-//       const newAdmin = await Admin.create({ email, password: hash });
-//       console.log(newAdmin);
-//       let token = jwt.sign(
-//         { email: newAdmin.email },
-//         process.env.JWT_SECRET_KEY
-//       );
-//       console.log(token);
-//       res.cookie("token", token);
-//       res.status(201).send("User registered");
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };

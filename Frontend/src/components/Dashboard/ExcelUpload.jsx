@@ -119,19 +119,19 @@ const ExcelUpload = () => {
                 <td>John Doe</td>
                 <td>john@example.com</td>
                 <td>1234567890</td>
-                <td>STU001</td>
+                <td>alternate1@email.com</td>
               </tr>
               <tr>
                 <td>Jane Smith</td>
                 <td>jane@example.com</td>
                 <td>9876543210</td>
-                <td>STU002</td>
+                <td>alternate2@email.com</td>
               </tr>
               <tr>
                 <td>Jane Smith</td>
                 <td>jane@example.com</td>
                 <td>9876543210</td>
-                <td>STU002</td>
+                <td>alternate3@email.com</td>
               </tr>
             </tbody>
           </table>
@@ -201,6 +201,7 @@ const ExcelUpload = () => {
           )}
         </div>
       )}
+      
     </div>
   );
 };
