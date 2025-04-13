@@ -42,7 +42,7 @@ exports.createStudent = async (req, res) => {
     await student.save();
     
     // Send the TIN to the student's email
-    await sendTinEmail(email, name, tin);
+    // await sendTinEmail(email, name, tin);
     
     res.status(201).json(student);
   } catch (error) {
@@ -191,15 +191,15 @@ exports.importStudentsFromExcel = async (req, res) => {
           await student.save();
           
           // Send the TIN to the student's email
-          const emailSent = await sendTinEmail(email, name, tin);
+          // const emailSent = await sendTinEmail(email, name, tin);
           
-          if (!emailSent) {
-            results.emailErrors.push({
-              student: student._id,
-              email,
-              message: "Failed to send TIN email"
-            });
-          }
+          // if (!emailSent) {
+          //   results.emailErrors.push({
+          //     student: student._id,
+          //     email,
+          //     message: "Failed to send TIN email"
+          //   });
+          // }
           
           results.success.push(student);
         } catch (error) {
