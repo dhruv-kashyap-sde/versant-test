@@ -12,6 +12,7 @@ const adminRoutes = require('./routes/admin.routes');
 const testRoutes = require('./routes/test.routes');
 const questionRoutes = require('./routes/questions.routes');
 const connectDB = require("./config/db.config");
+const createDefaultAdmin = require('./utils/createDefaultAdmin');
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -26,7 +27,6 @@ app.use(bodyParser.json());
 app.use('/api/admin', adminRoutes);
 app.use('/api/', testRoutes);
 app.use('/api/questions', questionRoutes);
-connectDB();
 
 app.get("/", (req, res) => {
   res.send('Hello World!');
@@ -36,8 +36,17 @@ app.get("/", (req, res) => {
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// server.js (continued)
+// Connect to database and initialize default admin
+const initializeApp = async () => {
+  await connectDB();
+  await createDefaultAdmin();
+};
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+initializeApp().then(() => {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}).catch(err => {
+  console.error('Failed to initialize application:', err);
+  process.exit(1);
 });
