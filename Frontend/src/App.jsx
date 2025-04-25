@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
 import Homepage from './pages/Home/Homepage';
-import SpeechToText from './utils/SpeechToText';
-import SecurityChecks from './security/SecurityChecks';
-import TestContainer from './utils/SpeechToText';
 import Dashboard from './components/Dashboard/Dashboard';
 import Private from './utils/private';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
@@ -19,6 +16,7 @@ import PartA from './components/PartA';
 import PartB from './components/PartB';
 import PartC from './components/PartC';
 import Result from './pages/Result/Result';
+import Rules from './utils/Rules';
 
 const App = () => {
   if (!("speechSynthesis" in window && "SpeechSynthesisUtterance" in window)) {
@@ -36,6 +34,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Homepage />} />
+          <Route path="/rules" element={<Rules />} />
           <Route path="/admin" element={<Private />} > {/* change it with <Private> later */}
             <Route path="" element={<Dashboard/>} />
           </Route>

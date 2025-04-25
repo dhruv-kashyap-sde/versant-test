@@ -59,11 +59,11 @@ exports.startTest = async (req, res) => {
 
     // Get 2 questions from each part
     const testQuestions = {
-      partA: getRandomElements(allQuestions.partA.questions, 8),
-      partB: getRandomElements(allQuestions.partB.questions, 8),
+      partA: getRandomElements(allQuestions.partA.questions, 2),
+      partB: getRandomElements(allQuestions.partB.questions, 2),
       partC: getRandomElements(allQuestions.partC.questions, 2),
-      partD: getRandomElements(allQuestions.partD.questions, 8),
-      partE: getRandomElements(allQuestions.partE.questions, 8),
+      partD: getRandomElements(allQuestions.partD.questions, 2),
+      partE: getRandomElements(allQuestions.partE.questions, 2),
       partF: getRandomElements(allQuestions.partF.questions, 2)
     };
 
@@ -178,6 +178,8 @@ exports.beginTest = async (req, res) => {
 
   try {
     const student = await Student.findOne({ tin });
+    console.log(student, "student");
+    
 
     if (!student) {
       return res.status(404).json({ message: "Invalid TIN" });

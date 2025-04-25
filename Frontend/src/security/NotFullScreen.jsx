@@ -3,10 +3,9 @@ import './NotFullScreen.css'
 import { AuthContext } from '../context/AuthContext'
 const NotFullScreen = ({checkFullScreen}) => {
   const {
-    initializeCamera, checkInternetConnection, initializeMic
+    checkInternetConnection, initializeMic
   } = useContext(AuthContext);
   useEffect(() => {
-    initializeCamera();
     checkInternetConnection();
     initializeMic();
   }, [])

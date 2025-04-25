@@ -24,28 +24,25 @@ const PartD = ({ onContinue }) => {
   //   },
   // ];
 
-  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } =
+    useContext(AuthContext);
 
   const partDQuestions = testQuestions.partD;
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
-  
+
   const CONST = [
     "Please type one word that best fits the meaning of the sentence. Type only one word. You will have 20 seconds for each sentence. Click 'Next' when you are finished.",
     "It's ___ tonight. Bring your sweater.",
-    "cold"
-  ]
-  
-  const rules = ["",
-    "Part D... Sentence completion",
-    CONST[0]
+    "cold",
   ];
 
+  const rules = ["", "Part D... Sentence completion", CONST[0]];
 
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  
+
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.voice = speakingVoice;
@@ -75,8 +72,8 @@ const PartD = ({ onContinue }) => {
   const startTest = () => {
     setInTutorial(false);
     stop();
-  }
-  
+  };
+
   useEffect(() => {
     if (inTutorial) return;
 
@@ -86,12 +83,11 @@ const PartD = ({ onContinue }) => {
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
       // console.log(timeLeft);
-      
     }, 1000);
-    
-  if (currentQuestionIndex === partDQuestions.length) {
-    clearInterval(timer)
-  }
+
+    if (currentQuestionIndex === partDQuestions.length) {
+      clearInterval(timer);
+    }
 
     return () => clearInterval(timer);
   }, [timeLeft, inTutorial]);
@@ -120,12 +116,13 @@ const PartD = ({ onContinue }) => {
           <div className="question-index">
             {!inTutorial ? (
               <>
+                Attempting question no.{" "}
                 <strong>
                   {currentQuestionIndex !== partDQuestions.length
                     ? currentQuestionIndex + 1
                     : currentQuestionIndex}
-                </strong>
-                /{partDQuestions.length}
+                </strong>{" "}
+                out of {partDQuestions.length}
               </>
             ) : (
               "Instructions"
@@ -134,7 +131,12 @@ const PartD = ({ onContinue }) => {
         </div>
         <div className="part-box">
           {inTutorial ? (
-            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest}/>
+            <Tutorial
+              head={CONST[0]}
+              see={CONST[1]}
+              type={CONST[2]}
+              click={startTest}
+            />
           ) : currentQuestionIndex < partDQuestions.length ? (
             <form onSubmit={handleSubmit}>
               <p>{partDQuestions[currentQuestionIndex].question}</p>
@@ -147,14 +149,25 @@ const PartD = ({ onContinue }) => {
               />
             </form>
           ) : (
-            <div className="part-box-complete"><p>Test completed!</p>
-            <button onClick={onContinue} className="primary">Go to Next Part</button></div>
+            <div className="part-box-complete">
+              <p>Test completed!</p>
+              <button onClick={onContinue} className="primary">
+                Go to Next Part
+              </button>
+            </div>
           )}
         </div>
         {currentQuestionIndex < partDQuestions.length && !inTutorial && (
           <>
             <span>Time left: {timeLeft} seconds</span>
-            <button onClick={currentQuestionIndex < partDQuestions.length - 1 ? handleSubmit : onContinue} className="secondary">
+            <button
+              onClick={
+                currentQuestionIndex < partDQuestions.length - 1
+                  ? handleSubmit
+                  : onContinue
+              }
+              className="secondary"
+            >
               {currentQuestionIndex < partDQuestions.length - 1
                 ? "Next Question"
                 : "Submit"}

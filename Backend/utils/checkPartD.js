@@ -22,6 +22,5 @@ export function checkPartD(questions, answers) {
       correct = correct + similarity;
     }
   });
-
-  return (correct / questions.length) * 100;
+  return Math.round((correct / questions.length) * 100);
 }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import Tutorial from '../utils/Tutorial';
-import { AuthContext } from '../context/AuthContext';
+import React, { useState, useEffect, useRef, useContext } from "react";
+import Tutorial from "../utils/Tutorial";
+import { AuthContext } from "../context/AuthContext";
 
 const PartC = ({ onContinue }) => {
   // Sample conversation data
@@ -34,18 +34,19 @@ const PartC = ({ onContinue }) => {
   //   },
   //   // Add more questions here
   // ];
-  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } =
+    useContext(AuthContext);
 
   const questions = testQuestions.partC;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState('');
-  const [feedback, setFeedback] = useState('');
+  const [userAnswer, setUserAnswer] = useState("");
+  const [feedback, setFeedback] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [availableVoices, setAvailableVoices] = useState([]);
   const synth = useRef(window.speechSynthesis);
-  const voicesLoaded = useRef(false);  
+  const voicesLoaded = useRef(false);
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef(null);  
+  const recognitionRef = useRef(null);
   const timerRef = useRef(null);
 
   // Get available voices
@@ -72,27 +73,28 @@ const PartC = ({ onContinue }) => {
 
   // Initialize speech recognition
   useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.lang = "en-US";
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        updatePartScore('C', transcript);
+        updatePartScore("C", transcript);
       };
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        setSpeechStatus('idle');
+        setSpeechStatus("idle");
         clearTimeout(timerRef.current);
 
         // Move to next question if we have more
         if (currentQuestionIndex < questions.length - 1) {
           setTimeout(() => {
-            setCurrentQuestionIndex(prev => prev + 1);
+            setCurrentQuestionIndex((prev) => prev + 1);
           }, 1000);
         } else {
           // console.log("All questions completed. Answers:", totalScore);
@@ -100,9 +102,9 @@ const PartC = ({ onContinue }) => {
       };
 
       recognitionRef.current.onerror = () => {
-        updatePartScore('C',' '); // Store empty string for no answer
+        updatePartScore("C", " "); // Store empty string for no answer
         setIsListening(false);
-        setSpeechStatus('idle');
+        setSpeechStatus("idle");
         // Remove the index increment from here since onend will handle it
       };
     } else {
@@ -126,40 +128,46 @@ const PartC = ({ onContinue }) => {
       return;
     }
 
-    setSpeechStatus('speaking');
+    setSpeechStatus("speaking");
     synth.current.cancel(); // Cancel any ongoing speech
 
     const currentConversation = questions[currentQuestionIndex];
 
     // Choose two different voices
-    const voice1 = availableVoices.find(voice => voice.name.includes('Male')) || availableVoices[0];
-    const voice2 = availableVoices.find(voice => voice.name.includes('Female')) || availableVoices[1];
+    const voice1 =
+      availableVoices.find((voice) => voice.name.includes("Male")) ||
+      availableVoices[0];
+    const voice2 =
+      availableVoices.find((voice) => voice.name.includes("Female")) ||
+      availableVoices[1];
 
     // Queue all dialogue parts
     currentConversation.dialog.forEach((line, index) => {
       const utterance = new SpeechSynthesisUtterance(line.text);
       utterance.voice = line.speaker === "Speaker 1" ? voice1 : voice2;
-      
+
       // No end callback here since we'll add the question afterward
-      
+
       // Add a small delay between speakers
       setTimeout(() => {
         synth.current.speak(utterance);
       }, index * 300);
     });
-    
+
     // Add the question after a short pause
     setTimeout(() => {
-      const questionUtterance = new SpeechSynthesisUtterance("Question: " + currentConversation.question);
+      const questionUtterance = new SpeechSynthesisUtterance(
+        "Question: " + currentConversation.question
+      );
       // Use a neutral voice for the question (can use voice1 or any preferred voice)
       questionUtterance.voice = availableVoices[4];
-      
+
       // Set the end callback on the question utterance
       questionUtterance.onend = () => {
-        setSpeechStatus('listening');
+        setSpeechStatus("listening");
         startListening();
       };
-      
+
       synth.current.speak(questionUtterance);
     }, currentConversation.dialog.length * 300 + 1000); // Add extra pause before question
   };
@@ -195,25 +203,9 @@ const PartC = ({ onContinue }) => {
     }
   };
 
-  const checkAnswer = () => {
-    const currentConversation = questions[currentQuestionIndex];
-    // console.log(currentConversation);
-    
-
-    // Convert to lowercase for case-insensitive matching
-    const normalizedUserAnswer = userAnswer.toLowerCase().trim();
-
-    // Check if any keyword is present in the answer
-    const isCorrect = currentConversation.keywords.some(keyword =>
-      normalizedUserAnswer.includes(keyword.toLowerCase())
-    );
-
-    setFeedback(isCorrect ? "Correct! Well done." : "Try again. Think about what Lucy needs to do.");
-  };
-
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
-  const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
+  const [speechStatus, setSpeechStatus] = useState("idle"); // 'idle', 'speaking', 'listening'
 
   const CONST = [
     "You will here conversation between 2 people, followed by question. Give a simple, short answer to the question.",
@@ -221,13 +213,10 @@ const PartC = ({ onContinue }) => {
     "Speaker 2: Sure, what time?",
     "Speaker 1: 7:30 would be great.",
     "Question: What will Lucy have to do tomorrow morning?",
-    '"Go to the office early." or "She will go to the office at 7:30"'
-  ]
-
-  const rules = ["",
-    "Part C..., Conversation",
-    CONST[0],
+    '"Go to the office early." or "She will go to the office at 7:30"',
   ];
+
+  const rules = ["", "Part C..., Conversation", CONST[0]];
 
   const speechSynth = speechSynthesis;
   let msgIndex = 0;
@@ -254,12 +243,11 @@ const PartC = ({ onContinue }) => {
     };
   }, []);
 
-
   const startTest = () => {
     stop();
     setInTutorial(false);
     playConversation();
-  }
+  };
 
   return (
     <div className="part-body">
@@ -271,12 +259,13 @@ const PartC = ({ onContinue }) => {
         <div className="question-index">
           {!inTutorial ? (
             <>
+              Attempting question no.{" "}
               <strong>
                 {currentQuestionIndex !== questions.length
                   ? currentQuestionIndex + 1
                   : currentQuestionIndex}
-              </strong>
-              /{questions.length}
+              </strong>{" "}
+              out of {questions.length}
             </>
           ) : (
             "Instructions"
@@ -291,11 +280,16 @@ const PartC = ({ onContinue }) => {
               <div className="tut-box">
                 <div className="box">
                   <h3>Your question will be :</h3>
-                  <div style={{ background: "var(--text-2)", textAlign: "start" }} className="color">
-                    {CONST[1]}<br />
-                    {CONST[2]}<br />
-                    {CONST[3]}<br />
-                    {" "}<br />
+                  <div
+                    style={{ background: "var(--text-2)", textAlign: "start" }}
+                    className="color"
+                  >
+                    {CONST[1]}
+                    <br />
+                    {CONST[2]}
+                    <br />
+                    {CONST[3]}
+                    <br /> <br />
                     {CONST[4]}
                   </div>
                 </div>
@@ -314,23 +308,34 @@ const PartC = ({ onContinue }) => {
         ) : currentQuestionIndex < questions.length ? (
           <>
             <div className="speech-qa-container">
-              <>{speechStatus === 'idle'
-                ? <div className="gray"><i class="ri-loader-line"></i>Processing</div>
-                : speechStatus === "listening"
-                  ? <div className="blue"><i class="ri-mic-line"></i>Now Speak</div>
-                  : speechStatus === 'speaking'
-                    ? <div className="gray"><i class="ri-speak-line"></i>Listen</div>
-                    : ""}</>
+              <>
+                {speechStatus === "idle" ? (
+                  <div className="gray">
+                    <i class="ri-loader-line"></i>Processing
+                  </div>
+                ) : speechStatus === "listening" ? (
+                  <div className="blue">
+                    <i class="ri-mic-line"></i>Now Speak
+                  </div>
+                ) : speechStatus === "speaking" ? (
+                  <div className="gray">
+                    <i class="ri-speak-line"></i>Listen
+                  </div>
+                ) : (
+                  ""
+                )}
+              </>
             </div>
           </>
         ) : (
           <div className="part-box-complete">
             <p>Test completed!</p>
-            <button onClick={onContinue} className="primary">Go to Next Part</button>
+            <button onClick={onContinue} className="primary">
+              Go to Next Part
+            </button>
           </div>
         )}
       </div>
-
     </div>
   );
 };

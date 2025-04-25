@@ -2,7 +2,6 @@
   width: 100%;
   border-collapse: collapse;
   border-radius: var(--radius);
-  overflow: hidden;
 }
 
 .student-table th, .student-table td {

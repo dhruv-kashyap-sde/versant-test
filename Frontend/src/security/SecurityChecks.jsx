@@ -8,8 +8,6 @@ const SecurityChecks = () => {
 
   const {
     videoRef, mediaStreamRef,
-    isCameraActive,
-    setIsCameraActive,
     isMicActive,
     setIsMicActive,
     audioRecordingCompleted,
@@ -27,13 +25,11 @@ const SecurityChecks = () => {
     checkFullScreen,
     handleFullScreenChange,
     proceedTest,
-    setProceedTest,
-    initializeCamera, checkInternetConnection, initializeMic
+    setProceedTest, checkInternetConnection, initializeMic
   } = useContext(AuthContext);
 
   // Run the security checks on mount
   useEffect(() => {
-    initializeCamera();
     initializeMic();
     checkInternetConnection();
     checkFullScreen();
@@ -52,7 +48,6 @@ const SecurityChecks = () => {
   // When all checks pass, trigger the callback for further action (e.g., starting the test)
   useEffect(() => {
     if (
-      isCameraActive &&
       isMicActive &&
       isInternetGood &&
       audioRecordingCompleted &&
@@ -61,7 +56,6 @@ const SecurityChecks = () => {
       setOnSecurityPassed(true);
     }
   }, [
-    isCameraActive,
     isMicActive,
     isInternetGood,
     audioRecordingCompleted,
@@ -90,21 +84,6 @@ const SecurityChecks = () => {
       )}
       <div className="security-body">
         <div className="status-tile-container">
-          <p className="status-tile">
-            <strong>Camera:</strong>{" "}
-            {isCameraActive ? (
-              <span style={{ color: "green" }}>Active</span>
-            ) : (
-              <span style={{ color: "red" }}>Inactive</span>
-            )}
-            <button
-              className="secondary"
-              onClick={initializeCamera}
-              disabled={isCameraActive}
-            >
-              Check again
-            </button>
-          </p>
           <p className="status-tile">
             <strong>Microphone:</strong>{" "}
             {isMicActive ? (

@@ -11,27 +11,24 @@ const PartE = ({ onContinue }) => {
   //   {question: "You can use the computer in a minute."}
   // ];
 
-  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } =
+    useContext(AuthContext);
   const partEQuestions = testQuestions.partE;
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
-  
+
   const CONST = [
     "Please type each sentence exactly as you hear it. You will have 30 seconds for each sentence. Pay attention to spelling and punctuation. Click 'Next' when you are finished",
     "Can you work on Monday? Yes I can.",
-    "Can you work on Monday? Yes I can."
-  ]
-  
-  const rules = ["",
-    "Part E... Dictation",
-    CONST[0]
+    "Can you work on Monday? Yes I can.",
   ];
 
+  const rules = ["", "Part E... Dictation", CONST[0]];
 
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  
+
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
@@ -64,16 +61,16 @@ const PartE = ({ onContinue }) => {
     setInTutorial(false);
     stop();
     questionSpeaker(partEQuestions[currentQuestionIndex].question);
-  }
+  };
 
   const questionSpeaker = (question) => {
     setSpeaking(true);
     msg.text = question;
     msg.voice = speakingVoice;
     synth.speak(msg);
-    msg.onend = () => setSpeaking(false)      
-  }
-  
+    msg.onend = () => setSpeaking(false);
+  };
+
   useEffect(() => {
     if (inTutorial) return;
 
@@ -83,12 +80,11 @@ const PartE = ({ onContinue }) => {
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => prevTime - 1);
       // console.log(timeLeft);
-      
     }, 1000);
-    
-  if (currentQuestionIndex === partEQuestions.length) {
-    clearInterval(timer)
-  }
+
+    if (currentQuestionIndex === partEQuestions.length) {
+      clearInterval(timer);
+    }
 
     return () => clearInterval(timer);
   }, [timeLeft, inTutorial]);
@@ -105,7 +101,7 @@ const PartE = ({ onContinue }) => {
     questionSpeaker(partEQuestions[currentQuestionIndex + 1].question);
   };
 
-  currentQuestionIndex > partEQuestions.length && onContinue()
+  currentQuestionIndex > partEQuestions.length && onContinue();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -123,12 +119,13 @@ const PartE = ({ onContinue }) => {
           <div className="question-index">
             {!inTutorial ? (
               <>
+                Attempting question no.{" "}
                 <strong>
                   {currentQuestionIndex !== partEQuestions.length
                     ? currentQuestionIndex + 1
                     : currentQuestionIndex}
-                </strong>
-                /{partEQuestions.length}
+                </strong>{" "}
+                out of {partEQuestions.length}
               </>
             ) : (
               "Instructions"
@@ -137,21 +134,37 @@ const PartE = ({ onContinue }) => {
         </div>
         <div className="part-box">
           {inTutorial ? (
-            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest}/>
+            <Tutorial
+              head={CONST[0]}
+              see={CONST[1]}
+              type={CONST[2]}
+              click={startTest}
+            />
           ) : currentQuestionIndex < partEQuestions.length ? (
             <form onSubmit={handleSubmit} className="user-input-container">
-              {speaking? <i style={{color: "var(--text-2)"}} class="ri-customer-service-fill"></i> :<input
-                autoFocus
-                type="text"
-                className="user-input"
-                placeholder="Type what you heard..."
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-              />}
+              {speaking ? (
+                <i
+                  style={{ color: "var(--text-2)" }}
+                  class="ri-customer-service-fill"
+                ></i>
+              ) : (
+                <input
+                  autoFocus
+                  type="text"
+                  className="user-input"
+                  placeholder="Type what you heard..."
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                />
+              )}
             </form>
           ) : (
-            <div className="part-box-complete"><p>Test completed!</p>
-            <button onClick={onContinue} className="primary">Go to Next Part</button></div>
+            <div className="part-box-complete">
+              <p>Test completed!</p>
+              <button onClick={onContinue} className="primary">
+                Go to Next Part
+              </button>
+            </div>
           )}
         </div>
         {currentQuestionIndex < partEQuestions.length && !inTutorial && (

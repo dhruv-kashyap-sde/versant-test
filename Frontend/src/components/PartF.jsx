@@ -5,22 +5,9 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const PartF = ({ onContinue }) => {
-  // const partFQuestions = [
-  //   {
-  //     question: "John is the sales manager of a small store. An angry customer called him to complain about a home security system that she had recently bought from his store. She told him that it did not work properly because the alarm went off when she was in the house. Initially she demanded a refund, but when John apologized, and offered to replace her system with a new one, she agreed. "
-  //   },
-  //   {
-  //     question: "Sam was on a busy flight that had been delayed. The plane finally landed and arrived at the gate. Then all the passengers got up to get their luggage. The woman in front of Sam accidentally bumped him in the arm. Just as she was apologizing, her bag fell from the overhead compartment and hit him on the head. The woman felt awful. Sam decided he didn’t want to fly again anytime soon. "
-  //   },
-  //   {
-  //     question: "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style for many years. Her award included a trip to Paris for one week. Mary and her husband have never been to Paris and they are very excited about it."
-  //   },
-  //   {
-  //     question: "Employees who wish to take time off during the summer should check with their managers in advance. Many people plan to be away from the office during the summer. As a company, we’d like to make sure all projects have enough people working on them before we approve requests for time off."
-  //   }
-  // ];
 
-  const { updatePartScore, totalScore, testQuestions, testId} = useContext(AuthContext);
+  const { speakingVoice, totalScore, testQuestions, testId } =
+    useContext(AuthContext);
   const partFQuestions = testQuestions.partF;
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
@@ -28,24 +15,19 @@ const PartF = ({ onContinue }) => {
   const CONST = [
     "You will have 30 seconds to read a paragraph. After 30 seconds, the paragraph will disappear from the screen. Then, you will have 90 seconds to reconstruct the paragraph. Show that you understood the passage by rewriting it in your own words. Your answer will be scored for clear and accurate content, not word-for-word memorization.",
     "Mic went to 10 job interviews. At the last interview, he finally received a job offer.",
-    "Mic had 10 job interviews. He got an offer after the final interview."
-  ]
-
-  const rules = ["",
-    "Part F..., Passage Reconstruction.",
-    CONST[0]
+    "Mic had 10 job interviews. He got an offer after the final interview.",
   ];
 
+  const rules = ["", "Part F..., Passage Reconstruction.", CONST[0]];
 
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  const voices = synth.getVoices();
-  
+
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
-      msg.voice = voices[1];
+      msg.voice = speakingVoice;
       synth.speak(msg);
       msgIndex++;
       msg.onend = speak;
@@ -73,7 +55,7 @@ const PartF = ({ onContinue }) => {
     stop();
     setInTutorial(false);
     setTimeLeft(30);
-  }
+  };
 
   useEffect(() => {
     if (inTutorial) return;
@@ -91,9 +73,8 @@ const PartF = ({ onContinue }) => {
       setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
-
     if (currentQuestionIndex === partFQuestions.length) {
-      clearInterval(timer)
+      clearInterval(timer);
     }
     return () => clearInterval(timer);
   }, [timeLeft, inTutorial, showInput]);
@@ -104,7 +85,6 @@ const PartF = ({ onContinue }) => {
     setUserAnswer("");
     setShowInput(false);
     setTimeLeft(30);
-
   };
 
   const handleSubmit = (e) => {
@@ -117,7 +97,10 @@ const PartF = ({ onContinue }) => {
   const handleAnswerSubmission = async () => {
     try {
       setLoading(true);
-      let response = await axios.post(`${import.meta.env.VITE_API}/submit`, {answers: totalScore, testId});
+      let response = await axios.post(`${import.meta.env.VITE_API}/submit`, {
+        answers: totalScore,
+        testId,
+      });
       // console.log(response.data);
       if (response.status === 200) {
         onContinue();
@@ -125,10 +108,10 @@ const PartF = ({ onContinue }) => {
       toast.success("Test completed successfully");
     } catch (error) {
       console.error("Error submitting test", error);
-    }finally{
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -141,12 +124,13 @@ const PartF = ({ onContinue }) => {
           <div className="question-index">
             {!inTutorial ? (
               <>
+                Attempting question no.{" "}
                 <strong>
                   {currentQuestionIndex !== partFQuestions.length
                     ? currentQuestionIndex + 1
                     : currentQuestionIndex}
-                </strong>
-                /{partFQuestions.length}
+                </strong>{" "}
+                out of {partFQuestions.length}
               </>
             ) : (
               "Instructions"
@@ -155,13 +139,23 @@ const PartF = ({ onContinue }) => {
         </div>
         <div className="part-box">
           {inTutorial ? (
-            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest} />
+            <Tutorial
+              head={CONST[0]}
+              see={CONST[1]}
+              type={CONST[2]}
+              click={startTest}
+            />
           ) : currentQuestionIndex < partFQuestions.length ? (
             <>
               {!showInput ? (
-                <p style={{ width: "90%" }}>{partFQuestions[currentQuestionIndex].question}</p>
+                <p style={{ width: "90%" }}>
+                  {partFQuestions[currentQuestionIndex].question}
+                </p>
               ) : (
-                <form onSubmit={handleSubmit} className="user-input-container textarea">
+                <form
+                  onSubmit={handleSubmit}
+                  className="user-input-container textarea"
+                >
                   <textarea
                     rows={10}
                     autoFocus
@@ -173,20 +167,29 @@ const PartF = ({ onContinue }) => {
                   />
                   <button className="secondary">Submit </button>
                 </form>
-
               )}
             </>
           ) : (
             <div className="part-box-complete">
               <p>Test completed!</p>
-              <button onClick={handleAnswerSubmission} className="primary">{loading? "Loading" : "Finish Test"}</button>
+              <button onClick={handleAnswerSubmission} className="primary">
+                {loading ? "Loading" : "Finish Test"}
+              </button>
             </div>
           )}
         </div>
         {currentQuestionIndex < partFQuestions.length && !inTutorial && (
-          <><span>Time left: {timeLeft} seconds</span>
-          {!showInput ? <button onClick={() => setShowInput(true)} className="secondary">Skip and Write</button>
-          :<button onClick={handleNextQuestion} className="secondary">Skip to Next Question</button>}
+          <>
+            <span>Time left: {timeLeft} seconds</span>
+            {!showInput ? (
+              <button onClick={() => setShowInput(true)} className="secondary">
+                Skip and Write
+              </button>
+            ) : (
+              <button onClick={handleNextQuestion} className="secondary">
+                Skip to Next Question
+              </button>
+            )}
           </>
         )}
       </div>

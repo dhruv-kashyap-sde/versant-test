@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import Tutorial from '../utils/Tutorial';
-import { AuthContext } from '../context/AuthContext';
+import React, { useEffect, useState, useRef, useContext } from "react";
+import Tutorial from "../utils/Tutorial";
+import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const PartA = ({ onContinue }) => {
-  
-  const { speakingVoice, updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
+  const { speakingVoice, updatePartScore, totalScore, testQuestions } =
+    useContext(AuthContext);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isListening, setIsListening] = useState(false);
-  const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
+  const [speechStatus, setSpeechStatus] = useState("idle"); // 'idle', 'speaking', 'listening'
   const questions = testQuestions.partA;
   const speechSynthesis = window.speechSynthesis;
   const recognitionRef = useRef(null);
@@ -15,27 +16,28 @@ const PartA = ({ onContinue }) => {
 
   // Initialize speech recognition
   useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.lang = "en-US";
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        updatePartScore('A', transcript);
+        updatePartScore("A", transcript);
       };
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        setSpeechStatus('idle');
+        setSpeechStatus("idle");
         clearTimeout(timerRef.current);
 
         // Move to next question if we have more
         if (currentQuestionIndex < questions.length - 1) {
           setTimeout(() => {
-            setCurrentQuestionIndex(prev => prev + 1);
+            setCurrentQuestionIndex((prev) => prev + 1);
           }, 1000);
         } else {
           // // console.log("All questions completed. Answers:", totalScore);
@@ -43,12 +45,15 @@ const PartA = ({ onContinue }) => {
       };
 
       recognitionRef.current.onerror = () => {
-        updatePartScore('A',''); // Store empty string for no answer
+        updatePartScore("A", ""); // Store empty string for no answer
         setIsListening(false);
-        setSpeechStatus('idle');
+        setSpeechStatus("idle");
         // Remove the index increment from here since onend will handle it
       };
     } else {
+      toast.error(
+        "Speech recognition not supported in this browser. Please use Chrome or Microsoft Edge."
+      );
       console.error("Speech recognition not supported");
     }
 
@@ -81,17 +86,17 @@ const PartA = ({ onContinue }) => {
       speechSynthesis.cancel();
     }
 
-    setSpeechStatus('speaking');
+    setSpeechStatus("speaking");
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = speakingVoice;
     utterance.onend = () => {
-      setSpeechStatus('listening');
+      setSpeechStatus("listening");
       startListening();
     };
 
     utterance.onerror = (event) => {
       console.error("Speech synthesis error", event);
-      setSpeechStatus('idle');
+      setSpeechStatus("idle");
     };
 
     speechSynthesis.speak(utterance);
@@ -121,10 +126,11 @@ const PartA = ({ onContinue }) => {
   const CONST = [
     "Please repeat the sentences that you hear",
     "Leave town on next Train",
-    "Leave town on next Train"
-  ]
+    "Leave town on next Train",
+  ];
 
-  const rules = ["",
+  const rules = [
+    "",
     "Part A..., Sentence Repitition",
     CONST[0],
     "for example, You will hear... 'Leave town on next Train'. and You should say... 'Leave town on next Train'.",
@@ -133,7 +139,7 @@ const PartA = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  
+
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
@@ -159,7 +165,7 @@ const PartA = ({ onContinue }) => {
     stop();
     setInTutorial(false);
     speakQuestion(questions[currentQuestionIndex].question);
-  }
+  };
   return (
     <>
       <div className="part-body">
@@ -171,12 +177,14 @@ const PartA = ({ onContinue }) => {
           <div className="question-index">
             {!inTutorial ? (
               <>
+                {" "}
+                Attempting question no.{" "}
                 <strong>
                   {currentQuestionIndex !== questions.length
                     ? currentQuestionIndex + 1
                     : currentQuestionIndex}
-                </strong>
-                /{questions.length}
+                </strong>{" "}
+                out of {questions.length}
               </>
             ) : (
               "Instructions"
@@ -185,27 +193,43 @@ const PartA = ({ onContinue }) => {
         </div>
         <div className="part-box">
           {inTutorial ? (
-            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest} />
+            <Tutorial
+              head={CONST[0]}
+              see={CONST[1]}
+              type={CONST[2]}
+              click={startTest}
+            />
           ) : currentQuestionIndex < questions.length ? (
             <>
               <div className="speech-qa-container">
-                <>{speechStatus === 'idle' 
-                ? <div className="gray"><i class="ri-loader-line"></i>Processing</div> 
-                : speechStatus === "listening" 
-                ? <div className="blue"><i class="ri-mic-line"></i>Now Speak</div>
-                : speechStatus === 'speaking' 
-                ? <div className="gray"><i class="ri-speak-line"></i>Listen</div>
-                : ""}</>
+                <>
+                  {speechStatus === "idle" ? (
+                    <div className="gray">
+                      <i class="ri-loader-line"></i>Processing
+                    </div>
+                  ) : speechStatus === "listening" ? (
+                    <div className="blue">
+                      <i class="ri-mic-line"></i>Now Speak
+                    </div>
+                  ) : speechStatus === "speaking" ? (
+                    <div className="gray">
+                      <i class="ri-speak-line"></i>Listen
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </>
               </div>
             </>
           ) : (
             <div className="part-box-complete">
               <p>Test completed!</p>
-              <button onClick={onContinue} className="primary">Go to Next Part</button>
+              <button onClick={onContinue} className="primary">
+                Go to Next Part
+              </button>
             </div>
           )}
         </div>
-
       </div>
     </>
   );

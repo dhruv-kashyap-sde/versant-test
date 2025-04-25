@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Homepage.css";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Homepage = () => {
@@ -42,7 +42,7 @@ const Homepage = () => {
     return true;
   };
 
-  const checkTin = () => {
+  const checkTin = async () => {
     if (!validateTin()) return;
 
     // Check if browser supports required speech features
@@ -52,38 +52,37 @@ const Homepage = () => {
     }
 
     setLoading(true);
-    axios.post(`${import.meta.env.VITE_API}/tin`, { tin })
-      .then(response => {
-        // console.log(response.data);
-        setStudent(response.data.student);
-
-        if (response.data.student.testStatus === "completed") {
-          toast.error("You have already completed the test. Please check your result.");
-          navigate("/");
-          setLoading(false);
-          return;
-        }
-
-        if (response.data.student.testStatus === "started") {
-          toast.error("You are not allowed to take the test. Please contact your instructor.");
-          navigate("/");
-          setLoading(false);
-          return;
-        }
-
-        if (response.status === 200) {
-          toast.success('TIN verified');
-          verifyTin(); // Set the verification state
-          navigate('/start-test'); // Navigate to the StartTest component
-        }
-        setLoading(false);
-      })
-      .catch(error => {
-        // toast.error('There was an error checking the TIN');
-        toast.error(`${error.response.data.message}`);
-        // console.log('There was an error checking the TIN!', error);
-        setLoading(false);
+    
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API}/tin`, { tin }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      setStudent(response.data.student);
+
+      if (response.data.student.testStatus === "completed") {
+        toast.error("You have already completed the test. Please check your result.");
+        navigate("/");
+        return;
+      }
+
+      if (response.data.student.testStatus === "started") {
+        toast.error("You are not allowed to take the test. Please contact your instructor.");
+        navigate("/");
+        return;
+      }
+
+      if (response.status === 200) {
+        toast.success('TIN verified');
+        verifyTin(); // Set the verification state
+        navigate('/start-test'); // Navigate to the StartTest component
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'There was an error checking the TIN');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const checkResult = () => {
@@ -115,14 +114,6 @@ const Homepage = () => {
             <div className="hr"></div>
           </div>
           <div className="content-body">
-            {(!hasSpeechSupport || !hasSpeechSynthesisSupport) && (
-              <div className="speech-support-warning">
-                <p style={{ color: 'red', marginBottom: '10px' }}>
-                  <i className="error"></i> Your browser does not support speech recognition or speech synthesis features required for this test. 
-                  Please use a modern browser like Chrome.
-                </p>
-              </div>
-            )}
             <label htmlFor="tin">Start your test :</label>
             <input
               id="tin-input"
@@ -138,6 +129,16 @@ const Homepage = () => {
             </button>
             <button onClick={checkResult} className="secondary mr-10">Result</button>
           </div>
+            {(!hasSpeechSupport || !hasSpeechSynthesisSupport) && (
+              <div className="speech-support-warning">
+                <p style={{ color: 'red', marginBottom: '10px' }}>
+                  <i className="error"></i> Your browser does not support speech recognition or speech synthesis features required for this test. 
+                  Please use a modern browser like <strong>Chrome</strong> or <strong>Microsoft Edge</strong>.
+                </p>
+              </div>
+            )}
+            <span style={{ fontSize: '12px', color: '#888' }}>
+            Check all Rules & Regulations <Link to="/rules" >here</Link></span>
         </div>
       </div>
       {showResult && (

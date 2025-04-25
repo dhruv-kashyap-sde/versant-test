@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   // States for the individual checks:
-  const [isCameraActive, setIsCameraActive] = useState(false);
   const [isMicActive, setIsMicActive] = useState(false);
   const [audioRecordingCompleted, setAudioRecordingCompleted] = useState(false);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState(null);
@@ -59,26 +58,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Initialize camera
-  const initializeCamera = async () => {
-    try {
-      const constraints = { video: true };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      mediaStreamRef.current = stream;
-
-      // Assign stream to video element for live preview
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-        setIsCameraActive(true);
-      }
-    } catch (err) {
-      console.error("Error accessing camera:", err);
-      setError("Error accessing camera: " + err.message);
-    }
-  };
-
-  // Initialize microphone
   const initializeMic = async () => {
     try {
       const constraints = { audio: true };
@@ -157,7 +136,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const voices = window.speechSynthesis.getVoices();
-  const speakingVoice = voices[6];
+  const speakingVoice = voices[0];
   
   // Updated totalScore state to be an array of objects
   const [totalScore, setTotalScore] = useState({
@@ -185,7 +164,6 @@ export const AuthProvider = ({ children }) => {
 
   // Function to remove all security checks
   const removeAllChecks = () => {
-    setIsCameraActive(false);
     setIsMicActive(false);
     setAudioRecordingCompleted(false);
     setRecordedAudioUrl(null);
@@ -215,13 +193,12 @@ export const AuthProvider = ({ children }) => {
     recordedAudioUrl, setRecordedAudioUrl,
     audioRecordingCompleted, setAudioRecordingCompleted,
     isMicActive, setIsMicActive,
-    isCameraActive, setIsCameraActive,
     onSecurityPassed, setOnSecurityPassed,
     isFullScreen, setIsFullScreen,
     checkFullScreen,
     handleFullScreenChange,
     proceedTest, setProceedTest,
-    initializeCamera, checkInternetConnection, initializeMic,
+    checkInternetConnection, initializeMic,
     speakingVoice,
     loading, setLoading,
     testQuestions, setTestQuestions,

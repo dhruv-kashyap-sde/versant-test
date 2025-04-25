@@ -11,14 +11,13 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AllPartsFlowControl = () => {
-  const { student, partIndex, setPartIndex, handleContinue, setIsCameraActive, setIsMicActive, 
+  const { student, partIndex, setPartIndex, handleContinue, setIsMicActive, 
     setAudioRecordingCompleted, setRecordedAudioUrl, setIsInternetGood, 
     setIsFullScreen, setOnSecurityPassed, mediaStreamRef } = useAuth();
 
   const navigate = useNavigate();
   const removeAllChecks = () => { 
     // Reset all security checks
-    setIsCameraActive(false);
     setIsMicActive(false);
     setAudioRecordingCompleted(false);
     setRecordedAudioUrl(null);

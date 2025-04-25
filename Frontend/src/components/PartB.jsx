@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import Tutorial from '../utils/Tutorial';
-import { AuthContext } from '../context/AuthContext';
-import checkPartB from '../utils/test/checkpartB';
+import React, { useEffect, useState, useRef, useContext } from "react";
+import Tutorial from "../utils/Tutorial";
+import { AuthContext } from "../context/AuthContext";
+import checkPartB from "../utils/test/checkpartB";
 
 const PartB = ({ onContinue }) => {
   // const questions = [
@@ -23,45 +23,46 @@ const PartB = ({ onContinue }) => {
   //   }
   // ];
 
-  const { updatePartScore, totalScore, testQuestions } = useContext(AuthContext);
-  
+  const { updatePartScore, totalScore, testQuestions } =
+    useContext(AuthContext);
+
   const questions = testQuestions.partB;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
   const [isListening, setIsListening] = useState(false);
-  const [speechStatus, setSpeechStatus] = useState('idle'); // 'idle', 'speaking', 'listening'
+  const [speechStatus, setSpeechStatus] = useState("idle"); // 'idle', 'speaking', 'listening'
 
   const speechSynthesis = window.speechSynthesis;
 
   const voices = speechSynthesis.getVoices();
-  let speakingVoice = voices[6];
+  let speakingVoice = voices[0];
 
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
 
   // Initialize speech recognition
   useEffect(() => {
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.lang = "en-US";
 
       recognitionRef.current.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        updatePartScore('B',transcript);
+        updatePartScore("B", transcript);
       };
 
       recognitionRef.current.onend = () => {
         setIsListening(false);
-        setSpeechStatus('idle');
+        setSpeechStatus("idle");
         clearTimeout(timerRef.current);
 
         // Move to next question if we have more
         if (currentQuestionIndex < questions.length - 1) {
           setTimeout(() => {
-            setCurrentQuestionIndex(prev => prev + 1);
+            setCurrentQuestionIndex((prev) => prev + 1);
           }, 1000);
         } else {
           // // console.log("All questions completed. Answers:", totalScore);
@@ -69,9 +70,9 @@ const PartB = ({ onContinue }) => {
       };
 
       recognitionRef.current.onerror = () => {
-        updatePartScore('B',' '); // Store empty string for no answer
+        updatePartScore("B", " "); // Store empty string for no answer
         setIsListening(false);
-        setSpeechStatus('idle');
+        setSpeechStatus("idle");
         // Remove the index increment from here since onend will handle it
       };
     } else {
@@ -107,18 +108,18 @@ const PartB = ({ onContinue }) => {
       speechSynthesis.cancel();
     }
 
-    setSpeechStatus('speaking');
+    setSpeechStatus("speaking");
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.7;
+    utterance.rate = 0.8;
     utterance.voice = speakingVoice;
     utterance.onend = () => {
-      setSpeechStatus('listening');
+      setSpeechStatus("listening");
       startListening();
     };
 
     utterance.onerror = (event) => {
       console.error("Speech synthesis error", event);
-      setSpeechStatus('idle');
+      setSpeechStatus("idle");
     };
 
     speechSynthesis.speak(utterance);
@@ -148,10 +149,11 @@ const PartB = ({ onContinue }) => {
   const CONST = [
     "Please rearrange the word groups  that you hear into the correct sentence.",
     "was reading... my mother... her favourite magazine",
-    "My mother was reading her favourite magazine."
-  ]
+    "My mother was reading her favourite magazine.",
+  ];
 
-  const rules = ["",
+  const rules = [
+    "",
     "Part B..., Sentence Builds",
     CONST[0],
     "for example, You will hear... 'was reading... my mother... her favourite magazine'. and You should say... 'my mother was reading her favourite magazine.",
@@ -160,13 +162,11 @@ const PartB = ({ onContinue }) => {
   const synth = speechSynthesis;
   let msgIndex = 0;
   let msg = new SpeechSynthesisUtterance();
-  
+
   const speak = () => {
     if (msgIndex < rules.length) {
       msg.text = rules[msgIndex];
-      // msg.voice = speakingVoice;
-      // console.log(speakingVoice);
-      
+
       msg.voice = speakingVoice;
       synth.speak(msg);
       msgIndex++;
@@ -189,15 +189,10 @@ const PartB = ({ onContinue }) => {
     stop();
     setInTutorial(false);
     speakQuestion(questions[currentQuestionIndex].question);
-  }
-
-  const checkanswers = () => {
-    // console.log(checkPartB(questions, totalScore.partB.answers))
-  }
+  };
 
   return (
     <>
-
       <div className="part-body">
         <div className="part-header">
           <h2>
@@ -207,12 +202,13 @@ const PartB = ({ onContinue }) => {
           <div className="question-index">
             {!inTutorial ? (
               <>
+                Attempting question no.{" "}
                 <strong>
                   {currentQuestionIndex !== questions.length
                     ? currentQuestionIndex + 1
                     : currentQuestionIndex}
-                </strong>
-                /{questions.length}
+                </strong>{" "}
+                out of {questions.length}
               </>
             ) : (
               "Instructions"
@@ -221,29 +217,45 @@ const PartB = ({ onContinue }) => {
         </div>
         <div className="part-box">
           {inTutorial ? (
-            <Tutorial head={CONST[0]} see={CONST[1]} type={CONST[2]} click={startTest} />
+            <Tutorial
+              head={CONST[0]}
+              see={CONST[1]}
+              type={CONST[2]}
+              click={startTest}
+            />
           ) : currentQuestionIndex < questions.length ? (
             <>
               <div className="speech-qa-container">
-                <>{speechStatus === 'idle' 
-                ? <div className="gray"><i class="ri-loader-line"></i>Processing</div> 
-                : speechStatus === "listening" 
-                ? <div className="blue"><i class="ri-mic-line"></i>Now Speak</div>
-                : speechStatus === 'speaking' 
-                ? <div className="gray"><i class="ri-speak-line"></i>Listen</div>
-                : ""}</>
+                <>
+                  {speechStatus === "idle" ? (
+                    <div className="gray">
+                      <i class="ri-loader-line"></i>Processing
+                    </div>
+                  ) : speechStatus === "listening" ? (
+                    <div className="blue">
+                      <i class="ri-mic-line"></i>Now Speak
+                    </div>
+                  ) : speechStatus === "speaking" ? (
+                    <div className="gray">
+                      <i class="ri-speak-line"></i>Listen
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </>
               </div>
             </>
           ) : (
             <div className="part-box-complete">
               <p>Test completed!</p>
-              <button onClick={onContinue} className="primary">Go to Next Part</button>
-              <button onClick={checkanswers} className="primary">Check answer</button>
+              <button onClick={onContinue} className="primary">
+                Go to Next Part
+              </button>
             </div>
           )}
         </div>
-
-      </div></>
+      </div>
+    </>
   );
 };
 
