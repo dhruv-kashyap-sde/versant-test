@@ -160,7 +160,7 @@ const PartC = ({ onContinue }) => {
         "Question: " + currentConversation.question
       );
       // Use a neutral voice for the question (can use voice1 or any preferred voice)
-      questionUtterance.voice = availableVoices[4];
+      questionUtterance.voice = availableVoices[3];
 
       // Set the end callback on the question utterance
       questionUtterance.onend = () => {
