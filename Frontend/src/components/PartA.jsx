@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef, useContext, useCallback } from "react";
 import Tutorial from "../utils/Tutorial";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -13,6 +13,7 @@ const PartA = ({ onContinue }) => {
   const speechSynthesis = window.speechSynthesis;
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
+  const isMountedRef = useRef(true); // Track component mount status
 
   // Initialize speech recognition
   useEffect(() => {
@@ -25,30 +26,48 @@ const PartA = ({ onContinue }) => {
       recognitionRef.current.lang = "en-US";
 
       recognitionRef.current.onresult = (event) => {
+        if (!isMountedRef.current) return; // Prevent state updates if unmounted
+        
         const transcript = event.results[0][0].transcript;
         updatePartScore("A", transcript);
       };
 
       recognitionRef.current.onend = () => {
+        if (!isMountedRef.current) return; // Prevent state updates if unmounted
+        
         setIsListening(false);
         setSpeechStatus("idle");
-        clearTimeout(timerRef.current);
+        
+        // Clear any existing timeout to prevent memory leaks
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
 
         // Move to next question if we have more
         if (currentQuestionIndex < questions.length - 1) {
-          setTimeout(() => {
-            setCurrentQuestionIndex((prev) => prev + 1);
+          const nextTimeout = setTimeout(() => {
+            if (isMountedRef.current) { // Check if still mounted
+              setCurrentQuestionIndex((prev) => prev + 1);
+            }
           }, 1000);
-        } else {
-          // // console.log("All questions completed. Answers:", totalScore);
+          
+          timerRef.current = nextTimeout;
         }
       };
 
       recognitionRef.current.onerror = () => {
+        if (!isMountedRef.current) return; // Prevent state updates if unmounted
+        
         updatePartScore("A", ""); // Store empty string for no answer
         setIsListening(false);
         setSpeechStatus("idle");
-        // Remove the index increment from here since onend will handle it
+        
+        // Clear any existing timeout
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
       };
     } else {
       toast.error(
@@ -58,67 +77,129 @@ const PartA = ({ onContinue }) => {
     }
 
     return () => {
+      isMountedRef.current = false; // Mark as unmounted
+      
+      // Cancel any ongoing speech recognition
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try {
+          recognitionRef.current.abort();
+        } catch (error) {
+          console.error("Error aborting speech recognition:", error);
+        }
       }
-      if (speechSynthesis.speaking) {
-        speechSynthesis.cancel();
+      
+      // Cancel any ongoing speech synthesis
+      if (speechSynthesis && speechSynthesis.speaking) {
+        try {
+          speechSynthesis.cancel();
+        } catch (error) {
+          console.error("Error canceling speech synthesis:", error);
+        }
       }
-      clearTimeout(timerRef.current);
+      
+      // Clear any active timers
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
   }, []);
 
   // Start the process when component mounts or when currentQuestionIndex changes
   useEffect(() => {
-    if (inTutorial) return;
+    if (inTutorial || !isMountedRef.current) return;
 
     if (currentQuestionIndex < questions.length) {
-      speakQuestion(questions[currentQuestionIndex].question);
+      // Add small delay to prevent race conditions
+      const speakTimeout = setTimeout(() => {
+        if (isMountedRef.current) { // Check if component is still mounted
+          speakQuestion(questions[currentQuestionIndex].question);
+        }
+      }, 300);
+      
+      timerRef.current = speakTimeout;
     }
 
-    if (currentQuestionIndex === questions.length) {
-      // // console.log("All questions completed. Answers:", totalScore);
-    }
-  }, [currentQuestionIndex]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [currentQuestionIndex, inTutorial]);
 
-  const speakQuestion = (text) => {
+  const speakQuestion = useCallback((text) => {
+    if (!isMountedRef.current) return;
+    
+    // Cancel any ongoing speech
     if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
+      try {
+        speechSynthesis.cancel();
+      } catch (error) {
+        console.error("Error canceling speech:", error);
+      }
     }
 
     setSpeechStatus("speaking");
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = speakingVoice;
+    
     utterance.onend = () => {
+      if (!isMountedRef.current) return;
+      
       setSpeechStatus("listening");
-      startListening();
+      
+      // Small delay to prevent race conditions between synthesis and recognition
+      setTimeout(() => {
+        if (isMountedRef.current) {
+          startListening();
+        }
+      }, 100);
     };
 
     utterance.onerror = (event) => {
+      if (!isMountedRef.current) return;
+      
       console.error("Speech synthesis error", event);
       setSpeechStatus("idle");
     };
 
-    speechSynthesis.speak(utterance);
-  };
-
-  const startListening = () => {
-    if (recognitionRef.current) {
-      try {
-        setIsListening(true);
-        recognitionRef.current.start();
-
-        // Set a timeout to stop listening after 10 seconds
-        timerRef.current = setTimeout(() => {
-          if (recognitionRef.current && isListening) {
-            recognitionRef.current.stop();
-          }
-        }, 10000);
-      } catch (error) {
-        console.error("Error starting speech recognition", error);
-      }
+    try {
+      speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.error("Error speaking:", error);
+      setSpeechStatus("idle");
     }
-  };
+  }, [speakingVoice]);
+
+  const startListening = useCallback(() => {
+    if (!recognitionRef.current || !isMountedRef.current) return;
+    
+    try {
+      setIsListening(true);
+      recognitionRef.current.start();
+
+      // Clear any existing timer first
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      
+      // Set a timeout to stop listening after 10 seconds
+      timerRef.current = setTimeout(() => {
+        if (isMountedRef.current && recognitionRef.current && isListening) {
+          try {
+            recognitionRef.current.stop();
+          } catch (error) {
+            console.error("Error stopping speech recognition:", error);
+          }
+        }
+      }, 10000);
+    } catch (error) {
+      console.error("Error starting speech recognition", error);
+      setSpeechStatus("idle");
+      setIsListening(false);
+    }
+  }, [isListening]);
 
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
@@ -151,7 +232,13 @@ const PartA = ({ onContinue }) => {
   };
 
   const stop = () => {
-    speechSynthesis.cancel();
+    if (speechSynthesis && speechSynthesis.speaking) {
+      try {
+        speechSynthesis.cancel();
+      } catch (error) {
+        console.error("Error canceling speech synthesis:", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -166,6 +253,7 @@ const PartA = ({ onContinue }) => {
     setInTutorial(false);
     speakQuestion(questions[currentQuestionIndex].question);
   };
+  
   return (
     <>
       <div className="part-body">
@@ -205,15 +293,15 @@ const PartA = ({ onContinue }) => {
                 <>
                   {speechStatus === "idle" ? (
                     <div className="gray">
-                      <i class="ri-loader-line"></i>Processing
+                      <i className="ri-loader-line"></i>Processing
                     </div>
                   ) : speechStatus === "listening" ? (
                     <div className="blue">
-                      <i class="ri-mic-line"></i>Now Speak
+                      <i className="ri-mic-line"></i>Now Speak
                     </div>
                   ) : speechStatus === "speaking" ? (
                     <div className="gray">
-                      <i class="ri-speak-line"></i>Listen
+                      <i className="ri-speak-line"></i>Listen
                     </div>
                   ) : (
                     ""
