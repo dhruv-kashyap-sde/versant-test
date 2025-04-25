@@ -35,7 +35,7 @@ const AllPartsFlowControl = () => {
   }
 
   return (
-    <div style={{height:"100vh", overflow:"hidden"}}>
+    <div>
       <div className="main-header">
         <h1 className="logo">Versant Test</h1>
         <h2>{student.name}</h2>

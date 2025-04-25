@@ -84,8 +84,8 @@
   flex-grow: 1;
 }
 
-.rule-content.no-icon {
-  margin-left: 67px; /* To align with cards that have icons */
+.parts-section .rule-card{
+    gap: 30px;
 }
 
 .rule-content h3 {
@@ -168,7 +168,10 @@
 
 .rules-action {
   margin-top: 3rem;
-  text-align: center;
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+align-items: center;
 }
 
 .rules-button {

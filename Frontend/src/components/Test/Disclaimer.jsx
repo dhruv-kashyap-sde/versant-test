@@ -3,13 +3,14 @@ import { AuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './Disclaimer.css';
 
 const Disclaimer = ({ onContinue }) => {
   const { speakingVoice, setTestQuestions, loading, setLoading, student, setTestId } = useContext(AuthContext);
   const [isChecked, setIsChecked] = useState(false);
   
   const rules = [
-    "Welcome to Versant Test. Please follow the instructions carefully. Do not reload the page during the test. Do not block any permissions. Do not remove FullScreen. Violating any rules leads to instant disqualification. Speak in natural voice, not too low, not too loud.",
+    "Welcome to Versant Test. Please read all instructions carefully before proceeding. Do not reload or refresh the page during the test. DO NOT exit fullscreen mode during the test. Do not block any permissions required for the test. Speak in natural voice, not too low, not too loud. Violating any rules above will lead to instant disqualification from the test.",
   ];
 
   const synth = speechSynthesis;
@@ -47,10 +48,8 @@ const Disclaimer = ({ onContinue }) => {
     try {
       setLoading(true);
       let tin = student.tin;
-      // console.log(student);
       
       const response = await axios.post(`${import.meta.env.VITE_API}/start`, { tin });
-      // console.log(response.data);
       
       if (response.data.status === "completed") {
         toast.error("You have already completed the test. Please check your result.");
@@ -63,13 +62,11 @@ const Disclaimer = ({ onContinue }) => {
         return;
       }
       setTestQuestions(response.data.questions);
-      // console.log(response.data);
       setTestId(response.data.testId);
       setLoading(false);
       toast.success(response.data.message);
       onContinue();
     } catch (error) {
-      // console.log("Error fetching questions", error);
       toast.error("Error fetching questions");
     } finally{
       setLoading(false);
@@ -80,16 +77,63 @@ const Disclaimer = ({ onContinue }) => {
     <div className='disclaimer-container'>
       <div className="disclaimer-body">
         <div className="disclaimer-header">
-          <h1>Rules</h1>
+          <h1>Test Rules & Regulations</h1>
+          <p className="subtitle">Please read all instructions carefully before proceeding</p>
         </div>
-        <ol>
-          <li>Do not <strong>Reload</strong> the page during the test.</li>
-          <li>Do not <strong>Block</strong> any permissions.</li>
-          <li>Do not <strong>Remove</strong> FullScreen.</li>
-          <li>Voilating any rules leads to instant <strong>DISQUALIFICATION</strong>.</li>
-          <li>Speak in Natural voice, not too low, not too loud.</li>
-        </ol>
-        <label htmlFor="agreement">
+
+        <div className="disclaimer-rules-section">
+          <div className="rule-card">
+            <div className="rule-icon warning">
+              <i className="ri-refresh-line"></i>
+            </div>
+            <div className="rule-content">
+              <h3>No Page Reloading</h3>
+              <p><strong>DO NOT</strong> refresh or reload the page during the test. This will terminate your test session and may result in disqualification.</p>
+            </div>
+          </div>
+
+          <div className="rule-card">
+            <div className="rule-icon warning">
+              <i className="ri-fullscreen-exit-line"></i>
+            </div>
+            <div className="rule-content">
+              <h3>Maintain Fullscreen</h3>
+              <p><strong>DO NOT</strong> exit fullscreen mode during the test. Exiting fullscreen may result in disqualification.</p>
+            </div>
+          </div>
+
+          <div className="rule-card">
+            <div className="rule-icon warning">
+              <i className="ri-forbid-line"></i>
+            </div>
+            <div className="rule-content">
+              <h3>No Permission Blocking</h3>
+              <p><strong>DO NOT</strong> block any permissions required for the test. This includes microphone access which is essential for speaking portions.</p>
+            </div>
+          </div>
+
+          <div className="rule-card">
+            <div className="rule-icon">
+              <i className="ri-volume-up-line"></i>
+            </div>
+            <div className="rule-content">
+              <h3>Speaking Volume</h3>
+              <p>Speak in a natural voice - not too low, not too loud. Make sure you are in a quiet environment for optimal speech recognition.</p>
+            </div>
+          </div>
+
+          <div className="rule-card">
+            <div className="rule-icon">
+              <i className="ri-error-warning-line"></i>
+            </div>
+            <div className="rule-content">
+              <h3>Instant Disqualification</h3>
+              <p>Violating any of the rules above will lead to <strong>instant disqualification</strong> from the test. Please adhere to all guidelines.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="disclaimer-agreement">
           <input 
             onChange={handleCheckboxChange} 
             type="checkbox" 
@@ -97,10 +141,15 @@ const Disclaimer = ({ onContinue }) => {
             checked={isChecked} 
             id="agreement" 
           />
-          I agree
-        </label>
+          <label htmlFor="agreement">I have read and understood all the rules and regulations. I agree to comply with them throughout the test.</label>
+        </div>
       </div>
-      <button className='primary' disabled={!isChecked || loading} onClick={handleContinueClick}>{loading? "loading":"Continue"}</button>
+      
+      <div className="disclaimer-action">
+        <button className='primary' disabled={!isChecked || loading} onClick={handleContinueClick}>
+          {loading ? "Loading..." : "Continue to Test"}
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Tutorial.css';
 
-const Rules = () => {
+const Rules = ({ inTest, back }) => {
   const [micPermission, setMicPermission] = useState('unchecked');
   const [fullscreenSupport, setFullscreenSupport] = useState('unchecked');
   const [speechSynthesisSupport, setSpeechSynthesisSupport] = useState('unchecked');
   const [speechRecognitionSupport, setSpeechRecognitionSupport] = useState('unchecked');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check speech synthesis support
@@ -73,7 +75,7 @@ const Rules = () => {
   return (
     <div className="rules-container">
       <div className="rules-header">
-        <h1>Test Rules & Requirements</h1>
+        <h1>Test Guide & Requirements</h1>
         <p className="subtitle">Please read all instructions carefully before starting the test</p>
       </div>
 
@@ -213,54 +215,62 @@ const Rules = () => {
         </div>
       </div>
 
-      <div className="rules-section">
+      <div className="rules-section parts-section">
         <h2>Test Components Overview</h2>
         
         <div className="rule-card">
+            <span className="circle">A</span>
           <div className="rule-content no-icon">
-            <h3>Part A: Sentence Repetition</h3>
+            <h3> Sentence Repetition</h3>
             <p>You will hear sentences and need to repeat them exactly as you hear them.</p>
           </div>
         </div>
         
         <div className="rule-card">
+            <span className="circle">B</span>
           <div className="rule-content no-icon">
-            <h3>Part B: Sentence Builds</h3>
+            <h3> Sentence Builds</h3>
             <p>You will hear three short phrases and need to arrange them into a grammatically correct sentence.</p>
           </div>
         </div>
         
         <div className="rule-card">
+            <span className="circle">C</span>
           <div className="rule-content no-icon">
-            <h3>Part C: Conversations</h3>
+            <h3> Conversations</h3>
             <p>You will listen to a conversation between two speakers and answer a comprehension question.</p>
           </div>
         </div>
         
         <div className="rule-card">
+            <span className="circle">D</span>
           <div className="rule-content no-icon">
-            <h3>Part D: Sentence Completion</h3>
+            <h3> Sentence Completion</h3>
             <p>You will read sentences with missing words and supply appropriate words to complete them.</p>
           </div>
         </div>
         
         <div className="rule-card">
+            <span className="circle">E</span>
           <div className="rule-content no-icon">
-            <h3>Part E: Dictation</h3>
+            <h3> Dictation</h3>
             <p>You will hear sentences and need to type them exactly as you hear them.</p>
           </div>
         </div>
         
         <div className="rule-card">
+            <span className="circle">F</span>
           <div className="rule-content no-icon">
-            <h3>Part F: Passage Reconstruction</h3>
+            <h3> Passage Reconstruction</h3>
             <p>You will view a short passage for 30 seconds, after which you'll need to reconstruct it from memory.</p>
           </div>
         </div>
       </div>
 
       <div className="rules-action">
-        <Link to="/" className="rules-button">Return to Homepage</Link>
+        {inTest ? <><button onClick={back} className="secondary">Go Back</button> <button onClick={() => navigate('/start-test')} className="primary">Continue</button></>:
+        <Link to="/" className="">Return to Homepage</Link>
+        }
       </div>
     </div>
   );

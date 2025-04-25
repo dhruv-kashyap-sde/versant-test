@@ -3,15 +3,11 @@ import SecurityChecks from "../../security/SecurityChecks";
 import NotFullScreen from "../../security/NotFullScreen";
 import AllPartsFlowControl from "./AllPartsFlowControl";
 import { AuthContext } from "../../context/AuthContext";
-import './Disclaimer.css';
+import "./Disclaimer.css";
 
 const StartTest = () => {
-  const {
-    isFullScreen,
-    checkFullScreen,
-    proceedTest,
-    setIsFullScreen
-  } = useContext(AuthContext);
+  const { isFullScreen, checkFullScreen, proceedTest, setIsFullScreen } =
+    useContext(AuthContext);
 
   useEffect(() => {
     const handleFullScreenChange = () => {
@@ -27,17 +23,12 @@ const StartTest = () => {
   }, [isFullScreen]);
 
   return (
-    <div>
-
-      {proceedTest ? (
-        <AllPartsFlowControl />
-      ) : (
-        <SecurityChecks />
-      )}
-      {!isFullScreen &&
-        <NotFullScreen checkFullScreen={checkFullScreen} />
-      }
-    </div>
+    <>
+      <div>
+        {proceedTest ? <AllPartsFlowControl /> : <SecurityChecks />}
+        {!isFullScreen && <NotFullScreen checkFullScreen={checkFullScreen} />}
+      </div>
+    </>
   );
 };
 
