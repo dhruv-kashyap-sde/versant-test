@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   const [isMicActive, setIsMicActive] = useState(false);
   const [audioRecordingCompleted, setAudioRecordingCompleted] = useState(false);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState(null);
-  const [isInternetGood, setIsInternetGood] = useState(true);
+  const [isInternetGood, setIsInternetGood] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [error, setError] = useState(null);
   const [proceedTest, setProceedTest] = useState(false);
