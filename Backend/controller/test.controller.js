@@ -5,6 +5,7 @@ const { calculatePartDScore, checkPartD } = require("../utils/checkPartD");
 const checkPart = require("../utils/checkPart");
 const { calculatePartCScore, getPartCScore, checkPartC } = require("../utils/checkPartC");
 const checkPartF = require("../utils/checkPartF");
+require("dotenv").config();
 
 // Start a new test
 exports.startTest = async (req, res) => {

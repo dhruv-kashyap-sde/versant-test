@@ -14,6 +14,9 @@ const PartA = ({ onContinue }) => {
   const recognitionRef = useRef(null);
   const timerRef = useRef(null);
   const isMountedRef = useRef(true); // Track component mount status
+  
+  // tutorial logic
+  const [inTutorial, setInTutorial] = useState(true);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -201,8 +204,6 @@ const PartA = ({ onContinue }) => {
     }
   }, [isListening]);
 
-  // tutorial logic
-  const [inTutorial, setInTutorial] = useState(true);
 
   const CONST = [
     "Please repeat the sentences that you hear",
