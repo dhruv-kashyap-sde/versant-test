@@ -29,4 +29,7 @@ router.post("/dashboard", verifyToken, adminController.dashboard);
 // create admin
 // router.post('/create', adminController.createAdmin);
 
+router.post('/send-invitations', adminController.sendInvitations);
+
+
 module.exports = router;

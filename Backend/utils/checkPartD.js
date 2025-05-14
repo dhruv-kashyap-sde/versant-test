@@ -1,7 +1,6 @@
 // Helper function for Part D scoring
-import stringSimilarity from "string-similarity";
-
-export function checkPartD(questions, answers) {
+const stringSimilarity = require("string-similarity");
+exports.checkPartD = (questions, answers) =>  {
   let correct = 0;
   const SIMILARITY_THRESHOLD = 0.8; // 80% similarity threshold - adjust as needed
 
@@ -24,3 +23,4 @@ export function checkPartD(questions, answers) {
   });
   return Math.round((correct / questions.length) * 100);
 }
+ 

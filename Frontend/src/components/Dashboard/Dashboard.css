@@ -1,7 +1,6 @@
 .dashboard-container{
     min-height: 100vh;
     display: flex;
-    /* padding: 2rem 3rem; */
 }
 
 .dashboard-container .header{
@@ -13,8 +12,7 @@
 
 .sidebar-container{
     text-align: center;
-    border-right: var(--border);
-    /* background-color: rebeccapurple; */
+    border-right: 1px solid #50505098; /* --border */
     min-width: 200px;
     padding: 10px 15px;
     width: 15vw;
@@ -25,7 +23,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    
+}
+
+.color {
+    color: #1b89f7; /* --theme */
+}
+
+.hr {
+    margin: 10px 0;
+    border-top: 1px solid #50505098; /* --border */
 }
 
 .sidebar-container .sidebar-buttons{
@@ -34,16 +40,33 @@
     flex-direction: column;
 }
 
+/* Apply to MUI ListItemButton */
+.secondary {
+    background-color: whitesmoke;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.secondary:hover {
+    background-color: #b7d6f5; /* --bg */
+}
+
+.active {
+    background-color: #1b89f7 !important; /* --theme */
+    color: whitesmoke !important; /* --w */
+}
+
 .dashboard-body{
     padding: 10px 15px;
-    /* background-color: rebeccapurple; */
     width: 85vw;
 }
 
+/* Student form styles */
 .student-form{
     background-color: whitesmoke;
     padding: 20px 30px;
-    border-radius: var(--radius);
+    border-radius: 10px; /* --radius */
 }
 
 .student-form input{
@@ -56,11 +79,10 @@
 }
 
 /* Question creation */
-
 .question-container{
     background-color: whitesmoke;
-    padding: 20px ;
-    border-radius: var(--radius);
+    padding: 20px;
+    border-radius: 10px; /* --radius */
     min-height: 85vh;
 }
 
@@ -74,7 +96,7 @@
 .question-container .question-body .question-input .a-form{
     display: flex;
     justify-content: start;
-    align-items: end;
+    align-items: flex-end;
     gap: 20px;
     margin-bottom: 10px;
 }
@@ -86,12 +108,12 @@
 .question-body .example-box{
     background-color: white;
     padding: 10px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    p{
-        margin-bottom: 0;
-    }
+    border-radius: 10px; /* --radius */
+    box-shadow: 1px 1px 3px 2px #bbb8b898; /* --shadow */
     margin-bottom: 20px;
+}
+.question-body .example-box p {
+    margin-bottom: 0;
 }
 
 /* custom part form css */
@@ -115,8 +137,8 @@
 }
 .c-form .line-2{
     display: flex;
-    justify-content: start;
-    align-items: start;
+    justify-content: flex-start;
+    align-items: flex-start;
     gap: 10px;
 }
 .c-form .line-2 p input{
@@ -140,7 +162,7 @@
     top: -70px;
     min-width: 200px;
     background-color: white;
-    border-radius: var(--radius);
+    border-radius: 10px; /* --radius */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     padding: 10px;
     z-index: 10;
@@ -175,7 +197,35 @@
 .status-code{
     display: flex;
     justify-content: space-between;
-    /* align-items: center;
-    gap: 10px;
-    margin-bottom: 10px; */
+}
+
+/* MUI overrides to match the original design */
+.MuiListItemButton-root {
+    padding: 8px 16px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.MuiListItemText-primary {
+    font-weight: normal;
+}
+
+.active .MuiListItemText-primary {
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    
+    .sidebar-container {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #50505098;
+    }
+    
+    .dashboard-body {
+        width: 100%;
+    }
 }

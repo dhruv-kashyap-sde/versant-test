@@ -279,3 +279,116 @@ exports.resetStudentTestStatus = async (req, res) => {
     res.status(500).json({ message: "Error resetting student test status", error: error.message });
   }
 };
+
+const nodemailer = require('nodemailer');
+
+// Create a transporter using the provided Mailtrap credentials
+const transporter = nodemailer.createTransport({
+  host: "bulk.smtp.mailtrap.io",
+  port: 587,
+  auth: {
+    user: "smtp@mailtrap.io",
+    pass: "63acd31e23c1614b751786702f09feb0",
+  }
+});
+
+// Controller for sending invitation emails to students
+exports.sendInvitations = async (req, res) => {
+  try {
+    const { studentIds } = req.body;
+
+    // Validation
+    if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+      return res.status(400).json({ success: false, message: 'No students selected' });
+    }
+
+    // Find students by IDs
+    const students = await Student.find({ _id: { $in: studentIds } });
+    
+    if (!students || students.length === 0) {
+      return res.status(404).json({ success: false, message: 'No valid students found' });
+    }
+
+    // Send invitation emails
+    const emailPromises = students.map(async (student) => {
+      const mailOptions = {
+        from: "skillvedaaassessment@morlingglobal.in",
+        to: student.email,
+        subject: 'Your Test Identification Number (TIN)',
+        html: `
+        <div
+          style="
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+          "
+        >
+          <h2 style="color: #333">Hello ${student.name},</h2>
+          <p>
+            Your Test Identification Number (TIN) has
+            been generated. You are now eligible for test.
+          </p>
+          <div
+            style="
+              background-color: #f8f9fa;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 20px 0;
+            "
+          >
+            <h4>Please follow the pre-requisite conditions:</h4>
+            <ul style="list-style-type: disc; padding-left: 20px">
+              <li>You must have a good internet Connection</li>
+              <li>Use a laptop or desktop computer</li>
+              <li>Use Google Chrome or Microsoft Edge browser</li>
+              <li>Ensure your microphone and camera are working</li>
+              <li>You can give test only <strong>once.</strong></li>
+            </ul>
+          </div>
+          <div
+            style="
+              background-color: #f8f9fa;
+              padding: 15px;
+              border-radius: 5px;
+              text-align: center;
+              margin: 20px 0;
+            "
+          >
+            <h3 style="margin: 0; color: #007bff; font-size: 24px">${student.tin}</h3>
+          </div>
+          <p>
+            Please keep this TIN secure as you will need it to access your test.
+          </p>
+          <p>If you have any questions, please contact the administrator.</p>
+          <p style="margin-top: 20px; font-size: 14px; color: #666">
+            This is an automated message, please do not reply.
+          </p>
+          <a href="https://vna.skillvedaa.in/" style="color: #007bff; text-decoration: none; font-weight: bold;">
+            Click here to access your test
+          </a>
+        </div>
+        `
+      };
+
+      return transporter.sendMail(mailOptions);
+    });
+
+    // Wait for all emails to be sent
+    await Promise.all(emailPromises);
+
+    res.status(200).json({
+      success: true,
+      message: `Invitations sent successfully to ${students.length} students`,
+    });
+  } catch (error) {
+    console.error('Error sending invitations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending invitations',
+      error: error.message,
+    });
+  }
+};

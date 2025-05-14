@@ -1,20 +1,87 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./AllStudent.css";
 import toast from "react-hot-toast";
 import Loader from "../../utils/Loaders/Loader";
+
+// Material UI imports
+import { 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, 
+  Paper, Typography, TextField, InputAdornment, IconButton, Button, 
+  Box, Chip, Tooltip, Card, CardContent, CardHeader, Divider,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+} from '@mui/material';
+import { 
+  Search as SearchIcon,
+  CheckCircle as CheckCircleIcon,
+  Cancel as CancelIcon, 
+  AccessTime as AccessTimeIcon,
+  Delete as DeleteIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  SwapVert as SwapVertIcon,
+  Info as InfoIcon
+} from '@mui/icons-material';
+import { styled, alpha } from '@mui/material/styles';
+
+// Custom styles
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  fontWeight: 'bold',
+  backgroundColor: theme.palette.primary.main, // Changed from .light to .main
+  color: theme.palette.common.white,
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark, // Changed hover to use primary.dark
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.primary.light, 0.1),
+  },
+}));
+
+const ScorePopover = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  width: '250px',
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[3],
+  padding: theme.spacing(2),
+  zIndex: 1,
+  display: 'none',
+  '& .MuiDivider-root': {
+    margin: theme.spacing(1, 0),
+  },
+  '.score-cell:hover &': {
+    display: 'block',
+  },
+}));
+
+const ScoreWrapper = styled(Box)({
+  position: 'relative',
+  cursor: 'pointer',
+});
 
 const AllStudent = () => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
-  // New state variables for pagination, sorting, and search
-  const [currentPage, setCurrentPage] = useState(1);
-  const [studentsPerPage] = useState(10);
   const [sortField, setSortField] = useState('createdAt');
   const [sortDirection, setSortDirection] = useState('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredStudents, setFilteredStudents] = useState([]);
+  
+  // Pagination state (Material UI style)
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  
+  // Delete confirmation dialog
+  const [openDialog, setOpenDialog] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
 
   const fetchStudents = async () => {
     setLoadingStudents(true);
@@ -31,6 +98,7 @@ const AllStudent = () => {
         console.error("There was an error fetching the students!", error);
       });
   };
+  
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -78,7 +146,7 @@ const AllStudent = () => {
     });
 
     setFilteredStudents(result);
-    setCurrentPage(1);
+    setPage(0);
   }, [students, searchTerm, sortField, sortDirection]);
 
   const handleSort = (field) => {
@@ -89,11 +157,6 @@ const AllStudent = () => {
       setSortDirection('asc');
     }
   };
-
-  const indexOfLastStudent = currentPage * studentsPerPage;
-  const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
-  const currentStudents = filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent);
-  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
   const handleDeleteStudent = async (id) => {
     setLoading(true);
@@ -106,6 +169,7 @@ const AllStudent = () => {
       toast.error("Error deleting student");
     } finally {
       setLoading(false);
+      setOpenDialog(false);
     }
   };
 
@@ -130,189 +194,311 @@ const AllStudent = () => {
     }
   };
 
+  // Material UI pagination handlers
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Dialog handlers
+  const openDeleteDialog = (student) => {
+    setStudentToDelete(student);
+    setOpenDialog(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setOpenDialog(false);
+    setStudentToDelete(null);
+  };
+  
+  // Get current students for display
+  const currentStudents = filteredStudents.slice(
+    page * rowsPerPage, 
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'completed':
+        return <CheckCircleIcon color="success" />;
+      case 'started':
+        return <AccessTimeIcon color="primary" />;
+      default:
+        return <CancelIcon color="error" />;
+    }
+  };
+  
+  const getSortIcon = (field) => {
+    if (sortField !== field) return <SwapVertIcon fontSize="small" />;
+    return sortDirection === 'asc' ? 
+      <ArrowUpwardIcon fontSize="small" /> : 
+      <ArrowDownwardIcon fontSize="small" />;
+  };
+
   return (
-    <>
-      <div className="header">
-        <h1 className="color">All Students</h1>
-      </div>
-      <div className="hr"></div>
-      
-      <div className="table-controls">
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search by name, email or score..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <i className="ri-search-line search-icon"></i>
-        </div>
-        
-        <div className="pagination-info">
-          Showing {filteredStudents.length > 0 ? indexOfFirstStudent + 1 : 0} to {Math.min(indexOfLastStudent, filteredStudents.length)} of {filteredStudents.length} students
-        </div>
-      </div>
-      
-      <table className="student-table">
-        <thead>
-          <tr>
-            <th>Sr. N</th>
-            <th>TIN</th>
-            <th onClick={() => handleSort('name')} className="sortable-header">
-              Name {sortField === 'name' && (sortDirection === 'asc' ? '(A to Z) ' : '(Z to A) ')}<i class="ri-arrow-up-down-line"></i>
-            </th>
-            <th onClick={() => handleSort('email')} className="sortable-header">
-              Email {sortField === 'email' && (sortDirection === 'asc' ? '(A to Z) ' : '(Z to A) ')}<i class="ri-arrow-up-down-line"></i>
-            </th>
-            <th onClick={() => handleSort('score')} className="sortable-header">
-              Test Score {sortField === 'score' && (sortDirection === 'asc' ? '(Low) ' : '(High) ')}<i class="ri-arrow-up-down-line"></i>
-            </th>
-            <th onClick={() => handleSort('testStatus')} className="sortable-header">
-              Test Status {sortField === 'testStatus' && (sortDirection === 'asc' ? '(Not Started) ' : '(Completed) ')}<i class="ri-arrow-up-down-line"></i>
-            </th>
-            <th>Phone Number</th>
-            <th>Alternate ID</th>
-            <th onClick={() => handleSort('createdAt')} className="sortable-header">
-              Created At {sortField === 'createdAt' && (sortDirection === 'asc' ? '(Old) ' : '(New) ')}<i class="ri-arrow-up-down-line"></i>
-            </th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentStudents.map((student, index) => (
-            <tr key={student._id} className={index % 2 === 0 ? "even" : "odd"}>
-              <td>{indexOfFirstStudent + index + 1}</td>
-              <td>{student.tin}</td>
-              <td>{student.name}</td>
-              <td>{student.email}</td>
-              <td className="score-cell">
-                <div className="score-wrapper">
-                  {student.testScore.total}
-                  <div className="score-popup">
-                    <div className="score-popup-header">Individual Scores</div>
-                    <div className="score-item">
-                      <span>Part A:</span>{" "}
-                      <span>{student.testScore.partA || 0}</span>
-                    </div>
-                    <div className="score-item">
-                      <span>Part B:</span>{" "}
-                      <span>{student.testScore.partB || 0}</span>
-                    </div>
-                    <div className="score-item">
-                      <span>Part C:</span>{" "}
-                      <span>{student.testScore.partC || 0}</span>
-                    </div>
-                    <div className="score-item">
-                      <span>Part D:</span>{" "}
-                      <span>{student.testScore.partD || 0}</span>
-                    </div>
-                    <div className="score-item">
-                      <span>Part E:</span>{" "}
-                      <span>{student.testScore.partE || 0}</span>
-                    </div>
-                    <div className="score-item">
-                      <span>Part F:</span>{" "}
-                      <span>{student.testScore.partF || 0}</span>
-                    </div>
-                    <div className="score-item total">
-                      <span>Total:</span> <span>{student.testScore.total}</span>
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td>
-                {student.testStatus === "completed" ? (
-                  <span className="status-code">
-                    <i className="ri-check-line green">Completed</i>&nbsp;
-                    <button
-                      onClick={() => handleAllowance(student._id)}
-                      className="edit-btn"
-                    >
-                      {loading ? "Please wait..." : "Allow"}
-                    </button>
-                  </span>
-                ) : student.testStatus === "started" ? (
-                  <span className="status-code">
-                    <i className="ri-time-line color">Started</i>
-                    <button
-                      onClick={() => handleAllowance(student._id)}
-                      className="edit-btn"
-                    >
-                      {loading ? "Please wait..." : "Allow"}
-                    </button>
-                  </span>
+    <Box sx={{ padding: 0 }}>
+      <Card elevation={3}>
+        <CardHeader 
+          title={
+            <Typography variant="h5" component="h1" color="primary" fontWeight="bold">
+              All Students
+            </Typography>
+          }
+        />
+        <Divider />
+        <CardContent>
+          {/* Search and filter controls */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            mb: 2,
+            flexWrap: 'wrap', 
+            gap: 2 
+          }}>
+            <TextField
+              label="Search students"
+              placeholder="Search by name, email or score..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              variant="outlined"
+              size="small"
+              sx={{ minWidth: 300 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            
+            <Typography variant="body2" color="text.secondary">
+              Showing {filteredStudents.length} students
+            </Typography>
+          </Box>
+
+          {/* Table */}
+          <TableContainer component={Paper} elevation={0}>
+            <Table sx={{ minWidth: 650 }}>
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Sr. N</StyledTableCell>
+                  <StyledTableCell>TIN</StyledTableCell>
+                  <StyledTableCell onClick={() => handleSort('name')}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5  }}>
+                      Name {getSortIcon('name')}
+                    </Box>
+                  </StyledTableCell>
+                  <StyledTableCell onClick={() => handleSort('email')}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      Email {getSortIcon('email')}
+                    </Box>
+                  </StyledTableCell>
+                  <StyledTableCell onClick={() => handleSort('score')}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      Test Score {getSortIcon('score')}
+                    </Box>
+                  </StyledTableCell>
+                  <StyledTableCell onClick={() => handleSort('testStatus')}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      Test Status {getSortIcon('testStatus')}
+                    </Box>
+                  </StyledTableCell>
+                  <StyledTableCell>Phone Number</StyledTableCell>
+                  <StyledTableCell>Alternate ID</StyledTableCell>
+                  <StyledTableCell onClick={() => handleSort('createdAt')}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      Created At {getSortIcon('createdAt')}
+                    </Box>
+                  </StyledTableCell>
+                  <StyledTableCell>Actions</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {loadingStudents ? (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center">
+                      <Loader />
+                    </TableCell>
+                  </TableRow>
+                ) : currentStudents.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center">
+                      <Typography variant="body1" color="text.secondary" sx={{ py: 3 }}>
+                        No students found matching your search criteria
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
                 ) : (
-                  <span className="status-code">
-                    <i className="ri-close-line red">Not Started</i>
-                  </span>
+                  currentStudents.map((student, index) => (
+                    <StyledTableRow key={student._id}>
+                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                      <TableCell>{student.tin}</TableCell>
+                      <TableCell>{student.name}</TableCell>
+                      <TableCell>{student.email}</TableCell>
+                      <TableCell className="score-cell">
+                        <ScoreWrapper>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            {student.testScore.total}
+                            <Tooltip title="View score breakdown">
+                              <InfoIcon fontSize="small" color="primary" />
+                            </Tooltip>
+                          </Box>
+                          <ScorePopover>
+                            <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 'bold' }}>
+                              Individual Scores
+                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="body2">Part A:</Typography>
+                              <Typography variant="body2" fontWeight="medium">{student.testScore.partA || 0}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="body2">Part B:</Typography>
+                              <Typography variant="body2" fontWeight="medium">{student.testScore.partB || 0}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="body2">Part C:</Typography>
+                              <Typography variant="body2" fontWeight="medium">{student.testScore.partC || 0}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="body2">Part D:</Typography>
+                              <Typography variant="body2" fontWeight="medium">{student.testScore.partD || 0}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="body2">Part E:</Typography>
+                              <Typography variant="body2" fontWeight="medium">{student.testScore.partE || 0}</Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                              <Typography variant="body2">Part F:</Typography>
+                              <Typography variant="body2" fontWeight="medium">{student.testScore.partF || 0}</Typography>
+                            </Box>
+                            <Divider />
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                              <Typography variant="body2" fontWeight="bold">Total:</Typography>
+                              <Typography variant="body2" fontWeight="bold">{student.testScore.total}</Typography>
+                            </Box>
+                          </ScorePopover>
+                        </ScoreWrapper>
+                      </TableCell>
+                      <TableCell>
+                        {student.testStatus === "completed" ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                            <Chip 
+                              icon={<CheckCircleIcon />} 
+                              label="Completed" 
+                              color="success" 
+                              size="small" 
+                              variant="outlined"
+                            />
+                            <Button 
+                              size="small" 
+                              variant="outlined" 
+                              color="primary"
+                              onClick={() => handleAllowance(student._id)}
+                              disabled={loading}
+                            >
+                              {loading ? "Please wait..." : "Allow"}
+                            </Button>
+                          </Box>
+                        ) : student.testStatus === "started" ? (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                            <Chip 
+                              icon={<AccessTimeIcon />} 
+                              label="Started" 
+                              color="primary" 
+                              size="small" 
+                              variant="outlined"
+                            />
+                            <Button 
+                              size="small" 
+                              variant="outlined" 
+                              color="primary"
+                              onClick={() => handleAllowance(student._id)}
+                              disabled={loading}
+                            >
+                              {loading ? "Please wait..." : "Allow"}
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Chip 
+                            icon={<CancelIcon />} 
+                            label="Not Started" 
+                            color="error" 
+                            size="small" 
+                            variant="outlined"
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>{student.phone || "N/A"}</TableCell>
+                      <TableCell>
+                        {student.alternateId === "" ? "N/A" : student.alternateId}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(student.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          startIcon={<DeleteIcon />}
+                          onClick={() => openDeleteDialog(student)}
+                          disabled={loading}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))
                 )}
-              </td>
-              <td>{student.phone}</td>
-              <td>
-                {student.alternateId === "" ? "N/A" : student.alternateId}
-              </td>
-              <td>{new Date(student.createdAt).toLocaleDateString()}</td>
-              <td>
-                <button
-                  onClick={() => handleDeleteStudent(student._id)}
-                  className="delete-btn"
-                  disabled={loading}
-                >
-                  <i className="ri-delete-bin-6-line"></i>
-                  {loading ? "Loading..." : "Delete"}
-                </button>
-                &nbsp;
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-      {filteredStudents.length === 0 && !loadingStudents && (
-        <div className="no-results">No students found matching your search criteria</div>
-      )}
-      
-      {loadingStudents && <Loader />}
-      
-      {filteredStudents.length > 0 && (
-        <div className="pagination">
-          <button 
-            onClick={() => setCurrentPage(1)} 
-            disabled={currentPage === 1}
-            className="pagination-btn"
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Pagination */}
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredStudents.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Delete confirmation dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={closeDeleteDialog}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete {studentToDelete?.name}? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button 
+            onClick={() => handleDeleteStudent(studentToDelete?._id)} 
+            color="error" 
+            variant="contained"
+            disabled={loading}
           >
-            First
-          </button>
-          <button 
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
-            disabled={currentPage === 1}
-            className="pagination-btn"
-          >
-            Previous
-          </button>
-          
-          <div className="page-info">
-            Page {currentPage} of {totalPages}
-          </div>
-          
-          <button 
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
-            disabled={currentPage === totalPages}
-            className="pagination-btn"
-          >
-            Next
-          </button>
-          <button 
-            onClick={() => setCurrentPage(totalPages)} 
-            disabled={currentPage === totalPages}
-            className="pagination-btn"
-          >
-            Last
-          </button>
-        </div>
-      )}
-    </>
+            {loading ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 
