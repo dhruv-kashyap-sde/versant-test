@@ -9,6 +9,7 @@ const PartF = ({ onContinue }) => {
   const { speakingVoice, totalScore, testQuestions, testId } =
     useContext(AuthContext);
   const partFQuestions = testQuestions.partF;
+
   // tutorial logic
   const [inTutorial, setInTutorial] = useState(true);
 
@@ -148,7 +149,17 @@ const PartF = ({ onContinue }) => {
           ) : currentQuestionIndex < partFQuestions.length ? (
             <>
               {!showInput ? (
-                <p style={{ width: "90%" }}>
+                <p 
+                  style={{ 
+                    width: "90%", 
+                    userSelect: "none", 
+                    WebkitUserSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none"
+                  }} 
+                  onCopy={(e) => e.preventDefault()}
+                  onContextMenu={(e) => e.preventDefault()}
+                >
                   {partFQuestions[currentQuestionIndex].question}
                 </p>
               ) : (
@@ -164,6 +175,7 @@ const PartF = ({ onContinue }) => {
                     placeholder="Type your answer..."
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
+                    onPaste={(e) => e.preventDefault()}
                   />
                   <button className="secondary">Submit </button>
                 </form>

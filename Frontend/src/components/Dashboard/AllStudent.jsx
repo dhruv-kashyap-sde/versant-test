@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Loader from "../../utils/Loaders/Loader";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 // Material UI imports
 import { 
@@ -19,7 +21,8 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
   SwapVert as SwapVertIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  FileDownload as FileDownloadIcon
 } from '@mui/icons-material';
 import { styled, alpha } from '@mui/material/styles';
 
@@ -203,7 +206,6 @@ const AllStudent = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   // Dialog handlers
   const openDeleteDialog = (student) => {
     setStudentToDelete(student);
@@ -213,6 +215,77 @@ const AllStudent = () => {
   const closeDeleteDialog = () => {
     setOpenDialog(false);
     setStudentToDelete(null);
+  };
+  
+  // Excel export handler
+  const exportToExcel = () => {
+    try {
+      setLoading(true);
+      // Format data for excel
+      const data = filteredStudents.map((student, index) => {
+        return {
+          'Sr. No': index + 1,
+          'Name': student.name || 'N/A',
+          'Email': student.email || 'N/A',
+          'TIN': student.tin || 'N/A',
+          'Test Score': student.testScore?.total || 0,
+          'Part A': student.testScore?.partA || 0,
+          'Part B': student.testScore?.partB || 0,
+          'Part C': student.testScore?.partC || 0,
+          'Part D': student.testScore?.partD || 0,
+          'Part E': student.testScore?.partE || 0,
+          'Part F': student.testScore?.partF || 0,
+          'Test Status': student.testStatus || 'N/A',
+          'Phone Number': student.phone || 'N/A',
+          'Alternate ID': student.alternateId || 'N/A',
+          'Created At': new Date(student.createdAt).toLocaleDateString()
+        };
+      });
+
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      
+      // Set column widths
+      const wscols = [
+        { wch: 6 }, // Sr. No
+        { wch: 25 }, // Name
+        { wch: 30 }, // Email
+        { wch: 10 }, // TIN
+        { wch: 10 }, // Test Score
+        { wch: 8 }, // Part A
+        { wch: 8 }, // Part B
+        { wch: 8 }, // Part C
+        { wch: 8 }, // Part D
+        { wch: 8 }, // Part E
+        { wch: 8 }, // Part F
+        { wch: 12 }, // Test Status
+        { wch: 15 }, // Phone Number
+        { wch: 15 }, // Alternate ID
+        { wch: 12 }, // Created At
+      ];
+      worksheet['!cols'] = wscols;
+      
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+      
+      // Generate Excel file
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const fileData = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      
+      // Get current date for filename
+      const date = new Date();
+      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+      
+      // Save file
+      saveAs(fileData, `Students_${formattedDate}.xlsx`);
+      toast.success("Excel file downloaded successfully!");
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      toast.error("Error exporting data to Excel");
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Get current students for display
@@ -276,10 +349,19 @@ const AllStudent = () => {
                 ),
               }}
             />
-            
-            <Typography variant="body2" color="text.secondary">
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
               Showing {filteredStudents.length} students
             </Typography>
+            <Button 
+              variant="contained"
+              onClick={exportToExcel}
+              disabled={loading || filteredStudents.length === 0}
+              startIcon={<FileDownloadIcon />}
+            >
+              {loading ? "Exporting..." : "Export Students"}
+            </Button>
+            </Box>
           </Box>
 
           {/* Table */}
