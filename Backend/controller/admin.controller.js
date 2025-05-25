@@ -4,11 +4,10 @@ const generateTin = require("../utils/generateTin");
 const { sendTinEmail } = require("../utils/emailService");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const xlsx = require('xlsx');
-const fs = require('fs');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const path = require('path');
+const xlsx = require("xlsx");
+const fs = require("fs");
+const nodemailer = require("nodemailer");
+const Trainer = require("../models/trainer.model");
 
 // Create a new student
 exports.createStudent = async (req, res) => {
@@ -38,13 +37,124 @@ exports.createStudent = async (req, res) => {
     }
 
     // Add the generated TIN to the student data
-    const student = new Student({ name, email, phone, alternateId, tin });
+    const student = new Student({
+      name,
+      email,
+      phone,
+      alternateId,
+      tin,
+      createdBy: "Admin",
+    });
     await student.save();
-    
+
     // Send the TIN to the student's email
     // await sendTinEmail(email, name, tin);
-    
+
     res.status(201).json(student);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Create new Trainer
+exports.createTrainer = async (req, res) => {
+  try {
+    const { name, email, phone, tinAmount, password } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !phone || !tinAmount || !password) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "All fields are required (name, email, phone, tinAmount, password)",
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
+      });
+    }
+
+    // Validate phone number (10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid 10-digit phone number",
+      });
+    }
+
+    // Validate tinAmount is a positive number
+    if (isNaN(tinAmount) || Number(tinAmount) <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "TIN amount must be a positive number",
+      });
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password should be at least 6 characters long",
+      });
+    }
+
+    // Check if trainer with the same email or phone already exists
+    const existingTrainer = await Trainer.findOne({
+      $or: [{ email }, { phone }],
+    });
+
+    if (existingTrainer) {
+      return res.status(400).json({
+        success: false,
+        message: "Trainer with this email or phone already exists",
+      });
+    }
+
+    // Create and save the trainer
+    const trainer = new Trainer({
+      name,
+      email,
+      phone,
+      tinAmount: Number(tinAmount),
+      password,
+    });
+
+    await trainer.save();
+
+    // Return success without sending back the password
+    res.status(201).json({
+      success: true,
+      message: "Trainer created successfully",
+      trainer: {
+        id: trainer._id,
+        name: trainer.name,
+        email: trainer.email,
+        phone: trainer.phone,
+        tinAmount: trainer.tinAmount,
+        createdAt: trainer.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating trainer:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create trainer",
+      error: error.message,
+    });
+  }
+};
+
+// Fetch all trainers
+exports.getAllTrainers = async (req, res) => {
+  try {
+    const trainer = await Trainer.find();
+    res.status(200).json(trainer);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -64,28 +174,74 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(404).json({ message: "Please add all the Fields" });
+    return res.status(400).json({ message: "Please add all the Fields" });
   }
 
   try {
+    // First check if it's an admin
     let admin = await Admin.findOne({ email });
-    if (!admin) return res.status(401).json({ message: "Invalid credentials" });
+    if (admin) {
+      // Verify admin password
+      const isMatch = await admin.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
 
-    if (email !== admin.email)
-      return res.status(401).json({ message: "Invalid credentials" });
+      // Generate token for admin
+      const token = jwt.sign(
+        { email, role: "admin", userId: admin._id },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "1d" }
+      );
 
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.json({
+        message: "Login successful",
+        success: true,
+        token,
+        role: "admin",
+        userData: {
+          id: admin._id,
+          email: admin.email,
+          username: admin.username,
+        },
+      });
+    }
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY);
+    // If not admin, check if it's a trainer
+    let trainer = await Trainer.findOne({ email }).select("+password");
+    if (trainer) {
+      // Verify trainer password
+      const isMatch = await trainer.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
 
-    res.json({
-      message: "Login successful",
-      success: true,
-      token,
-    });
+      // Generate token for trainer
+      const token = jwt.sign(
+        { email, role: "trainer", userId: trainer._id },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "1d" }
+      );
+
+      return res.json({
+        message: "Login successful",
+        success: true,
+        token,
+        role: "trainer",
+        userData: {
+          id: trainer._id,
+          name: trainer.name,
+          email: trainer.email,
+          phone: trainer.phone,
+          tinAmount: trainer.tinAmount,
+        },
+      });
+    }
+
+    // If neither admin nor trainer
+    return res.status(401).json({ message: "Invalid credentials" });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -124,7 +280,7 @@ exports.importStudentsFromExcel = async (req, res) => {
     }
 
     const filePath = req.file.path;
-    
+
     try {
       const workbook = xlsx.readFile(filePath);
       const sheetName = workbook.SheetNames[0];
@@ -140,7 +296,7 @@ exports.importStudentsFromExcel = async (req, res) => {
       const results = {
         success: [],
         errors: [],
-        emailErrors: []
+        emailErrors: [],
       };
 
       for (const row of data) {
@@ -151,7 +307,7 @@ exports.importStudentsFromExcel = async (req, res) => {
           if (!name || !email || !phone) {
             results.errors.push({
               row,
-              error: "Missing required fields (name, email, or phone)"
+              error: "Missing required fields (name, email, or phone)",
             });
             continue;
           }
@@ -164,7 +320,7 @@ exports.importStudentsFromExcel = async (req, res) => {
           if (existingStudent) {
             results.errors.push({
               row,
-              error: "Student with this email or phone already exists"
+              error: "Student with this email or phone already exists",
             });
             continue;
           }
@@ -187,12 +343,19 @@ exports.importStudentsFromExcel = async (req, res) => {
           }
 
           // Create and save the student
-          const student = new Student({ name, email, phone, alternateId, tin });
+          const student = new Student({
+            name,
+            email,
+            phone,
+            alternateId,
+            tin,
+            createdBy: "Admin",
+          });
           await student.save();
-          
+
           // Send the TIN to the student's email
           // const emailSent = await sendTinEmail(email, name, tin);
-          
+
           // if (!emailSent) {
           //   results.emailErrors.push({
           //     student: student._id,
@@ -200,12 +363,12 @@ exports.importStudentsFromExcel = async (req, res) => {
           //     message: "Failed to send TIN email"
           //   });
           // }
-          
+
           results.success.push(student);
         } catch (error) {
           results.errors.push({
             row,
-            error: error.message
+            error: error.message,
           });
         }
       }
@@ -217,12 +380,14 @@ exports.importStudentsFromExcel = async (req, res) => {
         message: `Imported ${results.success.length} students successfully. ${results.errors.length} errors. ${results.emailErrors.length} email sending errors.`,
         success: results.success,
         errors: results.errors,
-        emailErrors: results.emailErrors
+        emailErrors: results.emailErrors,
       });
     } catch (excelError) {
       console.error("Error processing Excel file:", excelError);
-      res.status(400).json({ error: "Error processing Excel file: " + excelError.message });
-      
+      res
+        .status(400)
+        .json({ error: "Error processing Excel file: " + excelError.message });
+
       // Clean up the file
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
@@ -230,12 +395,12 @@ exports.importStudentsFromExcel = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in importStudentsFromExcel:", error);
-    
+
     // Delete the file if it exists and there was an error
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
       fs.unlinkSync(req.file.path);
     }
-    
+
     res.status(500).json({ error: error.message });
   }
 };
@@ -257,7 +422,7 @@ exports.resetStudentTestStatus = async (req, res) => {
     }
 
     // Reset test status and scores
-    student.testStatus = 'not started';
+    student.testStatus = "not started";
     student.testScore = {
       total: 0,
       partA: 0,
@@ -265,7 +430,7 @@ exports.resetStudentTestStatus = async (req, res) => {
       partC: 0,
       partD: 0,
       partE: 0,
-      partF: 0
+      partF: 0,
     };
 
     await student.save();
@@ -275,12 +440,15 @@ exports.resetStudentTestStatus = async (req, res) => {
       student,
     });
   } catch (error) {
-    console.error('Error resetting student test status:', error);
-    res.status(500).json({ message: "Error resetting student test status", error: error.message });
+    console.error("Error resetting student test status:", error);
+    res
+      .status(500)
+      .json({
+        message: "Error resetting student test status",
+        error: error.message,
+      });
   }
 };
-
-const nodemailer = require('nodemailer');
 
 // Create a transporter using the provided Mailtrap credentials
 const transporter = nodemailer.createTransport({
@@ -289,7 +457,7 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: "smtp@mailtrap.io",
     pass: "63acd31e23c1614b751786702f09feb0",
-  }
+  },
 });
 
 // Controller for sending invitation emails to students
@@ -299,14 +467,18 @@ exports.sendInvitations = async (req, res) => {
 
     // Validation
     if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
-      return res.status(400).json({ success: false, message: 'No students selected' });
+      return res
+        .status(400)
+        .json({ success: false, message: "No students selected" });
     }
 
     // Find students by IDs
     const students = await Student.find({ _id: { $in: studentIds } });
-    
+
     if (!students || students.length === 0) {
-      return res.status(404).json({ success: false, message: 'No valid students found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "No valid students found" });
     }
 
     // Send invitation emails
@@ -314,7 +486,7 @@ exports.sendInvitations = async (req, res) => {
       const mailOptions = {
         from: "skillvedaaassessment@morlingglobal.in",
         to: student.email,
-        subject: 'Your Test Identification Number (TIN)',
+        subject: "Your Test Identification Number (TIN)",
         html: `
         <div
           style="
@@ -370,7 +542,7 @@ exports.sendInvitations = async (req, res) => {
             Click here to access your test
           </a>
         </div>
-        `
+        `,
       };
 
       return transporter.sendMail(mailOptions);
@@ -384,10 +556,10 @@ exports.sendInvitations = async (req, res) => {
       message: `Invitations sent successfully to ${students.length} students`,
     });
   } catch (error) {
-    console.error('Error sending invitations:', error);
+    console.error("Error sending invitations:", error);
     res.status(500).json({
       success: false,
-      message: 'Error sending invitations',
+      message: "Error sending invitations",
       error: error.message,
     });
   }

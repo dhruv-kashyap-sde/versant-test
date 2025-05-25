@@ -8,6 +8,12 @@ const { verifyToken } = require('../middleware/verifyToken');
 // Route to create a new student
 router.post('/students', adminController.createStudent);
 
+// Route to create a new trainer
+router.post('/trainer', adminController.createTrainer);
+
+// Route to fetch all trainers
+router.get('/trainers', adminController.getAllTrainers);
+
 // Route to fetch all students
 router.get('/students', adminController.getAllStudents);
 

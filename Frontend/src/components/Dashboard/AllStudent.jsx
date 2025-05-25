@@ -238,6 +238,7 @@ const AllStudent = () => {
           'Test Status': student.testStatus || 'N/A',
           'Phone Number': student.phone || 'N/A',
           'Alternate ID': student.alternateId || 'N/A',
+          'Created By': student.createdBy || 'Admin',
           'Created At': new Date(student.createdAt).toLocaleDateString()
         };
       });
@@ -392,7 +393,12 @@ const AllStudent = () => {
                     </Box>
                   </StyledTableCell>
                   <StyledTableCell>Phone Number</StyledTableCell>
-                  <StyledTableCell>Alternate ID</StyledTableCell>
+                  {/* <StyledTableCell>Alternate ID</StyledTableCell> //commenting because alternate id doesnt have that much of a use  */}
+                  <StyledTableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      Created By
+                    </Box>
+                  </StyledTableCell>
                   <StyledTableCell onClick={() => handleSort('createdAt')}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       Created At {getSortIcon('createdAt')}
@@ -518,7 +524,7 @@ const AllStudent = () => {
                       </TableCell>
                       <TableCell>{student.phone || "N/A"}</TableCell>
                       <TableCell>
-                        {student.alternateId === "" ? "N/A" : student.alternateId}
+                        {student.createdBy ?? "Admin" }
                       </TableCell>
                       <TableCell>
                         {new Date(student.createdAt).toLocaleDateString()}
