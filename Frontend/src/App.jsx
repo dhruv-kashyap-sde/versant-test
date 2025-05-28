@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Homepage from './pages/Home/Homepage';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './components/Dashboard/AdminDashboard/Dashboard';
 import Private from './utils/private';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Loginpage from './pages/Login/Login';
@@ -22,6 +22,7 @@ import DeviceWarning from './components/DeviceWarning';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './utils/theme/theme'; 
+import TrainerDashboard from './components/Dashboard/TrainerDashboard/TrainerDashboard';
 
 
 const App = () => {
@@ -87,6 +88,9 @@ const App = () => {
               <Route path="/rules" element={<Rules />} />
               <Route path="/admin" element={<Private />} > {/* change it with <Private> later */}
                 <Route path="" element={<Dashboard />} />
+              </Route>
+              <Route path="/trainer" element={<Private />} > {/* change it with <Private> later */}
+                <Route path="" element={<TrainerDashboard />} />
               </Route>
               <Route path="/login" element={<Loginpage />} />
               <Route

@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [error, setError] = useState(null);
   const [proceedTest, setProceedTest] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const verifyTin = () => {
     setIsVerified(true);
@@ -182,12 +183,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const contextValue = {
-    totalScore, 
-    setTotalScore,
+    totalScore, setTotalScore,
     updatePartScore,
     mediaStreamRef, videoRef, 
-    isVerified,
-    verifyTin,
+    isVerified, verifyTin,
     error, setError,
     isInternetGood, setIsInternetGood,
     recordedAudioUrl, setRecordedAudioUrl,
@@ -195,8 +194,7 @@ export const AuthProvider = ({ children }) => {
     isMicActive, setIsMicActive,
     onSecurityPassed, setOnSecurityPassed,
     isFullScreen, setIsFullScreen,
-    checkFullScreen,
-    handleFullScreenChange,
+    checkFullScreen, handleFullScreenChange,
     proceedTest, setProceedTest,
     checkInternetConnection, initializeMic,
     speakingVoice,
@@ -206,6 +204,7 @@ export const AuthProvider = ({ children }) => {
     testId, setTestId,
     partIndex, setPartIndex,
     handleContinue,
+    currentUser, setCurrentUser,
     removeAllChecks, // Add the removeAllChecks function to context
   };
 

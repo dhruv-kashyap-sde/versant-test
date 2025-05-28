@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import A from './QuestionParts/A';
-import B from './QuestionParts/B';
-import { C } from './QuestionParts/C';
-import { D } from './QuestionParts/D';
-import { E } from './QuestionParts/E';
-import { F } from './QuestionParts/F';
+import A from '../QuestionParts/A';
+import B from '../QuestionParts/B';
+import { C } from '../QuestionParts/C';
+import { D } from '../QuestionParts/D';
+import { E } from '../QuestionParts/E';
+import { F } from '../QuestionParts/F';
 
 // Material UI imports
 import {

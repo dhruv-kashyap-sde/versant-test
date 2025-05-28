@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Loader from "../../utils/Loaders/Loader";
+import Loader from "../../../utils/Loaders/Loader";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 

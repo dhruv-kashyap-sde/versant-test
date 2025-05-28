@@ -3,7 +3,7 @@ import axios from "axios";
 import CreateStudent from "./CreateStudent";
 import AllStudent from "./AllStudent";
 import CreateQuestions from "./CreateQuestions";
-import SendMail from "./SendMail";
+import SendMail from "../SendMail";
 
 // Material UI imports
 import { Box, Typography, Divider, Button, styled } from "@mui/material";

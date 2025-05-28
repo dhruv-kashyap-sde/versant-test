@@ -250,9 +250,29 @@ exports.dashboard = async (req, res) => {
   let { email } = req.user;
   let admin = await Admin.findOne({ email });
 
-  if (!admin) return res.status(401).json({ message: "User not found" });
+  if(admin){
+    res.json({ message: "Welcome to Admin Dashboard", success: true });
+  }
 
-  res.json({ message: "Welcome to Admin Dashboard", success: true });
+  let trainer = await Trainer.findOne({ email });
+  if (trainer) {
+    res.json({
+      message: "Welcome to Trainer Dashboard",
+      success: true,
+      userData: {
+        id: trainer._id,
+        name: trainer.name,
+        email: trainer.email,
+        phone: trainer.phone,
+        tinAmount: trainer.tinAmount,
+      },
+    });
+  }
+  // If neither admin nor trainer is found
+  if (!admin && !trainer) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
 };
 
 // Delete a student by ID
