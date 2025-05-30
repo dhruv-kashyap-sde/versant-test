@@ -45,8 +45,9 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   Password as PasswordIcon,
+  Refresh,
 } from "@mui/icons-material";
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha } from "@mui/material/styles";
 
 const CreateTrainer = () => {
   const [name, setName] = useState("");
@@ -55,20 +56,6 @@ const CreateTrainer = () => {
   const [phone, setPhone] = useState("");
   const [tinAmount, setTinAmount] = useState(100);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    // No need to fetch trainers here as AllTrainers component will handle it
-  }, []);
-  
-  const fetchAllTrainers = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API}/admin/trainers`
-      );
-      console.log("Fetched trainers:", response.data);
-    } catch (error) {
-      console.error("Error fetching trainers:", error);
-    }
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -119,7 +106,6 @@ const CreateTrainer = () => {
       );
     } finally {
       setLoading(false);
-      fetchAllTrainers();
     }
   };
 
@@ -166,7 +152,6 @@ const CreateTrainer = () => {
                     }}
                   />
                 </Grid>
-
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -185,7 +170,8 @@ const CreateTrainer = () => {
                       ),
                     }}
                   />
-                </Grid>                <Grid item xs={12} md={6}>
+                </Grid>{" "}
+                <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     required
@@ -205,7 +191,6 @@ const CreateTrainer = () => {
                     }}
                   />
                 </Grid>
-
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -226,7 +211,7 @@ const CreateTrainer = () => {
                     }}
                   />
                 </Grid>
-                <Grid sx={{width: '20vw'}} item xs={12} md={6}>
+                <Grid sx={{ width: "20vw" }} item xs={12} md={6}>
                   <Typography
                     variant="body1"
                     gutterBottom
@@ -264,7 +249,6 @@ const CreateTrainer = () => {
                     Selected: {tinAmount} TINs
                   </Typography>
                 </Grid>
-
                 <Grid item xs={12} sx={{ mt: 2 }}>
                   <Button
                     type="submit"
@@ -299,11 +283,11 @@ const AllTrainers = () => {
   const [trainers, setTrainers] = useState([]);
   const [filteredTrainers, setFilteredTrainers] = useState([]);
   const [loadingTrainers, setLoadingTrainers] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
-  
+
   // Delete confirmation dialog
   const [openDialog, setOpenDialog] = useState(false);
   const [trainerToDelete, setTrainerToDelete] = useState(null);
@@ -312,14 +296,14 @@ const AllTrainers = () => {
   useEffect(() => {
     fetchTrainers();
   }, []);
-  
+
   // Effect to handle filtering
   useEffect(() => {
     let result = trainers;
     if (searchTerm) {
       const lowerCaseSearch = searchTerm.toLowerCase();
       result = trainers.filter(
-        trainer => 
+        (trainer) =>
           trainer.name.toLowerCase().includes(lowerCaseSearch) ||
           trainer.email.toLowerCase().includes(lowerCaseSearch) ||
           trainer.phone.includes(searchTerm)
@@ -357,6 +341,7 @@ const AllTrainers = () => {
     } finally {
       setLoading(false);
       setOpenDialog(false);
+      fetchTrainers();
     }
   };
 
@@ -370,7 +355,7 @@ const AllTrainers = () => {
     setOpenDialog(false);
     setTrainerToDelete(null);
   };
-  
+
   // Pagination handlers
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -380,7 +365,7 @@ const AllTrainers = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  
+
   // Get current trainers for display
   const currentTrainers = filteredTrainers.slice(
     page * rowsPerPage,
@@ -389,16 +374,16 @@ const AllTrainers = () => {
 
   // Styled components for table
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    fontWeight: 'bold',
+    fontWeight: "bold",
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
   }));
-  
+
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
+    "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
-    '&:hover': {
+    "&:hover": {
       backgroundColor: alpha(theme.palette.primary.light, 0.1),
     },
   }));
@@ -420,14 +405,16 @@ const AllTrainers = () => {
       <Divider />
       <CardContent>
         {/* Search controls */}
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          mb: 2,
-          flexWrap: 'wrap', 
-          gap: 2 
-        }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+            flexWrap: "wrap",
+            gap: 2,
+          }}
+        >
           <TextField
             label="Search trainers"
             placeholder="Search by name, email or phone..."
@@ -444,10 +431,19 @@ const AllTrainers = () => {
               ),
             }}
           />
-          
-          <Typography variant="body2" color="text.secondary">
-            Showing {filteredTrainers.length} trainers
-          </Typography>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Showing {filteredTrainers.length} trainers
+            </Typography>
+            <IconButton
+              aria-label="refresh"
+              onClick={fetchTrainers}
+              disabled={loading}
+            >
+              <Refresh />
+            </IconButton>
+          </Box>
         </Box>
 
         {/* Trainers Table */}
@@ -460,6 +456,7 @@ const AllTrainers = () => {
                 <StyledTableCell>Email</StyledTableCell>
                 <StyledTableCell>Phone</StyledTableCell>
                 <StyledTableCell>TIN Allocated</StyledTableCell>
+                <StyledTableCell>TIN Remaining</StyledTableCell>
                 <StyledTableCell>Created At</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
               </TableRow>
@@ -474,7 +471,11 @@ const AllTrainers = () => {
               ) : currentTrainers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
-                    <Typography variant="body1" color="text.secondary" sx={{ py: 3 }}>
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{ py: 3 }}
+                    >
                       No trainers found matching your search criteria
                     </Typography>
                   </TableCell>
@@ -487,11 +488,12 @@ const AllTrainers = () => {
                     <TableCell>{trainer.email}</TableCell>
                     <TableCell>{trainer.phone || "N/A"}</TableCell>
                     <TableCell>{trainer.tinAmount || 0}</TableCell>
+                    <TableCell>{trainer.tinRemaining || 0}</TableCell>
                     <TableCell>
                       {new Date(trainer.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: "flex", gap: 1 }}>
                         <Tooltip title="Delete Trainer">
                           <IconButton
                             color="error"
@@ -522,25 +524,23 @@ const AllTrainers = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </CardContent>
-      
+
       {/* Delete confirmation dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={closeDeleteDialog}
-      >
+      <Dialog open={openDialog} onClose={closeDeleteDialog}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete {trainerToDelete?.name}? This action cannot be undone.
+            Are you sure you want to delete {trainerToDelete?.name}? This action
+            cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeDeleteDialog} color="primary">
             Cancel
           </Button>
-          <Button 
-            onClick={() => handleDeleteTrainer(trainerToDelete?._id)} 
-            color="error" 
+          <Button
+            onClick={() => handleDeleteTrainer(trainerToDelete?._id)}
+            color="error"
             variant="contained"
             disabled={loading}
           >

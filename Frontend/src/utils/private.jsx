@@ -1,13 +1,14 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Navigate, Outlet } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const Private = () => {
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const token = localStorage.getItem("token");
-
+  const { setCurrentUser} = useContext(AuthContext);
   useEffect(() => {
     const URL = import.meta.env.VITE_API;
 
@@ -22,6 +23,13 @@ const Private = () => {
           setHasAccess(false);
           toast.error("Access denied");
         }
+
+        if (response.data.role === "admin") {
+          setCurrentUser(response.data.userData);
+        } else if (response.data.role === "trainer") {
+          setCurrentUser(response.data.userData);
+        }
+
       } catch (error) {
         // console.log("error login failed");
         toast.error("error login failed");

@@ -9,6 +9,7 @@ const similarity = require('string-similarity');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const adminRoutes = require('./routes/admin.routes');
+const trainerRoutes = require('./routes/trainer.routes')
 const testRoutes = require('./routes/test.routes');
 const questionRoutes = require('./routes/questions.routes');
 const connectDB = require("./config/db.config");
@@ -25,6 +26,7 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use('/api/admin', adminRoutes);
+app.use('/api/trainer', trainerRoutes);
 app.use('/api/', testRoutes);
 app.use('/api/questions', questionRoutes);
 

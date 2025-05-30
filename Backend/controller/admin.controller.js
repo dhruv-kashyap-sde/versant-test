@@ -123,6 +123,7 @@ exports.createTrainer = async (req, res) => {
       phone,
       tinAmount: Number(tinAmount),
       password,
+      tinRemaining: Number(tinAmount), // Initialize tinRemaining with the same amount
     });
 
     await trainer.save();
@@ -137,6 +138,7 @@ exports.createTrainer = async (req, res) => {
         email: trainer.email,
         phone: trainer.phone,
         tinAmount: trainer.tinAmount,
+        tinRemaining: trainer.tinRemaining,
         createdAt: trainer.createdAt,
       },
     });
@@ -149,6 +151,30 @@ exports.createTrainer = async (req, res) => {
     });
   }
 };
+
+// Delete a trainer by ID
+exports.deleteTrainer = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!id) {
+      return res.status(400).json({ error: "Trainer ID is required" });
+    }
+
+    // Find and delete the trainer
+    const deletedTrainer = await Trainer.findByIdAndDelete(id);
+
+    if (!deletedTrainer) {
+      return res.status(404).json({ error: "Trainer not found" });
+    }
+
+    res.status(200).json({ message: "Trainer deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting trainer:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
 // Fetch all trainers
 exports.getAllTrainers = async (req, res) => {
@@ -259,13 +285,7 @@ exports.dashboard = async (req, res) => {
     res.json({
       message: "Welcome to Trainer Dashboard",
       success: true,
-      userData: {
-        id: trainer._id,
-        name: trainer.name,
-        email: trainer.email,
-        phone: trainer.phone,
-        tinAmount: trainer.tinAmount,
-      },
+      trainer
     });
   }
   // If neither admin nor trainer is found
@@ -280,14 +300,33 @@ exports.deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedStudent = await Student.findByIdAndDelete(id);
+    // Find the student first to check who created it
+    const student = await Student.findById(id);
 
-    if (!deletedStudent) {
+    if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    res.status(200).json({ message: "Student deleted successfully" });
+    // Check if student was created by a trainer
+    if (student.createdBy !== "Admin") {
+      // Find the trainer by name
+      const trainer = await Trainer.findById(student.creatorId);
+      
+      if (trainer) {
+        // Increment the trainer's remaining TIN count
+        trainer.tinRemaining += 1;
+        await trainer.save();
+      }
+    }
+
+    // Delete the student
+    await Student.findByIdAndDelete(id);
+
+    res.status(200).json({ 
+      message: "Student deleted successfully"
+    });
   } catch (error) {
+    console.error("Error deleting student:", error);
     res.status(500).json({ error: error.message });
   }
 };

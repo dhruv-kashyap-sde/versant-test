@@ -88,23 +88,24 @@ const Dashboard = () => {
   };
 
   const logoutUser = async () => {
-localStorage.removeItem("token");
-      window.location.href = "/login"; // Redirect to login page
+    localStorage.removeItem("token");
+    window.location.href = "/login"; // Redirect to login page
   }
+
   return (
     <DashboardContainer>
       {/* Sidebar */}
       <SidebarContainer>
-        {/* <LogoContainer> */}
         <Typography
           variant="h5"
           component="h1"
           color="primary"
           sx={{ fontWeight: "bold", padding: "12.5px 0" }}
+          onClick={()=> window.location.href = "/"}
+          style={{ cursor: "pointer" }} // Make the logo clickable
         >
-          Versant
+          SkillVedaa Swar
         </Typography>
-        {/* </LogoContainer> */}
         <Divider sx={{ my: 1 }} />
         <Box
           sx={{

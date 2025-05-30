@@ -29,6 +29,11 @@ const trainerSchema = new mongoose.Schema(
       required: [true, "TIN amount is required"],
       min: [0, "TIN amount cannot be negative"],
     },
+    tinRemaining: {
+      type: Number,
+      default: 0,
+      min: [0, "TIN remaining cannot be negative"],
+    },
     password: {
       type: String,
       required: [true, "Password is required"],

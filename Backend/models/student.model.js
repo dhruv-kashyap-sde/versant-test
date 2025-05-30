@@ -66,6 +66,9 @@ const studentSchema = new mongoose.Schema({
   createdBy: {
     type: String,
   },
+  creatorId: {
+    type: String
+  },
   testStatus:{
     type: String,
     enum: [ 'not started', 'started', 'completed'],

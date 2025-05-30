@@ -11,6 +11,9 @@ router.post('/students', adminController.createStudent);
 // Route to create a new trainer
 router.post('/trainer', adminController.createTrainer);
 
+// Route to delete a new trainer
+router.delete('/trainer/:id', adminController.deleteTrainer);
+
 // Route to fetch all trainers
 router.get('/trainers', adminController.getAllTrainers);
 
@@ -29,7 +32,7 @@ router.post('/students/import', upload.single('file'), adminController.importStu
 // **Login Route**
 router.post("/login", adminController.login);
 
-// **Protected Admin Route**
+// **Protected Route**
 router.post("/dashboard", verifyToken, adminController.dashboard);
 
 // create admin

@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Rules from "../../utils/Rules";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // Material UI imports
 import {
@@ -32,7 +34,9 @@ import {
   ListItemIcon,
   Chip,
   Stack,
-  CircularProgress
+  CircularProgress,
+  Avatar,
+  useTheme
 } from '@mui/material';
 import {
   Fingerprint as FingerprintIcon,
@@ -44,7 +48,13 @@ import {
   Search as SearchIcon,
   Assessment as AssessmentIcon,
   Mic as MicIcon,
-  Numbers
+  Numbers,
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Assignment as AssignmentIcon,
+  Download as DownloadIcon,
+  CalendarMonth as CalendarIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
@@ -184,6 +194,8 @@ const Homepage = () => {
     axios
       .post(`${import.meta.env.VITE_API}/tin`, { tin })
       .then((response) => {
+        console.log(response.data);
+        
         if (response.data && response.data.student) {
           setStudent(response.data.student);
           setResultData(response.data.student); // Store result data separately
@@ -198,7 +210,6 @@ const Homepage = () => {
         setResultLoading(false);
       });
   };
-
   const back = () => setShowResult(false);
 
   // Get status chip based on test status
@@ -221,6 +232,77 @@ const Homepage = () => {
         <Typography>{score !== undefined ? `${score} / 100` : "N/A"}</Typography>
       </ListItem>
     );
+  };
+  
+  // Format date helper function
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+    // PDF Export function
+  const exportToPDF = () => {
+    if (!resultData) return;
+    
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.setTextColor(33, 150, 243); // Blue color
+    doc.text("SkillVedaa Swar Test Results", 105, 20, { align: 'center' });
+    
+    // Add student information
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Name: ${resultData.name}`, 20, 40);
+    doc.text(`Email: ${resultData.email}`, 20, 50);
+    doc.text(`TIN: ${resultData.tin}`, 20, 60);
+    doc.text(`Phone: ${resultData.phone || "N/A"}`, 20, 70);
+    doc.text(`Test Date: ${formatDate(resultData.createdAt)}`, 20, 80);
+    doc.text(`Test Status: ${resultData.testStatus.toUpperCase()}`, 20, 90);
+    
+    // Add score table if test is completed
+    if (resultData.testScore && resultData.testStatus === "completed") {
+      doc.text("Test Scores:", 20, 110);
+      
+      const tableData = [
+        ["Part A", `${resultData.testScore.partA || 0} / 100`],
+        ["Part B", `${resultData.testScore.partB || 0} / 100`],
+        ["Part C", `${resultData.testScore.partC || 0} / 100`],
+        ["Part D", `${resultData.testScore.partD || 0} / 100`],
+        ["Part E", `${resultData.testScore.partE || 0} / 100`],
+        ["Part F", `${resultData.testScore.partF || 0} / 100`],
+        ["Total", `${resultData.testScore.total || 0} / 100`]
+      ];
+      
+      autoTable(doc, {
+        startY: 120,
+        head: [['Section', 'Score']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [33, 150, 243] },
+        styles: { halign: 'center' },
+        columnStyles: {
+          0: { halign: 'left' },
+          1: { halign: 'right' }
+        }
+      });
+      
+      // Add a note at the bottom
+      const finalY = doc.lastAutoTable.finalY + 20;
+      doc.setFontSize(10);
+      doc.text("This is an official result from the SkillVedaa Swar.", 105, finalY, { align: 'center' });
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, finalY + 10, { align: 'center' });
+    } else {
+      doc.text("No scores available. Test has not been completed.", 105, 120, { align: 'center' });
+    }
+    
+    // Save the PDF
+    doc.save(`SkillVedaa_Swar_Result_${resultData.name.replace(/\s+/g, '_')}_${resultData.tin}.pdf`);
   };
 
   return (
@@ -310,67 +392,266 @@ const Homepage = () => {
                 </Link>
               </Typography>
             </Box>
-          </ContentCard>
-
-          {/* Results Dialog */}
+          </ContentCard>          {/* Results Dialog */}
           <Dialog
             open={showResult}
             onClose={() => setShowResult(false)}
             fullWidth
-            maxWidth="sm"
+            maxWidth="md"
+            PaperProps={{
+              sx: { borderRadius: 2 }
+            }}
           >
-            <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+            <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white', px: 3, py: 2 }}>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <AssessmentIcon />
                 <Typography variant="h6">Test Result</Typography>
               </Stack>
             </DialogTitle>
             
-            <DialogContent sx={{ pt: 3 }}>
+            <DialogContent sx={{ p: 0 }}>
               {resultData ? (
-                <>
-                  <Box sx={{ mb: 3, mt: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Test Status:
-                    </Typography>
-                    {getStatusChip(resultData.testStatus)}
+                <Box>
+                  {/* Student Information Section */}
+                  <Box sx={{ bgcolor: 'background.paper', p: 3 }}>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', borderRight: { md: '1px solid #eee' } }}>
+                        <Avatar 
+                          sx={{ 
+                            width: 100, 
+                            height: 100, 
+                            bgcolor: 'primary.main',
+                            mb: 2,
+                            fontSize: '2rem'
+                          }}
+                        >
+                          {resultData.name ? resultData.name.charAt(0).toUpperCase() : 'S'}
+                        </Avatar>
+                        <Typography variant="h6" align="center" gutterBottom>
+                          {resultData.name}
+                        </Typography>
+                        <Box sx={{ mt: 1, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {getStatusChip(resultData.testStatus)}
+                        </Box>
+                      </Grid>
+                      
+                      <Grid item xs={12} md={8}>
+                        <Typography variant="h6" gutterBottom color="primary">
+                          Student Information
+                        </Typography>
+                        
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} sm={6}>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                              <EmailIcon color="primary" fontSize="small" />
+                              <Typography variant="body2" color="text.secondary">
+                                Email
+                              </Typography>
+                            </Stack>
+                            <Typography variant="body1">
+                              {resultData.email}
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item xs={12} sm={6}>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                              <Numbers color="primary" fontSize="small" />
+                              <Typography variant="body2" color="text.secondary">
+                                TIN
+                              </Typography>
+                            </Stack>
+                            <Typography variant="body1">
+                              {resultData.tin}
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item xs={12} sm={6}>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                              <PhoneIcon color="primary" fontSize="small" />
+                              <Typography variant="body2" color="text.secondary">
+                                Phone Number
+                              </Typography>
+                            </Stack>
+                            <Typography variant="body1">
+                              {resultData.phone || "Not provided"}
+                            </Typography>
+                          </Grid>
+                          
+                          <Grid item xs={12} sm={6}>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                              <CalendarIcon color="primary" fontSize="small" />
+                              <Typography variant="body2" color="text.secondary">
+                                Test Date
+                              </Typography>
+                            </Stack>
+                            <Typography variant="body1">
+                              {formatDate(resultData.createdAt)}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
                   </Box>
                   
-                  <Divider sx={{ mb: 2 }} />
+                  <Divider />
                   
-                  {/* Only show scores if testScore exists and test is completed */}
-                  {resultData.testScore && resultData.testStatus === "completed" ? (
-                    <>
-                      <List disablePadding>
-                        {renderScoreItem("Part A", resultData.testScore.partA)}
-                        {renderScoreItem("Part B", resultData.testScore.partB)}
-                        {renderScoreItem("Part C", resultData.testScore.partC)}
-                        {renderScoreItem("Part D", resultData.testScore.partD)}
-                        {renderScoreItem("Part E", resultData.testScore.partE)}
-                        {renderScoreItem("Part F", resultData.testScore.partF)}
-                      </List>
-                      
-                      <Box sx={{ mt: 3, p: 2, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 1 }}>
-                        <Typography variant="h6" align="center" fontWeight="bold">
-                          Total Score: {resultData.testScore.total || "N/A"}
-                        </Typography>
+                  {/* Test Results Section */}
+                  <Box sx={{ p: 3 }}>
+                    <Typography variant="h6" gutterBottom color="primary" sx={{ display: 'flex', alignItems: 'center' }}>
+                      <AssessmentIcon sx={{ mr: 1 }} />
+                      Test Results
+                    </Typography>
+                    
+                    {/* Only show scores if testScore exists and test is completed */}
+                    {resultData.testScore && resultData.testStatus === "completed" ? (
+                      <Box sx={{ mt: 2 }}>
+                        <Grid container spacing={2}>
+                          {/* Score cards for each part */}
+                          <Grid item xs={6} sm={4} md={2}>
+                            <Card elevation={1} sx={{ height: '100%' }}>
+                              <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                <Typography variant="h6" color="primary.main">
+                                  Part A
+                                </Typography>
+                                <Typography variant="h4" fontWeight="bold">
+                                  {resultData.testScore.partA || 0}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  out of 100
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          
+                          <Grid item xs={6} sm={4} md={2}>
+                            <Card elevation={1} sx={{ height: '100%' }}>
+                              <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                <Typography variant="h6" color="primary.main">
+                                  Part B
+                                </Typography>
+                                <Typography variant="h4" fontWeight="bold">
+                                  {resultData.testScore.partB || 0}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  out of 100
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          
+                          <Grid item xs={6} sm={4} md={2}>
+                            <Card elevation={1} sx={{ height: '100%' }}>
+                              <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                <Typography variant="h6" color="primary.main">
+                                  Part C
+                                </Typography>
+                                <Typography variant="h4" fontWeight="bold">
+                                  {resultData.testScore.partC || 0}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  out of 100
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          
+                          <Grid item xs={6} sm={4} md={2}>
+                            <Card elevation={1} sx={{ height: '100%' }}>
+                              <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                <Typography variant="h6" color="primary.main">
+                                  Part D
+                                </Typography>
+                                <Typography variant="h4" fontWeight="bold">
+                                  {resultData.testScore.partD || 0}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  out of 100
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          
+                          <Grid item xs={6} sm={4} md={2}>
+                            <Card elevation={1} sx={{ height: '100%' }}>
+                              <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                <Typography variant="h6" color="primary.main">
+                                  Part E
+                                </Typography>
+                                <Typography variant="h4" fontWeight="bold">
+                                  {resultData.testScore.partE || 0}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  out of 100
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          
+                          <Grid item xs={6} sm={4} md={2}>
+                            <Card elevation={1} sx={{ height: '100%' }}>
+                              <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                <Typography variant="h6" color="primary.main">
+                                  Part F
+                                </Typography>
+                                <Typography variant="h4" fontWeight="bold">
+                                  {resultData.testScore.partF || 0}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  out of 100
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        </Grid>
+                        
+                        {/* Total Score */}
+                        <Card 
+                          elevation={3} 
+                          sx={{ 
+                            mt: 3, 
+                            p: 2, 
+                            bgcolor: 'primary.main', 
+                            color: 'white',
+                            borderRadius: 2
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography variant="h6">
+                              Total Score
+                            </Typography>
+                            <Typography variant="h3" fontWeight="bold">
+                              {resultData.testScore.total || 0}
+                            </Typography>
+                          </Box>
+                        </Card>
                       </Box>
-                    </>
-                  ) : (
-                    <Alert severity="info">
-                      <AlertTitle>No Score Available</AlertTitle>
-                      The test has not been completed yet. Scores will be available after completion.
-                    </Alert>
-                  )}
-                </>
+                    ) : (
+                      <Alert severity="info" sx={{ mt: 2 }}>
+                        <AlertTitle>No Score Available</AlertTitle>
+                        The test has not been completed yet. Scores will be available after completion.
+                      </Alert>
+                    )}
+                  </Box>
+                </Box>
               ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}>
                   <CircularProgress />
                 </Box>
               )}
             </DialogContent>
             
-            <DialogActions>
+            <DialogActions sx={{ px: 3, py: 2, borderTop: '1px solid #eee' }}>
+              {resultData && resultData.testStatus === "completed" && (
+                <Button 
+                  onClick={exportToPDF}
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<DownloadIcon />}
+                >
+                  Download PDF
+                </Button>
+              )}
+              <Box sx={{ flexGrow: 1 }} />
               <Button 
                 onClick={() => setShowResult(false)}
                 variant="contained"
