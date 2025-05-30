@@ -117,7 +117,7 @@ const Loginpage = () => {
                 color="primary"
                 fontWeight="300"
               >
-                Admin Login
+                Login
               </Typography>
             </Box>
 

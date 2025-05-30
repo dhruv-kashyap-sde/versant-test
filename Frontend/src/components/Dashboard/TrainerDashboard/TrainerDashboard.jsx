@@ -3,7 +3,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { AuthContext } from "../../../context/AuthContext";
 import SendMail from "../SendMail";
-import ExcelUpload from "../ExcelUpload";
 import Loader from "../../../utils/Loaders/Loader";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -63,6 +62,8 @@ import {
   SwapVert as SwapVertIcon,
   Info as InfoIcon,
   FileDownload as FileDownloadIcon,
+  Password,
+  RemoveRedEye,
 } from "@mui/icons-material";
 
 // Styled components
@@ -217,10 +218,8 @@ const TrainerDashboard = () => {
         );
       case "viewStudents":
         return <AllStudents />;
-      case "bulkUpload":
-        return <ExcelUpload isTrainer={true} refreshData={fetchTrainerData} />;
       case "sendMail":
-        return <SendMail isTrainer={true} />;
+        return <SendMail isAdmin={false} />;
       default:
         return (
           <TrainerOverview
@@ -284,14 +283,14 @@ const TrainerDashboard = () => {
           >
             View Students
           </NavButton>
-
+{/* 
           <NavButton
             startIcon={<UploadIcon />}
             active={activeTab === "bulkUpload" ? 1 : 0}
             onClick={() => setActiveTab("bulkUpload")}
           >
             Bulk Upload
-          </NavButton>
+          </NavButton> */}
 
           <NavButton
             startIcon={<MailIcon />}
@@ -336,11 +335,7 @@ const TrainerOverview = ({ currentUser, refreshData }) => {
   const tinRemaining = currentUser?.tinRemaining || 0;
   const usagePercentage = (tinUsed / tinTotal) * 100 || 0;
 
-  const [stats, setStats] = useState({
-    totalStudents: 0,
-    completedTests: 0,
-    pendingTests: 0,
-  });
+  const [stats, setStats] = useState([]);
 
   useEffect(() => {
     fetchStats();
@@ -348,10 +343,12 @@ const TrainerOverview = ({ currentUser, refreshData }) => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API}/trainer/stats`
+      const response = await axios.post(
+        `${import.meta.env.VITE_API}/trainer/students`, {token: localStorage.getItem("token")}
       );
       setStats(response.data);
+      console.log("Fetched stats:", response.data);
+      
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
@@ -413,57 +410,144 @@ const TrainerOverview = ({ currentUser, refreshData }) => {
             </CardContent>
           </TinUsageCard>
 
-          {/* Stats Cards */}
-          <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
-            Statistics
-          </Typography>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Card elevation={2}>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
+                <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
+                Statistics
+                </Typography>
+                <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                  <Card elevation={2}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
                     Total Students
-                  </Typography>
-                  <Typography variant="h3">{stats.totalStudents}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+                    </Typography>
+                    <Typography variant="h3">{stats.length}</Typography>
+                  </CardContent>
+                  </Card>
+                </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Card elevation={2}>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
+                <Grid item xs={12} md={4}>
+                  <Card elevation={2}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
                     Completed Tests
-                  </Typography>
-                  <Typography variant="h3" color="success.main">
-                    {stats.completedTests}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+                    </Typography>
+                    <Typography variant="h3" color="success.main">
+                    {stats.filter(student => student.testStatus === 'completed').length}
+                    </Typography>
+                  </CardContent>
+                  </Card>
+                </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Card elevation={2}>
-                <CardContent>
-                  <Typography color="textSecondary" gutterBottom>
+                <Grid item xs={12} md={4}>
+                  <Card elevation={2}>
+                  <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
                     Pending Tests
-                  </Typography>
-                  <Typography variant="h3" color="warning.main">
-                    {stats.pendingTests}
-                  </Typography>
+                    </Typography>
+                    <Typography variant="h3" color="warning.main">
+                    {stats.filter(student => student.testStatus !== 'completed').length}
+                    </Typography>
+                  </CardContent>
+                  </Card>
+                </Grid>
+                </Grid>
+              </Box>
+              <Box
+                sx={{ width: "50%"}}
+              >
+                <Card elevation={2}>
+                <CardHeader 
+                  title={`Welcome, ${currentUser?.name || "Trainer"}`}
+                  subheader="Your account details"
+                />
+                <CardContent>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PersonIcon color="primary" />
+                    <Typography variant="body1" fontWeight="medium">User ID:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                    {currentUser?._id || "Not available"}
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <EmailIcon color="primary" />
+                    <Typography variant="body1" fontWeight="medium">Email:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                    {currentUser?.email || "Not available"}
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PhoneIcon color="primary" />
+                    <Typography variant="body1" fontWeight="medium">Phone:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                    {currentUser?.phone || "Not provided"}
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Password color="primary" />
+                    <Typography variant="body1" fontWeight="medium">Password:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                    Sent on email
+                    </Typography>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AccessTimeIcon color="primary" />
+                    <Typography variant="body1" fontWeight="medium">Created On:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                    {currentUser?.createdAt 
+                      ? new Date(currentUser.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })
+                      : "Not available"}
+                    </Typography>
+                  </Box>
+                  </Box>
                 </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
-        <Box
-          sx={{ width: "50%", backgroundColor: "#fff", borderRadius: "8px" }}
-        >
-          <CardHeader title={`Welcome, ${currentUser?.name || "Trainer"}`} />
-        </Box>
-      </Box>
+                </Card>
+              </Box>
+              </Box>
 
-      {/* Recent Activity (placeholder) */}
+              {/* Password display component with toggle */}
+              {function PasswordDisplay({ password }) {
+              const [showPassword, setShowPassword] = useState(false);
+              
+              const togglePasswordVisibility = () => {
+                setShowPassword(!showPassword);
+              };
+              
+              return (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <AlternateEmailIcon color="primary" />
+                <Typography variant="body1" fontWeight="medium">Password:</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {showPassword ? password : '••••••••'}
+                </Typography>
+                <IconButton 
+                  size="small"
+                  onClick={togglePasswordVisibility}
+                  sx={{ ml: 1 }}
+                >
+                  {showPassword ? (
+                  <Tooltip title="Hide password">
+                    <CancelIcon fontSize="small" />
+                  </Tooltip>
+                  ) : (
+                  <Tooltip title="Show password">
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                  )}
+                </IconButton>
+                </Box>
+              );
+              }}
+
+              {/* Recent Activity (placeholder) */}
       <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
         Recent Activity
       </Typography>

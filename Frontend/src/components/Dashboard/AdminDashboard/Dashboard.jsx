@@ -81,7 +81,7 @@ const Dashboard = () => {
       case "Questions":
         return <CreateQuestions />;
       case "SendMail":
-        return <SendMail />;
+        return <SendMail isAdmin={true}/>;
       default:
         return <AllStudent />;
     }
