@@ -59,6 +59,11 @@ const studentSchema = new mongoose.Schema({
       default: 0
     },
   },
+  testId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Test',
+    required: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -57,6 +57,10 @@ const TestAttemptSchema = new mongoose.Schema({
     partF: { type: Number, default: 0 },
     total: { type: Number, default: 0 }
   },
+  studentImage: {
+    type: String,
+    default: ''
+  },
   
 }, { timestamps: true });
 

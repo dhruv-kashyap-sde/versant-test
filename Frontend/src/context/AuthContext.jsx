@@ -33,6 +33,11 @@ export const AuthProvider = ({ children }) => {
   const [proceedTest, setProceedTest] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+  // Add camera-related states
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [photoTaken, setPhotoTaken] = useState(false);
+  const [capturedImageUrl, setCapturedImageUrl] = useState(null);
+
   const verifyTin = () => {
     setIsVerified(true);
   };
@@ -163,6 +168,51 @@ export const AuthProvider = ({ children }) => {
     }));
   };
 
+  // Initialize camera function
+  const initializeCamera = async () => {
+    try {
+      const constraints = { video: true };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // Connect the stream to the video element
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        mediaStreamRef.current = stream;
+        setIsCameraActive(true);
+      } else {
+        setError("Video element not available");
+      }
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      setError("Error accessing camera: " + err.message);
+      setIsCameraActive(false);
+    }
+  };
+
+  // Take a photo using the camera
+  const capturePhoto = () => {
+    if (!videoRef.current || !isCameraActive) {
+      setError("Camera must be active to take a photo");
+      return;
+    }
+
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      
+      // Convert to image URL
+      const imageUrl = canvas.toDataURL('image/png');
+      setCapturedImageUrl(imageUrl);
+      setPhotoTaken(true);
+    } catch (err) {
+      console.error("Error capturing photo:", err);
+      setError("Failed to capture photo: " + err.message);
+    }
+  };
+
   // Function to remove all security checks
   const removeAllChecks = () => {
     setIsMicActive(false);
@@ -172,6 +222,9 @@ export const AuthProvider = ({ children }) => {
     setIsFullScreen(false);
     setOnSecurityPassed(false);
     setError(null);
+    setIsCameraActive(false);
+    setPhotoTaken(false);
+    setCapturedImageUrl(null);
     
     // Stop any active media streams
     if (mediaStreamRef.current) {
@@ -179,6 +232,18 @@ export const AuthProvider = ({ children }) => {
         track.stop();
       });
       mediaStreamRef.current = null;
+    }
+  };
+
+  // Function to convert base64 image to blob
+  const base64ToBlob = async (base64Url) => {
+    try {
+      const response = await fetch(base64Url);
+      const blob = await response.blob();
+      return blob;
+    } catch (err) {
+      console.error("Error converting image:", err);
+      throw new Error("Failed to process image: " + err.message);
     }
   };
 
@@ -205,7 +270,12 @@ export const AuthProvider = ({ children }) => {
     partIndex, setPartIndex,
     handleContinue,
     currentUser, setCurrentUser,
+    isCameraActive, setIsCameraActive,
+    photoTaken, setPhotoTaken,
+    capturedImageUrl, setCapturedImageUrl,
+    initializeCamera, capturePhoto,
     removeAllChecks, // Add the removeAllChecks function to context
+    base64ToBlob,
   };
 
   return (

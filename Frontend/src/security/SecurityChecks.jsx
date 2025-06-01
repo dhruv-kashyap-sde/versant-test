@@ -25,7 +25,15 @@ const SecurityChecks = () => {
     checkFullScreen,
     handleFullScreenChange,
     proceedTest,
-    setProceedTest, checkInternetConnection, initializeMic
+    setProceedTest, 
+    checkInternetConnection, 
+    initializeMic,
+    // Add new context values
+    isCameraActive,
+    photoTaken,
+    capturedImageUrl,
+    initializeCamera,
+    capturePhoto
   } = useContext(AuthContext);
 
   // Run the security checks on mount
@@ -33,6 +41,7 @@ const SecurityChecks = () => {
     initializeMic();
     checkInternetConnection();
     checkFullScreen();
+    initializeCamera();
 
     document.addEventListener("fullscreenchange", handleFullScreenChange);
 
@@ -51,7 +60,9 @@ const SecurityChecks = () => {
       isMicActive &&
       isInternetGood &&
       audioRecordingCompleted &&
-      isFullScreen
+      isFullScreen &&
+      isCameraActive &&
+      photoTaken
     ) {
       setOnSecurityPassed(true);
     }
@@ -62,6 +73,8 @@ const SecurityChecks = () => {
     recordedAudioUrl,
     onSecurityPassed,
     isFullScreen,
+    isCameraActive,
+    photoTaken
   ]);
 
   const startProceedTest = () => {
@@ -112,6 +125,25 @@ const SecurityChecks = () => {
               disabled={isInternetGood}
             >
               Check again
+            </button>
+          </p>
+          <p className="status-tile">
+            <strong>Camera:</strong>{" "}
+            {isCameraActive ? (
+              photoTaken ? (
+                <span style={{ color: "green" }}>Photo Captured</span>
+              ) : (
+                <span style={{ color: "orange" }}>Ready (Take Photo)</span>
+              )
+            ) : (
+              <span style={{ color: "red" }}>Inactive</span>
+            )}
+            <button
+              className="secondary"
+              onClick={isCameraActive ? capturePhoto : initializeCamera}
+              disabled={photoTaken}
+            >
+              {isCameraActive ? "Take Photo" : "Check again"}
             </button>
           </p>
           <p className="status-tile">

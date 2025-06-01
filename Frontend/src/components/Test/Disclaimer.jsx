@@ -6,8 +6,19 @@ import { useNavigate } from 'react-router-dom';
 import './Disclaimer.css';
 
 const Disclaimer = ({ onContinue }) => {
-  const { speakingVoice, setTestQuestions, loading, setLoading, student, setTestId } = useContext(AuthContext);
+  const { 
+    speakingVoice, 
+    setTestQuestions, 
+    loading, 
+    setLoading, 
+    student, 
+    setTestId, 
+    capturedImageUrl, 
+    base64ToBlob,
+    photoTaken
+  } = useContext(AuthContext);
   const [isChecked, setIsChecked] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   const rules = [
     "Welcome to Versant Test. Please read all instructions carefully before proceeding. Do not reload or refresh the page during the test. DO NOT exit fullscreen mode during the test. Do not block any permissions required for the test. Speak in natural voice, not too low, not too loud. Violating any rules above will lead to instant disqualification from the test.",
@@ -43,13 +54,47 @@ const Disclaimer = ({ onContinue }) => {
   };
 
   const navigate = useNavigate();
+  
   const handleContinueClick = async () => {
     stop();
     try {
       setLoading(true);
+      setUploadingImage(true);
       let tin = student.tin;
+
+      // Check if photo was taken during security checks
+      if (!photoTaken || !capturedImageUrl) {
+        toast.error("Security photo is required. Please complete all security checks.");
+        setLoading(false);
+        setUploadingImage(false);
+        return;
+      }
+
+      // Create form data with TIN and image
+      const formData = new FormData();
+      formData.append('tin', tin);
       
-      const response = await axios.post(`${import.meta.env.VITE_API}/start`, { tin });
+      // Convert the base64 image to a blob and add to formData
+      try {
+        const imageBlob = await base64ToBlob(capturedImageUrl);
+        formData.append('image', imageBlob, 'user-photo.png');
+      } catch (imgError) {
+        toast.error("Failed to process image. Please try again.");
+        setLoading(false);
+        setUploadingImage(false);
+        return;
+      }
+      
+      // Send request with image and TIN
+      const response = await axios.post(
+        `${import.meta.env.VITE_API}/start`, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
       
       if (response.data.status === "completed") {
         toast.error("You have already completed the test. Please check your result.");
@@ -61,15 +106,18 @@ const Disclaimer = ({ onContinue }) => {
         navigate("/");
         return;
       }
+      
       setTestQuestions(response.data.questions);
       setTestId(response.data.testId);
       setLoading(false);
+      setUploadingImage(false);
       toast.success(response.data.message);
       onContinue();
     } catch (error) {
-      toast.error("Error fetching questions");
-    } finally{
+      console.error("Error:", error);
+      toast.error(error.response?.data?.message || "Error starting test");
       setLoading(false);
+      setUploadingImage(false);
     }
   };
 
@@ -146,8 +194,12 @@ const Disclaimer = ({ onContinue }) => {
       </div>
       
       <div className="disclaimer-action">
-        <button className='primary' disabled={!isChecked || loading} onClick={handleContinueClick}>
-          {loading ? "Loading..." : "Continue to Test"}
+        <button 
+          className='primary' 
+          disabled={!isChecked || loading || uploadingImage} 
+          onClick={handleContinueClick}
+        >
+          {loading ? "Loading..." : uploadingImage ? "Uploading Photo..." : "Continue to Test"}
         </button>
       </div>
     </div>

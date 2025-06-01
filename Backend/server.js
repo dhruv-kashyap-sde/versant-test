@@ -52,3 +52,6 @@ initializeApp().then(() => {
   console.error('Failed to initialize application:', err);
   process.exit(1);
 });
+
+// Serve static files from the uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -1,10 +1,12 @@
 const Question = require("../models/question.model");
 const Student = require("../models/student.model");
 const TestAttempt = require("../models/testAttempt.model");
-const { calculatePartDScore, checkPartD } = require("../utils/checkPartD");
+const { checkPartD } = require("../utils/checkPartD");
 const checkPart = require("../utils/checkPart");
-const { calculatePartCScore, getPartCScore, checkPartC } = require("../utils/checkPartC");
+const { checkPartC } = require("../utils/checkPartC");
 const checkPartF = require("../utils/checkPartF");
+const fs = require('fs');
+const path = require('path');
 require("dotenv").config();
 
 // Start a new test
@@ -60,18 +62,25 @@ exports.startTest = async (req, res) => {
 
     // Get 2 questions from each part
     const testQuestions = {
-      partA: getRandomElements(allQuestions.partA.questions, process.env.NODE !== 'development' ? 2 : 8),
-      partB: getRandomElements(allQuestions.partB.questions, process.env.NODE !== 'development' ? 2 : 8),
-      partC: getRandomElements(allQuestions.partC.questions, process.env.NODE !== 'development' ? 2 : 5),
-      partD: getRandomElements(allQuestions.partD.questions, process.env.NODE !== 'development' ? 2 : 8),
-      partE: getRandomElements(allQuestions.partE.questions, process.env.NODE !== 'development' ? 2 : 8),
+      partA: getRandomElements(allQuestions.partA.questions, process.env.NODE === 'development' ? 2 : 8),
+      partB: getRandomElements(allQuestions.partB.questions, process.env.NODE === 'development' ? 2 : 8),
+      partC: getRandomElements(allQuestions.partC.questions, process.env.NODE === 'development' ? 2 : 5),
+      partD: getRandomElements(allQuestions.partD.questions, process.env.NODE === 'development' ? 2 : 8),
+      partE: getRandomElements(allQuestions.partE.questions, process.env.NODE === 'development' ? 2 : 8),
       partF: getRandomElements(allQuestions.partF.questions, 2)
     };
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    const imageUrl = `/uploads/${req.file.filename}`;
 
     // Create new test attempt
     const testAttempt = new TestAttempt({
       studentId: student._id,
       questions: testQuestions,
+      studentImage: imageUrl,
     });
 
     await testAttempt.save();
