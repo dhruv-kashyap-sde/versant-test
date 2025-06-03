@@ -4,6 +4,7 @@ import NotFullScreen from "../../security/NotFullScreen";
 import AllPartsFlowControl from "./AllPartsFlowControl";
 import { AuthContext } from "../../context/AuthContext";
 import "./Disclaimer.css";
+import FaceMonitor from "../../security/FaceMonitor";
 
 const StartTest = () => {
   const { isFullScreen, checkFullScreen, proceedTest, setIsFullScreen } =
@@ -26,6 +27,9 @@ const StartTest = () => {
     <>
       <div>
         {proceedTest ? <AllPartsFlowControl /> : <SecurityChecks />}
+        {proceedTest && <div style={{position:'fixed', bottom: '10px', right:'10px', zIndex: 999}}>
+          <FaceMonitor/>
+          </div>}
         {!isFullScreen && <NotFullScreen checkFullScreen={checkFullScreen} />}
       </div>
     </>

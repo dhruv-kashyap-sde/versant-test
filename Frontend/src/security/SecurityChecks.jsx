@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import "./Security.css";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import FaceMonitor from "./FaceMonitor";
 
 const SecurityChecks = () => {
 
@@ -161,7 +162,6 @@ const SecurityChecks = () => {
               Check again
             </button>
           </p>
-
           {/* Disabled because no use right now */}
           {/* <p className="status-tile">
             <strong>Audio Sample:</strong>{" "}
