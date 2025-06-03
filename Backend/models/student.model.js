@@ -62,7 +62,6 @@ const studentSchema = new mongoose.Schema({
   testId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Test',
-    required: true
   },
   createdAt: {
     type: Date,

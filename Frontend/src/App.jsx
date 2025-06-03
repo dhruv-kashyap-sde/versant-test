@@ -15,7 +15,6 @@ import ProtectedRoute from './utils/ProtectedRoute';
 // import PartA from './components/PartA';
 // import PartB from './components/PartB';
 // import PartC from './components/PartC';
-// import Result from './pages/Result/Result';
 import Rules from './utils/Rules';
 import DeviceWarning from './components/DeviceWarning';
 
