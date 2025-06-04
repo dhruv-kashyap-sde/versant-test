@@ -32,7 +32,7 @@ const upload = multer({
 });
 
 // Route to begin the student's test
-router.post('/start/:tin', testController.startTest);
+router.post('/start/:tin', upload.single('image'), testController.startTest);
 
 // Route to verify the student's tin
 router.post('/tin', testController.beginTest);

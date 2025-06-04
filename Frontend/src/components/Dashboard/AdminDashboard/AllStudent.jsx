@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import Loader from "../../../utils/Loaders/Loader";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import StudentDetails from './StudentDetails';
 
 // Material UI imports
 import { 
@@ -85,6 +86,11 @@ const AllStudent = () => {
   // Delete confirmation dialog
   const [openDialog, setOpenDialog] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
+
+  // Add these state variables for student details dialog
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
+  const [studentDetails, setStudentDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   const fetchStudents = async () => {
     setLoadingStudents(true);
@@ -196,6 +202,27 @@ const AllStudent = () => {
       fetchStudents();
     }
   };
+
+  const getStudentDetails = async (id) => {
+    setLoadingDetails(true);
+    setOpenDetailsDialog(true);
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API}/admin/details/${id}`);
+      if (response.status === 200) {
+        console.log("Student details response:", response.data);
+        
+        setStudentDetails(response.data);
+      } else {
+        toast.error("Error fetching student details");
+      }
+    } catch (error) {
+      console.log("Error fetching student details:", error);
+      toast.error(`${error.response?.data?.error || "Failed to fetch student details"}`);
+      setOpenDetailsDialog(false);
+    } finally {
+      setLoadingDetails(false);
+    }
+  }
 
   // Material UI pagination handlers
   const handleChangePage = (event, newPage) => {
@@ -540,6 +567,14 @@ const AllStudent = () => {
                         >
                           Delete
                         </Button>
+                        <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        onClick={() => getStudentDetails(student._id)}
+                        >
+                          Get Details
+                        </Button>
                       </TableCell>
                     </StyledTableRow>
                   ))
@@ -586,6 +621,14 @@ const AllStudent = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Student Details Dialog */}
+      <StudentDetails 
+        open={openDetailsDialog}
+        onClose={() => setOpenDetailsDialog(false)}
+        data={studentDetails}
+        loading={loadingDetails}
+      />
     </Box>
   );
 };

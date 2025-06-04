@@ -8,6 +8,7 @@ const xlsx = require("xlsx");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
 const Trainer = require("../models/trainer.model");
+const testAttemptModel = require("../models/testAttempt.model");
 
 // Create a new student
 exports.createStudent = async (req, res) => {
@@ -55,6 +56,35 @@ exports.createStudent = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+// get all details of a student by ID
+exports.getStudentDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ID
+    if (!id) {
+      return res.status(400).json({ error: "Student ID is required" });
+    }
+
+    // Find the student by ID
+    const student = await Student.findById(id);
+
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+    // Fetch test attempts for the student
+    const testAttempts = await testAttemptModel.find({ studentId: student._id });
+    if (!testAttempts || testAttempts.length === 0) {
+      return res.status(404).json({ error: "No test attempts found for this student" });
+    }
+
+    res.status(200).json({student, testAttempts});
+  } catch (error) {
+    console.error("Error fetching student details:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
 
 // Create new Trainer
 exports.createTrainer = async (req, res) => {
