@@ -4,11 +4,12 @@ import "./Security.css";
 import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import FaceMonitor from "./FaceMonitor";
+import * as faceapi from "face-api.js";
 
 const SecurityChecks = () => {
-
   const {
-    videoRef, mediaStreamRef,
+    videoRef,
+    mediaStreamRef,
     isMicActive,
     setIsMicActive,
     audioRecordingCompleted,
@@ -22,27 +23,50 @@ const SecurityChecks = () => {
     onSecurityPassed,
     setOnSecurityPassed,
     isFullScreen,
-    setIsFullScreen,
     checkFullScreen,
     handleFullScreenChange,
     proceedTest,
-    setProceedTest, 
-    checkInternetConnection, 
+    setProceedTest,
+    checkInternetConnection,
     initializeMic,
     // Add new context values
     isCameraActive,
     photoTaken,
     capturedImageUrl,
     initializeCamera,
-    capturePhoto
+    capturePhoto,
   } = useContext(AuthContext);
 
+  const [faceDetected, setFaceDetected] = useState(false);
   // Run the security checks on mount
   useEffect(() => {
     initializeMic();
     checkInternetConnection();
     checkFullScreen();
-    initializeCamera();
+
+    const loadModels = async () => {
+      await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+    };
+
+    loadModels().then(initializeCamera());
+        const interval = setInterval(async () => {
+      if (videoRef.current) {
+        const detections = await faceapi.detectAllFaces(
+          videoRef.current,
+          new faceapi.TinyFaceDetectorOptions()
+        );
+
+        if (detections.length === 0) {
+          toast.error("No face detected");
+          setFaceDetected(false);
+        } else if (detections.length > 1) {
+          toast.error("Multiple faces detected");
+          setFaceDetected(false);
+        } else{
+          setFaceDetected(true);
+        }
+      }
+    }, 2000); // Every 2 seconds
 
     document.addEventListener("fullscreenchange", handleFullScreenChange);
 
@@ -52,6 +76,7 @@ const SecurityChecks = () => {
         mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       }
       document.removeEventListener("fullscreenchange", handleFullScreenChange);
+      clearInterval(interval);
     };
   }, []);
 
@@ -63,10 +88,11 @@ const SecurityChecks = () => {
       audioRecordingCompleted &&
       isFullScreen &&
       isCameraActive &&
-      photoTaken
+      photoTaken &&
+      faceDetected
     ) {
       setOnSecurityPassed(true);
-    }
+    } else setOnSecurityPassed(false);
   }, [
     isMicActive,
     isInternetGood,
@@ -75,13 +101,14 @@ const SecurityChecks = () => {
     onSecurityPassed,
     isFullScreen,
     isCameraActive,
-    photoTaken
+    photoTaken,
+    faceDetected
   ]);
 
   const startProceedTest = () => {
     if (onSecurityPassed) {
       setProceedTest(true);
-    } else{
+    } else {
       toast.error("Security measures not taken");
     }
   };

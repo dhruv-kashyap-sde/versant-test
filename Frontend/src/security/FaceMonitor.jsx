@@ -5,7 +5,8 @@ import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 
 function FaceMonitor() {
-  const { testReport, setTestReport } = useContext(AuthContext);
+  const { testReport, setTestReport, 
+    setIsFullScreen, setFaceDetectionError } = useContext(AuthContext);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -34,14 +35,15 @@ function FaceMonitor() {
         if (detections.length === 0) {
           testReport.testLog.push(`No face detected at ${new Date().toLocaleString()}`);
           setTestReport({ ...testReport });
-          console.log(testReport);
+          setFaceDetectionError("No face detected, You will be redirected to the home page");
+          setIsFullScreen(false);
           toast.error("No face detected");
         } else if (detections.length > 1) {
+          setFaceDetectionError("Multiple face detected, You will be redirected to the home page");
+          setIsFullScreen(false);
           toast.error("Multiple faces detected");
-          testReport.testLog.push(`No face detected at ${new Date().toLocaleString()}`);
+          testReport.testLog.push(`Multiple faces detected at ${new Date().toLocaleString()}`);
           setTestReport({ ...testReport });
-          console.log(testReport);
-          
         } 
       }
     }, 2000); // Every 2 seconds

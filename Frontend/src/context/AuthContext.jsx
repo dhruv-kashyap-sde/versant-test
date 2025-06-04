@@ -37,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [capturedImageUrl, setCapturedImageUrl] = useState(null);
+  const [faceDetectionError, setFaceDetectionError] = useState(null);
 
   // test report log 
   const [testReport, setTestReport] = useState({
@@ -285,7 +286,8 @@ export const AuthProvider = ({ children }) => {
     initializeCamera, capturePhoto,
     removeAllChecks, // Add the removeAllChecks function to context
     base64ToBlob,
-    testReport, setTestReport
+    testReport, setTestReport,
+    faceDetectionError, setFaceDetectionError
   };
 
   return (

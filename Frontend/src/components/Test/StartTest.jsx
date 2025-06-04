@@ -7,10 +7,11 @@ import "./Disclaimer.css";
 import FaceMonitor from "../../security/FaceMonitor";
 
 const StartTest = () => {
-  const { isFullScreen, checkFullScreen, proceedTest, setIsFullScreen } =
+  const { isFullScreen, checkFullScreen, proceedTest, setIsFullScreen, setFaceDetectionError } =
     useContext(AuthContext);
 
   useEffect(() => {
+    setFaceDetectionError(null)
     const handleFullScreenChange = () => {
       if (!document.fullscreenElement) {
         setIsFullScreen(false);
