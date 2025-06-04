@@ -179,3 +179,13 @@
 
 // const similarity = stringSimilarity.compareTwoStrings(q[9].answer, answers[9]);
 // console.log(similarity);
+
+// function generateTin() {
+//     return Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join('');
+// }
+// for (let index = 0; index < 1000; index++) {
+    
+// let tin = generateTin();
+// console.log(`Generated TIN: ${tin} and its length is ${tin.length}`);
+    
+// }

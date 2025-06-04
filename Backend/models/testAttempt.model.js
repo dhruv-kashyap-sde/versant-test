@@ -12,6 +12,25 @@ const TestAttemptSchema = new mongoose.Schema({
   },
   endTime: {
     type: Date
+  },  
+  testReport: {
+    studentId: {
+      type: String,
+      default: ""
+    },
+    testId: {
+      type: String,
+      default: ""
+    }, 
+    testStartTime: {
+      type: String,
+      default: ""
+    },
+    testEndTime: {
+      type: String,
+      default: ""
+    },
+    testLog: [String]
   },
   questions: {
     partA: [{

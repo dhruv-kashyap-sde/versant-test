@@ -38,6 +38,15 @@ export const AuthProvider = ({ children }) => {
   const [photoTaken, setPhotoTaken] = useState(false);
   const [capturedImageUrl, setCapturedImageUrl] = useState(null);
 
+  // test report log 
+  const [testReport, setTestReport] = useState({
+    studentId: "",
+    testId: "", 
+    testStartTime: "",
+    testEndTime: "",
+    testLog: []
+  })
+
   const verifyTin = () => {
     setIsVerified(true);
   };
@@ -276,6 +285,7 @@ export const AuthProvider = ({ children }) => {
     initializeCamera, capturePhoto,
     removeAllChecks, // Add the removeAllChecks function to context
     base64ToBlob,
+    testReport, setTestReport
   };
 
   return (

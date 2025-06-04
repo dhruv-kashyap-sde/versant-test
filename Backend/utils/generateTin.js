@@ -1,9 +1,5 @@
 function generateTin() {
-    let tin = '';
-    for (let i = 0; i < 10; i++) {
-        tin += Math.floor(Math.random() * 10);
-    }
-    return tin.length === 10 ? tin : generateTin();
+    return Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join('');
 }
 
 module.exports = generateTin;

@@ -59,10 +59,7 @@ const studentSchema = new mongoose.Schema({
       default: 0
     },
   },
-  testId:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Test',
-  },
+  testId:[String],
   createdAt: {
     type: Date,
     default: Date.now
@@ -80,9 +77,10 @@ const studentSchema = new mongoose.Schema({
   }
 });
 
-// Pre-save hook to auto-generate TIN if not provided
+// Pre-save hook to auto-generate TIN if not provided or invalid
 studentSchema.pre('save', function(next) {
-  if (!this.tin) {
+  // Generate TIN if not provided or if not exactly 10 digits
+  if (!this.tin || String(this.tin).length !== 10) {
     this.tin = generateTin();
   }
   next();

@@ -32,14 +32,13 @@ function FaceMonitor() {
         );
 
         if (detections.length === 0) {
-          testReport.testLog.push(`No face detected at ${new Date().toISOString()}`);
+          testReport.testLog.push(`No face detected at ${new Date().toLocaleString()}`);
           setTestReport({ ...testReport });
           console.log(testReport);
-          
           toast.error("No face detected");
         } else if (detections.length > 1) {
           toast.error("Multiple faces detected");
-          testReport.testLog.push(`No face detected at ${new Date().toISOString()}`);
+          testReport.testLog.push(`No face detected at ${new Date().toLocaleString()}`);
           setTestReport({ ...testReport });
           console.log(testReport);
           

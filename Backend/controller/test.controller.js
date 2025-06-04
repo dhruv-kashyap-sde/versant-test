@@ -12,7 +12,10 @@ require("dotenv").config();
 // Start a new test
 exports.startTest = async (req, res) => {
   try {
-    const { tin } = req.body;
+    const { tin } = req.params;
+    const { testReport } = req.body;
+    console.log(tin, "tin from body");
+    
 
     // Validate student
     const student = await Student.findOne({ tin });
@@ -62,32 +65,34 @@ exports.startTest = async (req, res) => {
 
     // Get 2 questions from each part
     const testQuestions = {
-      partA: getRandomElements(allQuestions.partA.questions, process.env.NODE === 'development' ? 2 : 8),
-      partB: getRandomElements(allQuestions.partB.questions, process.env.NODE === 'development' ? 2 : 8),
-      partC: getRandomElements(allQuestions.partC.questions, process.env.NODE === 'development' ? 2 : 5),
-      partD: getRandomElements(allQuestions.partD.questions, process.env.NODE === 'development' ? 2 : 8),
-      partE: getRandomElements(allQuestions.partE.questions, process.env.NODE === 'development' ? 2 : 8),
+      partA: getRandomElements(allQuestions.partA.questions, process.env.NODE !== 'development' ? 2 : 8),
+      partB: getRandomElements(allQuestions.partB.questions, process.env.NODE !== 'development' ? 2 : 8),
+      partC: getRandomElements(allQuestions.partC.questions, process.env.NODE !== 'development' ? 2 : 5),
+      partD: getRandomElements(allQuestions.partD.questions, process.env.NODE !== 'development' ? 2 : 8),
+      partE: getRandomElements(allQuestions.partE.questions, process.env.NODE !== 'development' ? 2 : 8),
       partF: getRandomElements(allQuestions.partF.questions, 2)
     };
 
-    if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
-    }
+    // if (!req.file) {
+    //   return res.status(400).json({ message: "No image uploaded" });
+    // }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // const imageUrl = `/uploads/${req.file.filename}`;
 
     // Create new test attempt
     const testAttempt = new TestAttempt({
       studentId: student._id,
       questions: testQuestions,
-      studentImage: imageUrl,
+      studentImage: "imageURL" || imageUrl,
+      testReport: testReport || [],
     });
 
-    await testAttempt.save();
+    await testAttempt.save();    
 
     // Update student's test score
     await Student.findByIdAndUpdate(student._id, {
-      testStatus: 'started'
+      testStatus: 'started',
+      testId: student.testId.push(testAttempt._id),
     });
 
     res.status(201).json({
@@ -104,7 +109,7 @@ exports.startTest = async (req, res) => {
 // Submit test answers
 exports.submitTest = async (req, res) => {
   try {
-    const { testId, answers } = req.body;
+    const { testId, answers, testReport } = req.body;
 
     let testAttempt = await TestAttempt.findById(testId);
 
@@ -132,6 +137,7 @@ exports.submitTest = async (req, res) => {
       total: totalScore
     };
 
+    testAttempt.testReport = testReport || [];
     await testAttempt.save();
 
     // Update student's test score
@@ -158,12 +164,20 @@ exports.submitTest = async (req, res) => {
   }
 };
 
-// find a test based on its ID
+// find a test based on its ID or student ID
 exports.findTest = async (req, res) => {
-  const { testId } = req.params;
+  const { id } = req.params;
 
   try {
-    const testAttempt = await TestAttempt.findById(testId).populate('studentId', 'name tin');
+    let testAttempt;
+    
+    // First try to find by test ID
+    testAttempt = await TestAttempt.findById(id).populate('studentId', 'name tin');
+    
+    // If not found, try to find by student ID
+    if (!testAttempt) {
+      testAttempt = await TestAttempt.findOne({ studentId: id }).populate('studentId', 'name tin');
+    }
 
     if (!testAttempt) {
       return res.status(404).json({ message: "Test not found" });

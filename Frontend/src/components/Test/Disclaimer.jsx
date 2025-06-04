@@ -12,10 +12,12 @@ const Disclaimer = ({ onContinue }) => {
     loading, 
     setLoading, 
     student, 
+    testId,
     setTestId, 
     capturedImageUrl, 
     base64ToBlob,
-    photoTaken
+    photoTaken,
+    testReport, setTestReport
   } = useContext(AuthContext);
   const [isChecked, setIsChecked] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -54,9 +56,22 @@ const Disclaimer = ({ onContinue }) => {
   };
 
   const navigate = useNavigate();
+
+  const updateTestReport = () => {
+    console.log("from disclaimer", student);
+    
+    setTestReport(prev => ({
+      ...prev,
+      studentId: student._id,
+      testStartTime: new Date().toISOString(),
+      testId: testId || "",
+      testLog: []
+    }));
+  }
   
   const handleContinueClick = async () => {
     stop();
+    updateTestReport();
     try {
       setLoading(true);
       setUploadingImage(true);
@@ -72,7 +87,8 @@ const Disclaimer = ({ onContinue }) => {
 
       // Create form data with TIN and image
       const formData = new FormData();
-      formData.append('tin', tin);
+      // formData.append('tin', tin);
+      formData.append('testReport', testReport);
       
       // Convert the base64 image to a blob and add to formData
       try {
@@ -87,7 +103,7 @@ const Disclaimer = ({ onContinue }) => {
       
       // Send request with image and TIN
       const response = await axios.post(
-        `${import.meta.env.VITE_API}/start`, 
+        `${import.meta.env.VITE_API}/start/${tin}`, 
         formData,
         {
           headers: {

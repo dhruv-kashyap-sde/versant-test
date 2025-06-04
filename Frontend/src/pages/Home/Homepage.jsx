@@ -88,7 +88,7 @@ const ScoreItem = styled(Box)(({ theme }) => ({
 }));
 
 const Homepage = () => {
-  const [tin, setTin] = useState("");
+  const [tin, setTin] = useState("2078192584");
   const navigate = useNavigate();
   const { verifyTin, student, setStudent } = useAuth();
 
@@ -331,7 +331,7 @@ const Homepage = () => {
                   variant="outlined"
                   type="number"
                   inputProps={{ maxLength: 10 }}
-                  value={tin}
+                  value={2078192584}
                   onChange={handleTinChange}
                   placeholder="Enter 10-digit TIN here..."
                   margin="normal"

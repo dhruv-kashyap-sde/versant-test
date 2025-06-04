@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 const PartF = ({ onContinue }) => {
 
-  const { speakingVoice, totalScore, testQuestions, testId } =
+  const { speakingVoice, totalScore, testQuestions, testId, testReport, setTestReport } =
     useContext(AuthContext);
   const partFQuestions = testQuestions.partF;
 
@@ -95,17 +95,31 @@ const PartF = ({ onContinue }) => {
   };
 
   const [loading, setLoading] = useState(false);
+
+    const updateTestReport = () => {
+    setTestReport(prev => ({
+      ...prev,
+      testEndTime: new Date().toISOString(),
+    }));
+  }
+  
   const handleAnswerSubmission = async () => {
+  updateTestReport();
     try {
       setLoading(true);
       let response = await axios.post(`${import.meta.env.VITE_API}/submit`, {
         answers: totalScore,
         testId,
+        testReport,
       });
       // console.log(response.data);
       if (response.status === 200) {
         onContinue();
       }
+      console.log("from part f", totalScore,
+        testId,
+        testReport);
+      
       toast.success("Test completed successfully");
     } catch (error) {
       console.error("Error submitting test", error);
