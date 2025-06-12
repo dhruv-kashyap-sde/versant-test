@@ -39,6 +39,13 @@ export const AuthProvider = ({ children }) => {
   const [capturedImageUrl, setCapturedImageUrl] = useState(null);
   const [faceDetectionError, setFaceDetectionError] = useState(null);
 
+  // Add speech recognition test states
+  const [speechTestCompleted, setSpeechTestCompleted] = useState(false);
+  const [speechTestSentence, setSpeechTestSentence] = useState(`Hello, my name is ${student.name}. I am giving a speech test.`);
+  const [transcribedText, setTranscribedText] = useState("");
+  const [isSpeechTestActive, setIsSpeechTestActive] = useState(false);
+  const [speechRecognitionRef, setSpeechRecognitionRef] = useState(null);
+
   // test report log 
   const [testReport, setTestReport] = useState({
     studentId: "",
@@ -126,6 +133,96 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error("Audio recording error:", err);
       setError("Audio recording error: " + err.message);
+    }
+  };
+
+  // Speech recognition test functionality
+  const initializeSpeechRecognition = () => {
+    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+      recognition.maxResults = 1;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase().trim();
+        const targetSentence = speechTestSentence.toLowerCase().trim();
+        
+        setTranscribedText(transcript);
+        
+        // Calculate similarity (simple word matching)
+        const targetWords = targetSentence.split(' ');
+        const transcriptWords = transcript.split(' ');
+        
+        let matchedWords = 0;
+        targetWords.forEach(word => {
+          if (transcriptWords.some(transcriptWord => transcriptWord.includes(word) || word.includes(transcriptWord))) {
+            matchedWords++;
+          }
+        });
+        
+        // If at least 70% of words match, consider it successful
+        const accuracy = matchedWords / targetWords.length;
+        if (accuracy >= 0.7) {
+          setSpeechTestCompleted(true);
+          toast.success("Speech test completed successfully!");
+        } else {
+          toast.error(`Speech not clear enough. Please try again. (${Math.round(accuracy * 100)}% match)`);
+        }
+        
+        setIsSpeechTestActive(false);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        setIsSpeechTestActive(false);
+        toast.error("Speech recognition error. Please try again.");
+      };
+
+      recognition.onend = () => {
+        setIsSpeechTestActive(false);
+      };
+
+      setSpeechRecognitionRef(recognition);
+    } else {
+      setError("Speech recognition not supported in this browser");
+    }
+  };
+  const startSpeechTest = () => {
+    if (!speechRecognitionRef) {
+      initializeSpeechRecognition();
+      // Wait a bit for initialization then try again
+      setTimeout(() => startSpeechTest(), 100);
+      return;
+    }
+
+    if (!isMicActive) {
+      toast.error("Please enable microphone first");
+      return;
+    }
+
+    try {
+      setIsSpeechTestActive(true);
+      setTranscribedText("");
+      speechRecognitionRef.start();
+      
+      // Set timeout to stop recognition after 10 seconds
+      setTimeout(() => {
+        if (isSpeechTestActive && speechRecognitionRef) {
+          try {
+            speechRecognitionRef.stop();
+          } catch (error) {
+            console.error("Error stopping speech recognition:", error);
+          }
+        }
+      }, 10000);
+    } catch (error) {
+      console.error("Error starting speech recognition:", error);
+      setIsSpeechTestActive(false);
+      toast.error("Error starting speech test");
     }
   };
 
@@ -287,7 +384,13 @@ export const AuthProvider = ({ children }) => {
     removeAllChecks, // Add the removeAllChecks function to context
     base64ToBlob,
     testReport, setTestReport,
-    faceDetectionError, setFaceDetectionError
+    faceDetectionError, setFaceDetectionError,
+    speechTestCompleted, setSpeechTestCompleted,
+    speechTestSentence, setSpeechTestSentence,
+    transcribedText, setTranscribedText,
+    isSpeechTestActive, setIsSpeechTestActive,
+    speechRecognitionRef, setSpeechRecognitionRef,
+    startSpeechTest
   };
 
   return (

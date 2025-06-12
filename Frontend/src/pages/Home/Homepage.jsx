@@ -90,7 +90,7 @@ const ScoreItem = styled(Box)(({ theme }) => ({
 const Homepage = () => {
   const [tin, setTin] = useState("");
   const navigate = useNavigate();
-  const { verifyTin, student, setStudent } = useAuth();
+  const { verifyTin, student, setStudent, setSpeechTestSentence } = useAuth();
 
   const [loading, setLoading] = useState(false);
   const [resultLoading, setResultLoading] = useState(false);
@@ -152,6 +152,7 @@ const Homepage = () => {
       );
       
       if (response.data && response.data.student) {
+        setSpeechTestSentence(`Hello, my name is ${response.data.student.name}. I am giving a speech test.`);
         setStudent(response.data.student);
 
         if (response.data.student.testStatus === "completed") {
@@ -314,7 +315,7 @@ const Homepage = () => {
           <ContentCard elevation={3}>
             <Box mb={3} textAlign="center">
               <Typography variant="h4" component="h1" color="primary" gutterBottom>
-                Versant Test
+                Skill Vedaa Swar
               </Typography>
               <Divider />
             </Box>

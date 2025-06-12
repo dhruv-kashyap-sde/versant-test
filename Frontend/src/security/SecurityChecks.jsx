@@ -35,6 +35,13 @@ const SecurityChecks = () => {
     capturedImageUrl,
     initializeCamera,
     capturePhoto,
+    // Add speech test values
+    speechTestCompleted,
+    speechTestSentence,
+    transcribedText,
+    isSpeechTestActive,
+    startSpeechTest,
+    initializeSpeechRecognition,
   } = useContext(AuthContext);
 
   const [faceDetected, setFaceDetected] = useState(false);
@@ -48,8 +55,15 @@ const SecurityChecks = () => {
       await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
     };
 
+    // Initialize speech recognition
+    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+      // Speech recognition will be initialized when startSpeechTest is called
+    } else {
+      toast.error("Speech recognition not supported in this browser");
+    }
+
     loadModels().then(initializeCamera());
-        const interval = setInterval(async () => {
+    const interval = setInterval(async () => {
       if (videoRef.current) {
         const detections = await faceapi.detectAllFaces(
           videoRef.current,
@@ -62,7 +76,7 @@ const SecurityChecks = () => {
         } else if (detections.length > 1) {
           toast.error("Multiple faces detected");
           setFaceDetected(false);
-        } else{
+        } else {
           setFaceDetected(true);
         }
       }
@@ -79,13 +93,12 @@ const SecurityChecks = () => {
       clearInterval(interval);
     };
   }, []);
-
   // When all checks pass, trigger the callback for further action (e.g., starting the test)
   useEffect(() => {
     if (
       isMicActive &&
       isInternetGood &&
-      audioRecordingCompleted &&
+      speechTestCompleted &&
       isFullScreen &&
       isCameraActive &&
       photoTaken &&
@@ -96,13 +109,12 @@ const SecurityChecks = () => {
   }, [
     isMicActive,
     isInternetGood,
-    audioRecordingCompleted,
-    recordedAudioUrl,
+    speechTestCompleted,
     onSecurityPassed,
     isFullScreen,
     isCameraActive,
     photoTaken,
-    faceDetected
+    faceDetected,
   ]);
 
   const startProceedTest = () => {
@@ -188,29 +200,88 @@ const SecurityChecks = () => {
             >
               Check again
             </button>
-          </p>
-          {/* Disabled because no use right now */}
-          {/* <p className="status-tile">
-            <strong>Audio Sample:</strong>{" "}
-            {audioRecordingCompleted ? (
-              <span style={{ color: "green" }}>Recorded</span>
+          </p>{" "}
+          <p className="status-tile">
+            <strong>Speech Test:</strong>{" "}
+            {speechTestCompleted ? (
+              <span style={{ color: "green" }}>Completed</span>
+            ) : isSpeechTestActive ? (
+              <span style={{ color: "orange" }}>Listening...</span>
             ) : (
-              <span style={{ color: "orange" }}>Recording...</span>
+              <span style={{ color: "red" }}>Not Completed</span>
             )}
             <button
               className="secondary"
-              onClick={() => startAudioRecording(mediaStreamRef.current)}
-              disabled={audioRecordingCompleted}
+              onClick={startSpeechTest}
+              disabled={
+                speechTestCompleted || isSpeechTestActive || !isMicActive
+              }
             >
-              Check again
+              {isSpeechTestActive ? "Listening..." : "Start Speech Test"}
             </button>
           </p>
-        {recordedAudioUrl && (
-          <div style={{ marginTop: "1rem" }}>
-            <p className="status-tile">Review your recorded audio sample:</p>
-            <audio controls src={recordedAudioUrl}></audio>
-          </div>
-        )} */}
+          {/* Display the sentence to repeat */}
+          {!speechTestCompleted && isMicActive && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                backgroundColor: "#f5f5f5",
+                borderRadius: "8px",
+              }}
+            >
+              <p>
+                <strong>Please say the following sentence clearly:</strong>
+              </p>
+              <p
+                style={{
+                  fontSize: "1.1em",
+                  fontWeight: "bold",
+                  color: "#333",
+                  textAlign: "center",
+                  margin: "0.5rem 0",
+                }}
+              >
+                "{speechTestSentence}"
+              </p>
+              {transcribedText && (
+                <p
+                  style={{
+                    fontSize: "0.9em",
+                    color: "#666",
+                    marginTop: "0.5rem",
+                  }}
+                >
+                  <strong>You said:</strong> "{transcribedText}"
+                </p>
+              )}
+            </div>
+          )}
+          {speechTestCompleted && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "1rem",
+                backgroundColor: "#e8f5e8",
+                borderRadius: "8px",
+              }}
+            >
+              <p style={{ color: "green", margin: 0 }}>
+                ✓ Speech test completed successfully!
+              </p>
+              {transcribedText && (
+                <p
+                  style={{
+                    fontSize: "0.9em",
+                    color: "#666",
+                    marginTop: "0.5rem",
+                  }}
+                >
+                  <strong>Recognized:</strong> "{transcribedText}"
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="video-preview">
