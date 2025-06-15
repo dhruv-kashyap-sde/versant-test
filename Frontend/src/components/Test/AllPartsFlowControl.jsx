@@ -37,7 +37,7 @@ const AllPartsFlowControl = () => {
   return (
     <div>
       <div className="main-header">
-        <h1 className="logo">Versant Test</h1>
+        <h1 className="logo">SkillVedaa Swar</h1>
         <h2>{student.name}</h2>
       </div>
       {partIndex === -1 ? (

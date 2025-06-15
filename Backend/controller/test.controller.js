@@ -13,9 +13,7 @@ require("dotenv").config();
 exports.startTest = async (req, res) => {
   try {
     const { tin } = req.params;
-    const { testReport } = req.body;
-    console.log(tin, "tin from body");
-    
+    const { testReport } = req.body;    
 
     // Validate student
     const student = await Student.findOne({ tin });
@@ -201,9 +199,7 @@ exports.beginTest = async (req, res) => {
   }
 
   try {
-    const student = await Student.findOne({ tin });
-    console.log(student, "student");
-    
+    const student = await Student.findOne({ tin });    
 
     if (!student) {
       return res.status(404).json({ message: "Invalid TIN" });
@@ -217,8 +213,6 @@ exports.beginTest = async (req, res) => {
     });
 
     if (ongoingTest) {
-      console.log("onfoiinf", ongoingTest);
-
       return res.status(200).json({
         message: "Ongoing test found",
         testId: ongoingTest._id,
@@ -233,7 +227,6 @@ exports.beginTest = async (req, res) => {
     });
 
     if (completedTest) {
-      console.log("copmeleted", completedTest);
       return res.status(200).json({
         message: "You have already completed this test",
         testId: completedTest._id,
