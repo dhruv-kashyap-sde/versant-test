@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import FaceMonitor from "./FaceMonitor";
 import * as faceapi from "face-api.js";
+import { filterValidDetections, getOptimalDetectionOptions } from "../utils/faceDetectionUtils";
 
 const SecurityChecks = () => {
   const {
@@ -43,8 +44,13 @@ const SecurityChecks = () => {
     startSpeechTest,
     initializeSpeechRecognition,
   } = useContext(AuthContext);
-
   const [faceDetected, setFaceDetected] = useState(false);
+  const detectionRef = useRef({
+    consecutiveNoFaceCount: 0,
+    consecutiveMultiFaceCount: 0,
+    consecutiveValidCount: 0
+  });
+  
   // Run the security checks on mount
   useEffect(() => {
     initializeMic();
@@ -64,20 +70,52 @@ const SecurityChecks = () => {
 
     loadModels().then(initializeCamera());
     const interval = setInterval(async () => {
-      if (videoRef.current) {
-        const detections = await faceapi.detectAllFaces(
-          videoRef.current,
-          new faceapi.TinyFaceDetectorOptions()
-        );
+      if (videoRef.current && videoRef.current.readyState === 4) {        try {
+          const detections = await faceapi.detectAllFaces(
+            videoRef.current,
+            new faceapi.TinyFaceDetectorOptions(getOptimalDetectionOptions())
+          );
 
-        if (detections.length === 0) {
-          toast.error("No face detected");
-          setFaceDetected(false);
-        } else if (detections.length > 1) {
-          toast.error("Multiple faces detected");
-          setFaceDetected(false);
-        } else {
-          setFaceDetected(true);
+          const validDetections = filterValidDetections(detections, videoRef.current);
+
+          if (validDetections.length === 0) {
+            detectionRef.current.consecutiveNoFaceCount++;
+            detectionRef.current.consecutiveMultiFaceCount = 0;
+            detectionRef.current.consecutiveValidCount = 0;
+            
+            // Only show error after 2 consecutive failures (4 seconds)
+            if (detectionRef.current.consecutiveNoFaceCount >= 2) {
+              if (detectionRef.current.consecutiveNoFaceCount === 2) {
+                toast.error("Please position yourself in front of the camera");
+              }
+              setFaceDetected(false);
+            }
+          } else if (validDetections.length > 1) {
+            detectionRef.current.consecutiveMultiFaceCount++;
+            detectionRef.current.consecutiveNoFaceCount = 0;
+            detectionRef.current.consecutiveValidCount = 0;
+            
+            // Only show error after 2 consecutive detections (4 seconds)
+            if (detectionRef.current.consecutiveMultiFaceCount >= 2) {
+              if (detectionRef.current.consecutiveMultiFaceCount === 2) {
+                toast.error("Multiple faces detected - Ensure only you are visible");
+              }
+              setFaceDetected(false);
+            }
+          } else {
+            // Valid single face detected
+            detectionRef.current.consecutiveValidCount++;
+            detectionRef.current.consecutiveNoFaceCount = 0;
+            detectionRef.current.consecutiveMultiFaceCount = 0;
+            
+            // Need at least 2 consecutive valid detections to be sure
+            if (detectionRef.current.consecutiveValidCount >= 2) {
+              setFaceDetected(true);
+            }
+          }
+        } catch (error) {
+          console.error("Face detection error:", error);
+          // Don't immediately fail on detection errors
         }
       }
     }, 2000); // Every 2 seconds
@@ -282,10 +320,30 @@ const SecurityChecks = () => {
               )}
             </div>
           )}
-        </div>
-
-        <div className="video-preview">
-          <video ref={videoRef} autoPlay muted playsInline></video>
+        </div>        <div className="video-preview" style={{ position: 'relative' }}>
+          <video 
+            ref={videoRef} 
+            autoPlay 
+            muted 
+            playsInline
+            style={{ 
+              borderRadius: '8px',
+              border: faceDetected ? '3px solid #22c55e' : '3px solid #ef4444'
+            }}
+          ></video>
+          <div style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            backgroundColor: faceDetected ? '#22c55e' : '#ef4444',
+            color: 'white',
+            fontSize: '12px',
+            fontWeight: 'bold'
+          }}>
+            {faceDetected ? '✓ Face OK' : '✗ Position Face'}
+          </div>
         </div>
       </div>
       <button
