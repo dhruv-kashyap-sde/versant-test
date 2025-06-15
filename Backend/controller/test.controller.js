@@ -5,8 +5,6 @@ const { checkPartD } = require("../utils/checkPartD");
 const checkPart = require("../utils/checkPart");
 const { checkPartC } = require("../utils/checkPartC");
 const checkPartF = require("../utils/checkPartF");
-const fs = require('fs');
-const path = require('path');
 require("dotenv").config();
 
 // Start a new test

@@ -865,12 +865,7 @@ const AllStudents = () => {
   const handleDeleteStudent = async (id) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${import.meta.env.VITE_API}/trainer/student/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.delete(`${import.meta.env.VITE_API}/admin/student/${id}`)
       setStudents(students.filter((student) => student._id !== id));
       toast.success("Student deleted successfully!");
     } catch (error) {
