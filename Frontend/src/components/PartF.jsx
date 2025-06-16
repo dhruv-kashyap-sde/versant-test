@@ -208,7 +208,10 @@ const PartF = ({ onContinue }) => {
           <>
             <span>Time left: {timeLeft} seconds</span>
             {!showInput ? (
-              <button onClick={() => setShowInput(true)} className="secondary">
+              <button onClick={() => {
+                setShowInput(true);
+                setTimeLeft(90);
+                }} className="secondary">
                 Skip and Write
               </button>
             ) : (

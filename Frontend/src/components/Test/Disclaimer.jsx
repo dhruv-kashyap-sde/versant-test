@@ -23,7 +23,7 @@ const Disclaimer = ({ onContinue }) => {
   const [uploadingImage, setUploadingImage] = useState(false);
   
   const rules = [
-    "Welcome to SkillVedaa Swar. Please read all instructions carefully before proceeding. Do not reload or refresh the page during the test. DO NOT exit fullscreen mode during the test. Do not block any permissions required for the test. Speak in natural voice, not too low, not too loud. Violating any rules above will lead to instant disqualification from the test.",
+    "Welcome to The Test. Please read all instructions carefully before proceeding. Do not reload or refresh the page during the test. DO NOT exit fullscreen mode during the test. Do not block any permissions required for the test. Speak in natural voice, not too low, not too loud. Violating any rules above will lead to instant disqualification from the test.",
   ];
 
   const synth = speechSynthesis;
