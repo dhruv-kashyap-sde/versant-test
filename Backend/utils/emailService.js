@@ -1,4 +1,6 @@
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
 // Create a transporter using environment variables or default configuration
 const transporter = nodemailer.createTransport({
@@ -86,4 +88,58 @@ const sendTinEmail = async (to, name, tin) => {
   }
 };
 
-module.exports = { sendTinEmail };
+// Create transporter for teacher credentials
+const teacherTransporter = nodemailer.createTransport({
+  host: "bulk.smtp.mailtrap.io",
+  port: 587,
+  auth: {
+    user: "smtp@mailtrap.io",
+    pass: "63acd31e23c1614b751786702f09feb0",
+  },
+});
+
+// Function to read and replace template placeholders
+const getEmailTemplate = (templateData) => {
+  const templatePath = path.join(__dirname, '../templates/trainerAccountEmail.html');
+  let template = fs.readFileSync(templatePath, 'utf8');
+  
+  // Replace all placeholders with actual data
+  Object.keys(templateData).forEach(key => {
+    const placeholder = `{{${key}}}`;
+    template = template.replace(new RegExp(placeholder, 'g'), templateData[key]);
+  });
+  
+  return template;
+};
+
+// Function to send teacher credentials email
+const sendTeacherCredentialsEmail = async (teacherData, password) => {
+  const templateData = {
+    trainerName: teacherData.name,
+    trainerEmail: teacherData.email,
+    trainerPhone: teacherData.phone || 'N/A',
+    trainerPassword: password,
+    createdOn: new Date().toLocaleDateString(),
+    loginUrl: process.env.CLIENT_URL || 'http://localhost:3000/login'
+  };
+
+  const htmlContent = getEmailTemplate(templateData);
+
+  const mailOptions = {
+    from: '"Skillvedaa Swar--"'+ process.env.EMAIL_FROM,
+    to: teacherData.email,
+    subject: 'Your Trainer Account Credentials - Skillvedaa Swar',
+    html: htmlContent
+  };
+
+  try {
+    const info = await teacherTransporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+module.exports = { sendTinEmail, sendTeacherCredentialsEmail };

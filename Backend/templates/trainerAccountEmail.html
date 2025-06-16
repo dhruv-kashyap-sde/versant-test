@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Trainer Account Created</title>
+</head>
+<body style="font-family:'Arial', sans-serif; line-height:1.6; margin:0; padding:20px; background-color:#b7d6f5; color:#000">
+    <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 10px; box-shadow: 0 4px 10px #0056b31a; overflow: hidden">
+        <div style="background-color: #0056b3; color: #ffffff; padding: 30px; text-align: center">
+            <h1 style="margin: 0; font-size: 1.8em">
+                Trainer Account Created
+            </h1>
+            <p style="margin-bottom: 0">
+                Welcome to Skillvedaa Swar
+            </p>
+        </div>
+
+        <div style="padding: 30px">
+            <div style="text-align: center; margin-bottom: 30px; color: #333">
+                <h2 style="margin-bottom: 10px">
+                    Hello {{trainerName}}!</h2>
+                <p>Your trainer account has been successfully created. Below are your login credentials:</p>
+            </div>
+
+            <div style="background: #b7d6f5; padding: 20px; border-radius: 8px; margin-bottom: 20px">
+                <h3 style="color: #0056b3; margin-top: 0">
+                    Account Details
+                </h3>
+
+                <div style="margin:15px 0;padding:10px;background:#ffffff;border-radius:5px;display:flex">
+                    <div style="font-weight:bold;color:#0056b3;width:120px;flex-shrink:0">
+                        Name:
+                    </div>
+                    <div style="color:#333">
+                        {{trainerName}}
+
+                    </div>
+                </div>
+
+                <div style="margin:15px 0;padding:10px;background:#ffffff;border-radius:5px;display:flex">
+                    <div style="font-weight:bold;color:#0056b3;width:120px;flex-shrink:0">
+                        Email:
+                    </div>
+                    <div style="color:#333">
+                        {{trainerEmail}}
+
+                    </div>
+                </div>
+
+                <div style="margin:15px 0;padding:10px;background:#ffffff;border-radius:5px;display:flex">
+                    <div style="font-weight:bold;color:#0056b3;width:120px;flex-shrink:0">
+                        Phone:
+                    </div>
+                    <div style="color:#333">
+                        {{trainerPhone}}
+
+                    </div>
+                </div>
+
+                <div style="margin:15px 0;padding:10px;background:#ffffff;border-radius:5px;display:flex">
+                    <div style="font-weight:bold;color:#0056b3;width:120px;flex-shrink:0">
+                        Password:
+                    </div>
+                    <div style="color:#333">
+                        {{trainerPassword}}
+
+                    </div>
+                </div>
+
+                <div style="margin:15px 0;padding:10px;background:#ffffff;border-radius:5px;display:flex">
+                    <div style="font-weight:bold;color:#0056b3;width:120px;flex-shrink:0">
+                        TIN:
+                    </div>
+                    <div style="color:#333">
+                        {{trainerTin}}
+
+                    </div>
+                </div>
+
+                <div style="margin:15px 0;padding:10px;background:#ffffff;border-radius:5px;display:flex">
+                    <div style="font-weight:bold;color:#0056b3;width:120px;flex-shrink:0">
+                        Created On:
+                    </div>
+                    <div style="color:#333">
+                        {{createdOn}}
+
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding:15px; margin-bottom: 20px; border-radius: 4px">
+                <strong>Security Notice:</strong> Please change your password after your first login and keep your credentials secure.
+            </div>
+
+            <div style="text-align: center">
+                <a 
+                   href="{{loginUrl}}" 
+                   style="display: inline-block; background: #0056b3; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; text-align: center">
+                    Login to Your Account
+                </a>
+            </div>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 0.9em">
+            <p style="margin-bottom: 5px"><strong>Skillvedaa Swar</strong></p>
+            <p>If you need assistance, please contact support.</p>
+        </div>
+    </div>
+</body>
+</html>

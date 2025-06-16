@@ -2,6 +2,7 @@ const Admin = require("../models/admin.model");
 const Student = require("../models/student.model");
 const generateTin = require("../utils/generateTin");
 const { sendTinEmail } = require("../utils/emailService");
+const { sendTeacherCredentialsEmail } = require('../utils/emailService');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const xlsx = require("xlsx");
@@ -79,7 +80,7 @@ exports.getStudentDetails = async (req, res) => {
       return res.status(404).json({ error: "No test attempts found for this student" });
     }
 
-    res.status(200).json({student, testAttempts});
+    res.status(200).json({ student, testAttempts });
   } catch (error) {
     console.error("Error fetching student details:", error);
     res.status(500).json({ error: error.message });
@@ -99,6 +100,7 @@ exports.createTrainer = async (req, res) => {
           "All fields are required (name, email, phone, tinAmount, password)",
       });
     }
+
 
     // Validate email format
     const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
@@ -134,6 +136,10 @@ exports.createTrainer = async (req, res) => {
       });
     }
 
+    // Store plain password before hashing (if you're hashing it)
+    const plainTextPassword = password;
+
+
     // Check if trainer with the same email or phone already exists
     const existingTrainer = await Trainer.findOne({
       $or: [{ email }, { phone }],
@@ -158,6 +164,13 @@ exports.createTrainer = async (req, res) => {
 
     await trainer.save();
 
+    // Send email with credentials after successful creation
+    const emailResult = await sendTeacherCredentialsEmail(trainer, plainTextPassword);
+
+    if (!emailResult.success) {
+      console.warn('Trainer created but email failed to send:', emailResult.error);
+    }
+
     // Return success without sending back the password
     res.status(201).json({
       success: true,
@@ -171,6 +184,8 @@ exports.createTrainer = async (req, res) => {
         tinRemaining: trainer.tinRemaining,
         createdAt: trainer.createdAt,
       },
+      emailSent: emailResult.success
+
     });
   } catch (error) {
     console.error("Error creating trainer:", error);
@@ -306,7 +321,7 @@ exports.dashboard = async (req, res) => {
   let { email } = req.user;
   let admin = await Admin.findOne({ email });
 
-  if(admin){
+  if (admin) {
     res.json({ message: "Welcome to Admin Dashboard", success: true });
   }
 
@@ -341,7 +356,7 @@ exports.deleteStudent = async (req, res) => {
     if (student.createdBy !== "Admin") {
       // Find the trainer by name
       const trainer = await Trainer.findById(student.creatorId);
-      
+
       if (trainer) {
         // Increment the trainer's remaining TIN count
         trainer.tinRemaining += 1;
@@ -352,7 +367,7 @@ exports.deleteStudent = async (req, res) => {
     // Delete the student
     await Student.findByIdAndDelete(id);
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Student deleted successfully"
     });
   } catch (error) {
