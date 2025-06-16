@@ -1,0 +1,52 @@
+[
+    {
+        "part": "A",
+        "answers": [
+            "It's difficult to make a good decision.",
+            "Somebody told me to speed up.",
+            "Bob and Tom talked all day.",
+            "Do you accept credit cards?"
+        ]
+    },
+    {
+        "part": "B",
+        "answers": [
+            "How long are you staying here?",
+            "Do you have any pictures of your family?",
+            "He is a friend of mine.",
+            "The house next door is for sale."
+        ]
+    },
+    {
+        "part": "C",
+        "answers": []
+    },
+    {
+        "part": "D",
+        "answers": [
+            "d1",
+            "d2",
+            "d3",
+            "d4"
+        ]
+    },
+    {
+        "part": "E",
+        "answers": [
+            "e1",
+            "e2",
+            "e3",
+            "e4",
+            "e5"
+        ]
+    },
+    {
+        "part": "F",
+        "answers": [
+            "f1",
+            "f2",
+            "f3",
+            "f4"
+        ]
+    }
+]

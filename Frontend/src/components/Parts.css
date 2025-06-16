@@ -1,0 +1,179 @@
+.part-body{
+    height: 80vh;
+    width: 100vw;
+    padding: 0 10vh;
+    /* background-color: red; */
+}
+.part-body .part-header{
+    /* background-color: #fff; */
+    margin: auto;
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.part-header h2{
+    /* background-color: rebeccapurple; */
+    display: flex;
+    gap: 20px;
+    color: var(--theme);
+    font-size: 2rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+    
+} .circle{
+    height: 50px;
+    width: 50px;
+    background-color: var(--text-2);
+    color: var(--w);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 2rem;
+}
+
+.part-body .part-box{
+    height: 55vh;
+    background-color: #fff;
+    margin: 20px 0;
+    border: var(--border);
+    border-top: 40px solid var(--theme);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.part-box .speech-qa-container{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.speech-qa-container .blue, .speech-qa-container .gray{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: var(--border);
+    color: var(--w);
+}
+.speech-qa-container .blue{
+    background-color: var(--theme);
+}
+
+.speech-qa-container .gray{
+    background-color: var(--text-2);
+}
+
+.part-box .user-input-container{
+    width: 50%;
+    text-align: center;
+}
+
+.part-box i{
+    font-size: 3rem;
+    color: var(--w);
+}
+
+.part-box .textarea textarea{
+    resize: none;
+}
+
+
+.part-box .tutorial{
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+.tutorial .tut-box{
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    padding: 20px;
+    padding-top: 0;
+}
+
+.part-box .part-box-complete{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.tut-box .box{
+    width: 50%;
+}
+
+.tut-box .box h3{
+    margin-bottom: 0;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.tut-box .box .color{
+    height: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--w);    
+}
+
+.part-body .secondary{
+    margin-left: 10px;
+}
+
+/* Device Warning Styles */
+.device-warning-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--theme);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.device-warning-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.device-warning-content h2 {
+    color: var(--theme);
+    margin-bottom: 1rem;
+}
+
+.warning-icon {
+    color: var(--theme);
+    margin: 1.5rem 0;
+}
+
+.device-images {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1.5rem 0;
+}
+
+.device-icon {
+    font-size: 3rem;
+}
+
+.notice {
+    font-weight: bold;
+    margin-top: 1rem;
+    color: var(--text-2);
+}

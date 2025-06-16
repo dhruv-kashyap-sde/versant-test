@@ -1,0 +1,121 @@
+{
+  "partA": [
+    {
+      "question": "With all the good programs available it’s difficult to make a quick decision."
+    },
+    {
+      "question": "The search for qualified software engineer is truly difficult."
+    },
+    {
+      "question": "Roads through woods can be scary when there’s no light."
+    },
+    {
+      "question": "Somebody told me to speed up."
+    },
+    {
+      "question": "Bob and Tom talked all day."
+    },
+    {
+      "question": "These plates and glasses would make a fine present."
+    },
+    {
+      "question": "Do you accept credit cards?"
+    }
+  ],
+  "partB": [
+    {
+      "question": "Staying here... how long... are you?",
+      "rearranged": "How long are you staying here?"
+    },
+    {
+      "question": "Of your family... any pictures... do you have?",
+      "rearranged": "Do you have any pictures of your family?"
+    },
+    {
+      "question": "Of mine... he is...  a friend.",
+      "rearranged": "He is a friend of mine."
+    },
+    {
+      "question": "Next door... is for sale... the house.",
+      "rearranged": "The house next door is for sale."
+    }
+  ],
+  "partC":[
+    {
+      "dialog": [
+        { "speaker": "Speaker 1", "text": "Lucy, can you come to the office early tomorrow?" },
+        { "speaker": "Speaker 2", "text": "Sure, what time?" },
+        { "speaker": "Speaker 1", "text": "7:30 would be great." }
+      ],
+      "question": "What will Lucy have to do tomorrow morning?",
+      "keywords": ["go to the office", "early", "7:30", "come to the office", "be at the office"]
+    },
+    {
+      "dialog": [
+        { "speaker": "Speaker 1", "text": "did you got the book?" },
+        { "speaker": "Speaker 2", "text": "Yes, it was interesting." },
+        { "speaker": "Speaker 1", "text": "Glad to hear that." }
+      ],
+      "question": "how was the book?",
+      "keywords": ["interesting", "good", "nice", "enjoyed", "liked"]
+    },
+    {
+      "dialog": [
+        { "speaker": "Speaker 1", "text": "Did you hire any of the employee?" },
+        { "speaker": "Speaker 2", "text": "No i did not." },
+        { "speaker": "Speaker 1", "text": "I guess no one had enough experience, right?" }
+      ],
+      "question": "Why employees were not hired?",
+      "keywords": ["experience", "no one had enough experience", "no experience", "not enough experience"]
+    }
+  ],
+  "partD": [
+    {
+      "question": "You’re driving too ___. you should slow down.",
+      "answer": "fast"
+    },
+    {
+      "question": "I haven’t eaten anything all day. I’m so ___.",
+      "answer": "hungry"
+    },
+    {
+      "question": "She was awarded a promotion based on her excellent ___ on the job.",
+      "answer": "performance"
+    },
+    {
+      "question": "It was so ___ outside that no one wanted to leave the air-conditioned house.",
+      "answer": "hot"
+    }
+  ],
+  "partE": [
+    {
+      "question": "I have to agree with you."
+    },
+    {
+      "question": "The company first opened when I was much younger."
+    },
+    {
+      "question": "I don’t have any information."
+    },
+    {
+      "question": "It’s a good idea to create a different version of your resume."
+    },
+    {
+      "question": "You can use the computer in a minute."
+    }
+  ],
+  "partF": [
+    {
+      "question": "John is the sales manager of a small store. An angry customer called him to complain about a home security system that she had recently bought from his store. She told him that it did not work properly because the alarm went off when she was in the house. Initially she demanded a refund, but when John apologized, and offered to replace her system with a new one, she agreed. "
+    },
+    {
+      "question": "Sam was on a busy flight that had been delayed. The plane finally landed and arrived at the gate. Then all the passengers got up to get their luggage. The woman in front of Sam accidentally bumped him in the arm. Just as she was apologizing, her bag fell from the overhead compartment and hit him on the head. The woman felt awful. Sam decided he didn’t want to fly again anytime soon. "
+    },
+    {
+      "question": "Mary won this year’s best teacher award at her university. She has been known for her creative and unique teaching style for many years. Her award included a trip to Paris for one week. Mary and her husband have never been to Paris and they are very excited about it."
+    },
+    {
+      "question": "Employees who wish to take time off during the summer should check with their managers in advance. Many people plan to be away from the office during the summer. As a company, we’d like to make sure all projects have enough people working on them before we approve requests for time off."
+    }
+  ]
+}
