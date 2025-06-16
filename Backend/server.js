@@ -19,7 +19,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "https://versant-test-qxvv.onrender.com"],  // Change this to match your frontend port
+  origin: ["http://localhost:5173", "http://localhost:5174", "https://versant-test-qxvv.onrender.com", "https://vna.skillvedaa.in"],  // Change this to match your frontend port
   methods: ["GET", "POST", "PUT", "DELETE"],
 }
 ));
